@@ -1,0 +1,182 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model Student {
+  id                String            @id @default(cuid())
+  name              String
+  email             String            @unique
+  course            String
+  status            String            @default("Active")
+  lastLesson        String?
+  progress          Int               @default(0)
+  loginId           String            @unique
+  password          String
+  level             Int               @default(1)
+  target            String?
+  phone             String?
+  joinDate          String?
+  totalLessons      Int               @default(0)
+  internalNote      String?
+  toeicScore        String?
+  cefr              String?
+  vocabScore        Int?
+  grammarScore      Int?
+  listeningScore    Int?
+  speakingScore     Int?
+  goalTarget        String?
+  goalProgress      Int?
+  biography         String?
+  occupation        String?
+  avatarUrl         String?
+  coverUrl          String?
+  questLevel        Int               @default(1)
+  questXP           Int               @default(0)
+  questStreak       Int               @default(0)
+  lastQuestPlayedAt DateTime?
+  grammarProgresses GrammarProgress[]
+  invoices          Invoice[]
+  records           LessonRecord[]
+  schedules         LessonSchedule[]
+  messages          Message[]
+  testScores        TestScore[]
+  vocabProgresses   VocabProgress[]
+}
+
+model Teacher {
+  id       String    @id @default(cuid())
+  name     String
+  email    String    @unique
+  status   String    @default("Active")
+  role     String    @default("Teacher")
+  bio      String?
+  joinDate String
+  rating   Float?
+  loginId  String?   @unique
+  password String?
+  messages Message[]
+}
+
+model LessonSchedule {
+  id              String  @id @default(cuid())
+  studentId       String
+  studentName     String
+  teacherName     String
+  date            String
+  time            String
+  duration        String
+  course          String
+  type            String
+  status          String  @default("Scheduled")
+  tags            String?
+  meetingPassword String?
+  meetingUrl      String?
+  student         Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+model LessonRecord {
+  id            String  @id @default(cuid())
+  lessonId      String? @unique
+  studentId     String
+  date          String
+  teacher       String
+  title         String
+  feedback      String
+  homework      String?
+  internalNote  String?
+  grammar       Int     @default(50)
+  vocab         Int     @default(50)
+  pronunciation Int     @default(50)
+  fluency       Int     @default(50)
+  student       Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+model TestScore {
+  id         String   @id @default(cuid())
+  studentId  String
+  type       String
+  testName   String
+  date       String
+  grade      String?
+  score      String
+  totalScore String?
+  trend      String   @default("same")
+  createdAt  DateTime @default(now())
+  student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  studentId String
+  teacherId String?
+  sender    String
+  text      String
+  time      DateTime @default(now())
+  read      Boolean  @default(false)
+  teacher   Teacher? @relation(fields: [teacherId], references: [id])
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+model Announcement {
+  id       String @id @default(cuid())
+  title    String
+  content  String
+  date     String
+  target   String @default("All")
+  priority String @default("Normal")
+}
+
+model Invoice {
+  id        String   @id @default(cuid())
+  studentId String
+  planName  String
+  amount    Int
+  dueDate   String
+  status    String   @default("Pending")
+  createdAt DateTime @default(now())
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+model SchoolSettings {
+  id                        Int     @id @default(autoincrement())
+  schoolName                String
+  timezone                  String
+  defaultCourseDuration     Int
+  allowStudentCancellation  Boolean
+  cancellationDeadlineHours Int
+  monthlyGoal               Int
+}
+
+model VocabProgress {
+  id            String   @id @default(cuid())
+  studentId     String
+  level         String
+  stageIndex    Int
+  completions   Int      @default(0)
+  perfectClears Int      @default(0)
+  highestScore  Int      @default(0)
+  lastPlayedAt  DateTime @default(now())
+  student       Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, level, stageIndex])
+}
+
+model GrammarProgress {
+  id            String   @id @default(cuid())
+  studentId     String
+  level         String
+  stageIndex    Int
+  completions   Int      @default(0)
+  perfectClears Int      @default(0)
+  highestScore  Int      @default(0)
+  lastPlayedAt  DateTime @default(now())
+  student       Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, level, stageIndex])
+}
