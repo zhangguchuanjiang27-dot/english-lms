@@ -88,12 +88,12 @@ export default function StudentDashboard() {
     return (
         <main className="flex-1 p-6 md:p-10 overflow-y-auto bg-slate-50/50">
             {/* Header */}
-            <header className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
+            <header className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-10 gap-4 md:gap-6">
                 <div className="animate-in slide-in-from-left duration-500">
                     <div className="flex items-center gap-3 mb-2">
                         <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-[10px] font-black uppercase tracking-widest">Student Portal</span>
                     </div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">こんにちは、{displayName}さん 👋</h1>
+                    <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-tight">こんにちは、<br className="md:hidden" />{displayName}さん 👋</h1>
                 </div>
                 <div className="flex items-center gap-4 animate-in slide-in-from-right duration-500">
                     <div className="hidden lg:flex flex-col items-end border-r border-slate-200 pr-4 mr-2">
@@ -136,7 +136,7 @@ export default function StudentDashboard() {
                                                     Next Lesson
                                                 </div>
                                                 <div>
-                                                    <h2 className="text-4xl md:text-5xl font-black leading-[1.1] tracking-tight mb-4">
+                                                    <h2 className="text-3xl md:text-5xl font-black leading-tight tracking-tight mb-4">
                                                         {upcomingLesson.course}
                                                     </h2>
                                                     <div className="flex flex-wrap gap-5 text-slate-300">
@@ -152,12 +152,12 @@ export default function StudentDashboard() {
                                                 </div>
                                             </div>
 
-                                            <div className="flex flex-col gap-4 w-full md:w-auto">
-                                                <div className="bg-white/5 backdrop-blur-xl rounded-[2rem] p-6 flex flex-col items-center justify-center border border-white/10 text-center min-w-[200px]">
+                                            <div className="flex flex-col gap-4 w-full md:w-auto mt-4 md:mt-0">
+                                                <div className="bg-white/5 backdrop-blur-xl rounded-[2rem] p-5 md:p-6 flex flex-col items-center justify-center border border-white/10 text-center min-w-[200px]">
                                                     <p className="text-[10px] text-indigo-300 font-black uppercase tracking-widest mb-2">開始まで</p>
-                                                    <p className="text-3xl font-black text-white tracking-tight">{timeLeft || '確認中'}</p>
+                                                    <p className="text-2xl md:text-3xl font-black text-white tracking-tight">{timeLeft || '確認中'}</p>
                                                     <div className="w-full h-1 bg-white/10 rounded-full mt-4 overflow-hidden">
-                                                        <div className="h-full bg-indigo-500 w-2/3"></div>
+                                                        <div className="h-full bg-indigo-50 w-2/3"></div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -168,9 +168,9 @@ export default function StudentDashboard() {
                                                     href={upcomingLesson.meetingUrl}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="bg-white text-slate-900 px-8 py-3.5 rounded-2xl font-black text-sm shadow-xl hover:bg-slate-50 transition-all hover:translate-y-[-2px] active:translate-y-0 flex items-center gap-2"
+                                                    className="bg-white text-slate-900 px-8 py-3.5 rounded-2xl font-black text-sm shadow-xl hover:bg-slate-50 transition-all hover:translate-y-[-2px] active:translate-y-0 flex items-center justify-center gap-2 flex-1 md:flex-none"
                                                 >
-                                                    教室に入室する
+                                                    教室に入室
                                                     <ChevronRight size={18} />
                                                 </a>
                                             ) : (

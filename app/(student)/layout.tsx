@@ -16,6 +16,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import AuthGuard from '@/components/AuthGuard';
+import MobileNav from '@/components/MobileNav';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -39,7 +40,7 @@ export default function StudentLayout({
     return (
         <AuthGuard allowedRoles={['student']}>
             <div className="flex min-h-screen bg-[#F8FAFC] text-slate-900 font-sans">
-                {/* Sidebar */}
+                {/* Sidebar - Desktop only */}
                 <aside className="w-64 bg-white border-r border-slate-200 hidden md:flex flex-col p-6 sticky top-0 h-screen">
                     <div className="flex items-center gap-3 px-2 mb-10">
                         <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-200">
@@ -106,8 +107,26 @@ export default function StudentLayout({
                 </aside>
 
                 {/* Main Content */}
-                <div className="flex-1 flex flex-col">
-                    {children}
+                <div className="flex-1 flex flex-col min-h-screen pb-20 md:pb-0">
+                    {/* Mobile Header */}
+                    <header className="md:hidden bg-white/80 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex justify-between items-center sticky top-0 z-40">
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-indigo-100">
+                                V
+                            </div>
+                            <span className="font-bold text-lg tracking-tight text-slate-900">Voca</span>
+                        </div>
+                        <Link href="/profile" className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 font-bold text-xs uppercase overflow-hidden">
+                            <User size={16} />
+                        </Link>
+                    </header>
+
+                    <main className="flex-1 overflow-x-hidden">
+                        {children}
+                    </main>
+
+                    {/* Bottom Nav for Mobile */}
+                    <MobileNav />
                 </div>
             </div>
         </AuthGuard>
