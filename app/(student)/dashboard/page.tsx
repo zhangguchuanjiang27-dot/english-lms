@@ -8,14 +8,13 @@ import {
     MessageCircle,
     FileText,
     PencilLine,
-    Bell,
     BookOpen
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Student, LessonRecord, LessonSchedule, Announcement } from '@/lib/data-store';
+import { Student, LessonRecord, LessonSchedule } from '@/lib/data-store';
 import { getStudentDashboardData } from '@/lib/actions/student';
 
 function cn(...inputs: ClassValue[]) {
@@ -26,7 +25,6 @@ export default function StudentDashboard() {
     const [student, setStudent] = useState<Student | null>(null);
     const [records, setRecords] = useState<LessonRecord[]>([]);
     const [upcomingLesson, setUpcomingLesson] = useState<LessonSchedule | null>(null);
-    const [announcements, setAnnouncements] = useState<Announcement[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -38,7 +36,6 @@ export default function StudentDashboard() {
                 setStudent(data.student as unknown as Student);
                 setRecords(data.records as unknown as LessonRecord[]);
                 setUpcomingLesson(data.upcomingLesson as unknown as LessonSchedule);
-                setAnnouncements(data.announcements as unknown as Announcement[]);
             }
             setLoading(false);
         });
@@ -90,32 +87,7 @@ export default function StudentDashboard() {
             {/* Header */}
             <header className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-10 gap-4 md:gap-6">
                 <div className="animate-in slide-in-from-left duration-500">
-                    <div className="flex items-center gap-3 mb-2">
-                        <span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-[10px] font-black uppercase tracking-widest">Student Portal</span>
-                    </div>
                     <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-tight">こんにちは、<br className="md:hidden" />{displayName}さん 👋</h1>
-                </div>
-                <div className="flex items-center gap-4 animate-in slide-in-from-right duration-500">
-                    <div className="hidden lg:flex flex-col items-end border-r border-slate-200 pr-4 mr-2">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Current Target</p>
-                        <p className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                            <Target size={14} className="text-indigo-500" />
-                            {displayTarget}
-                        </p>
-                    </div>
-                    <Link href="/messages" className="p-3 rounded-2xl bg-white border border-slate-200 text-slate-400 hover:text-indigo-600 hover:border-indigo-200 transition-all relative shadow-sm hover:shadow-md group">
-                        <MessageCircle size={22} className="group-hover:scale-110 transition-transform" />
-                        <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-indigo-500 rounded-full border-2 border-white"></span>
-                    </Link>
-                    <Link href="/profile" className="flex items-center gap-3 p-1.5 pr-4 rounded-3xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition-all group">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center font-black shadow-lg shadow-indigo-200 uppercase transform group-hover:scale-105 transition-transform">
-                            {displayName[0]}
-                        </div>
-                        <div className="hidden sm:block">
-                            <p className="text-xs font-black text-slate-800 leading-none">{displayName}</p>
-                            <p className="text-[10px] font-bold text-slate-400 mt-0.5">Edit Profile</p>
-                        </div>
-                    </Link>
                 </div>
             </header>
 
@@ -133,19 +105,21 @@ export default function StudentDashboard() {
                                             <div className="space-y-6">
                                                 <div className="inline-flex items-center gap-2 bg-indigo-500/90 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-white shadow-lg shadow-indigo-500/30">
                                                     <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
-                                                    Next Lesson
+                                                    次の授業
                                                 </div>
                                                 <div>
-                                                    <h2 className="text-3xl md:text-5xl font-black leading-tight tracking-tight mb-4">
+                                                    <h2 className="text-2xl md:text-5xl font-black leading-tight tracking-tight mb-4">
                                                         {upcomingLesson.course}
                                                     </h2>
-                                                    <div className="flex flex-wrap gap-5 text-slate-300">
-                                                        <div className="flex items-center gap-2.5 text-sm font-bold bg-white/5 border border-white/10 px-4 py-2 rounded-2xl">
+                                                    <div className="flex flex-col md:flex-row gap-3 text-slate-300">
+                                                        <div className="flex items-center gap-2.5 text-xs md:text-sm font-bold bg-white/5 border border-white/10 px-4 py-2 rounded-2xl">
+
                                                             <Clock size={16} className="text-indigo-400" />
                                                             {upcomingLesson.date.replace(/-/g, '/')} {upcomingLesson.time}
                                                         </div>
-                                                        <div className="flex items-center gap-2.5 text-sm font-bold bg-white/5 border border-white/10 px-4 py-2 rounded-2xl">
+                                                        <div className="flex items-center gap-2.5 text-xs md:text-sm font-bold bg-white/5 border border-white/10 px-4 py-2 rounded-2xl">
                                                             <Video size={16} className="text-indigo-400" />
+
                                                             {upcomingLesson.teacherName} 先生
                                                         </div>
                                                     </div>
@@ -162,13 +136,13 @@ export default function StudentDashboard() {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="mt-10 flex flex-wrap gap-4">
+                                        <div className="mt-8 md:mt-10 flex flex-col sm:flex-row gap-3 md:gap-4">
                                             {upcomingLesson.meetingUrl ? (
                                                 <a
                                                     href={upcomingLesson.meetingUrl}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="bg-white text-slate-900 px-8 py-3.5 rounded-2xl font-black text-sm shadow-xl hover:bg-slate-50 transition-all hover:translate-y-[-2px] active:translate-y-0 flex items-center justify-center gap-2 flex-1 md:flex-none"
+                                                    className="w-full sm:w-auto bg-white text-slate-900 px-6 py-3 md:px-8 md:py-3.5 rounded-xl md:rounded-2xl font-black text-xs md:text-sm shadow-xl hover:bg-slate-50 transition-all hover:translate-y-[-2px] active:translate-y-0 flex items-center justify-center gap-2"
                                                 >
                                                     教室に入室
                                                     <ChevronRight size={18} />
@@ -176,13 +150,13 @@ export default function StudentDashboard() {
                                             ) : (
                                                 <button
                                                     onClick={() => alert('会議URLが設定されていません。事務局にお問い合わせください。')}
-                                                    className="bg-slate-500 text-white px-8 py-3.5 rounded-2xl font-black text-sm shadow-xl opacity-80 cursor-not-allowed flex items-center gap-2"
+                                                    className="w-full sm:w-auto bg-slate-500 text-white px-6 py-3 md:px-8 md:py-3.5 rounded-xl md:rounded-2xl font-black text-xs md:text-sm shadow-xl opacity-80 cursor-not-allowed flex items-center justify-center gap-2"
                                                 >
                                                     入室準備中
                                                     <Clock size={18} />
                                                 </button>
                                             )}
-                                            <Link href="/schedule" className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 px-6 py-3.5 rounded-2xl font-black text-sm transition-all flex items-center gap-2">
+                                            <Link href="/schedule" className="w-full sm:w-auto justify-center bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 px-6 py-3 md:px-8 md:py-3.5 rounded-xl md:rounded-2xl font-black text-xs md:text-sm transition-all flex items-center gap-2">
                                                 詳細を確認
                                             </Link>
                                         </div>
@@ -198,7 +172,7 @@ export default function StudentDashboard() {
                                         <p className="text-slate-400 max-w-md font-medium">
                                             学習のリズムを維持するために、定期的な受講をおすすめしています。
                                         </p>
-                                        <Link href="/schedule" className="inline-flex bg-white text-slate-900 px-8 py-3.5 rounded-2xl font-black text-sm shadow-xl hover:bg-slate-50 transition-all items-center gap-2">
+                                        <Link href="/schedule" className="inline-flex justify-center w-full md:w-auto bg-white text-slate-900 px-8 py-3.5 rounded-2xl font-black text-sm shadow-xl hover:bg-slate-50 transition-all items-center gap-2">
                                             空き状況を確認
                                             <ChevronRight size={18} />
                                         </Link>
@@ -212,10 +186,10 @@ export default function StudentDashboard() {
                         </div>
                     </section>
 
-                    {/* Secondary Section Grid: Karte & Announcements */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Secondary Section: Recent Karte */}
+                    <div className="grid grid-cols-1 gap-8">
                         {/* Recent Karte */}
-                        <section className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm flex flex-col h-full animate-in slide-in-from-bottom duration-500 delay-100">
+                        <section className="bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 border border-slate-100 shadow-sm flex flex-col h-full animate-in slide-in-from-bottom duration-500 delay-100">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-xl font-black text-slate-900 flex items-center gap-2">
                                     <FileText className="text-indigo-500" size={20} />
@@ -228,27 +202,27 @@ export default function StudentDashboard() {
 
                             <div className="flex-1">
                                 {records.length > 0 ? (
-                                    <div className="space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {records.slice(0, 2).map((record) => (
-                                            <div key={record.id} className="group p-5 bg-slate-50 hover:bg-indigo-50/50 rounded-2xl border border-slate-100 hover:border-indigo-100 transition-all">
+                                            <div key={record.id} className="group p-5 bg-slate-50 hover:bg-indigo-50/50 rounded-2xl border border-slate-100 hover:border-indigo-100 transition-all flex flex-col">
                                                 <div className="flex justify-between items-start mb-3">
                                                     <div>
-                                                        <div className="flex items-center gap-2 mb-1">
-                                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{record.date.replace(/-/g, '/')}</span>
-                                                            <span className="text-[10px] font-bold text-slate-500 bg-slate-200/50 px-2 py-0.5 rounded-md">担当: {record.teacher}</span>
+                                                        <div className="flex items-center gap-2 mb-2">
+                                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-white border border-slate-200 px-2 py-0.5 rounded-md shadow-sm">{record.date.replace(/-/g, '/')}</span>
+                                                            <span className="text-[10px] font-bold text-slate-500 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-md">担当: {record.teacher}</span>
                                                         </div>
-                                                        <h4 className="text-sm font-black text-slate-800 flex items-center gap-1.5">
-                                                            <BookOpen size={14} className="text-emerald-500" />
+                                                        <h4 className="text-sm md:text-base font-black text-slate-800 flex items-center gap-1.5 leading-tight">
+                                                            <BookOpen size={16} className="text-emerald-500 shrink-0" />
                                                             {record.title}
                                                         </h4>
                                                     </div>
                                                 </div>
-                                                <div className="space-y-3">
+                                                <div className="space-y-3 flex-1 flex flex-col">
                                                     <p className="text-xs text-slate-600 font-medium leading-relaxed line-clamp-2">
                                                         {record.feedback}
                                                     </p>
                                                     {record.homework && (
-                                                        <div className="flex items-start gap-2 bg-white p-3 rounded-xl border border-amber-100/50 shadow-sm">
+                                                        <div className="flex items-start gap-2 bg-white/80 p-3 rounded-xl border border-amber-100 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)] mt-auto">
                                                             <PencilLine size={14} className="text-amber-500 shrink-0 mt-0.5" />
                                                             <div>
                                                                 <p className="text-[10px] font-black text-amber-600 uppercase tracking-wider mb-0.5">次回までの宿題</p>
@@ -261,45 +235,10 @@ export default function StudentDashboard() {
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="h-full flex flex-col items-center justify-center py-10 text-center opacity-60">
+                                    <div className="h-full flex flex-col items-center justify-center py-10 text-center opacity-60 bg-slate-50 border border-dashed border-slate-200 rounded-3xl">
                                         <FileText size={40} className="text-slate-300 mb-3" />
                                         <p className="text-sm font-bold text-slate-500">まだカルテの記録がありません</p>
                                         <p className="text-xs text-slate-400 mt-1">レッスンを受講するとここにフィードバックが表示されます</p>
-                                    </div>
-                                )}
-                            </div>
-                        </section>
-
-                        {/* Announcements */}
-                        <section className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm flex flex-col h-full animate-in slide-in-from-bottom duration-500 delay-200">
-                            <div className="flex justify-between items-center mb-6">
-                                <h3 className="text-xl font-black text-slate-900 flex items-center gap-2">
-                                    <Bell className="text-amber-500" size={20} />
-                                    お知らせ
-                                </h3>
-                                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                                    {announcements.length} 件
-                                </div>
-                            </div>
-
-                            <div className="flex-1 overflow-y-auto pr-2 -mr-2 space-y-3">
-                                {announcements.length > 0 ? (
-                                    announcements.slice(0, 3).map((announcement) => (
-                                        <div key={announcement.id} className="p-4 bg-slate-50 hover:bg-white rounded-2xl border border-slate-100 transition-all cursor-default">
-                                            <div className="flex items-center gap-2 mb-2">
-                                                {announcement.priority === 'High' && (
-                                                    <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
-                                                )}
-                                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{announcement.date.replace(/-/g, '/')}</span>
-                                            </div>
-                                            <h4 className="text-sm font-black text-slate-800 mb-1 leading-snug">{announcement.title}</h4>
-                                            <p className="text-xs text-slate-500 font-medium leading-relaxed line-clamp-2">{announcement.content}</p>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div className="h-full flex flex-col items-center justify-center py-10 text-center opacity-60">
-                                        <Bell size={40} className="text-slate-300 mb-3" />
-                                        <p className="text-sm font-bold text-slate-500">現在お知らせはありません</p>
                                     </div>
                                 )}
                             </div>

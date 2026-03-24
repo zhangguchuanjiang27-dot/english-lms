@@ -35,7 +35,7 @@ export default function MobileNav() {
     const pathname = usePathname();
 
     return (
-        <nav className="md:hidden fixed bottom-1 left-4 right-4 bg-white/90 backdrop-blur-xl border border-slate-200 z-50 rounded-3xl shadow-2xl shadow-indigo-200/50 pb-safe overflow-hidden">
+        <nav className="md:hidden fixed bottom-1 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-lg bg-white/90 backdrop-blur-xl border border-slate-200 z-50 rounded-3xl shadow-2xl shadow-indigo-200/50 pb-safe overflow-hidden">
             <div className="overflow-x-auto scrollbar-hide py-2 px-1">
                 <div className="flex items-center min-w-max gap-1 px-2">
                     {NAV_ITEMS.map((item) => {

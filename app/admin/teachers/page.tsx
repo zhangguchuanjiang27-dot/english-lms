@@ -136,7 +136,7 @@ export default function TeachersPage() {
                                                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">氏名</label>
                                                 <input
                                                     type="text"
-                                                    placeholder="例: 長谷川匠"
+                                                    placeholder="例: 山田太郎"
                                                     className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm text-slate-900 placeholder:text-slate-400"
                                                     value={newTeacher.name}
                                                     onChange={(e) => setNewTeacher({ ...newTeacher, name: e.target.value, loginId: e.target.value.replace(/\s+/g, '').toLowerCase() })}

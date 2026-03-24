@@ -25,7 +25,8 @@ import {
 import Link from "next/link";
 import { useState, use, useEffect } from "react";
 import { DataStore, Student, LessonSchedule } from "@/lib/data-store";
-import { getStudentDetail, addLessonSchedule, deleteLessonSchedule, updateStudent } from "@/lib/actions/admin";
+import { getStudentDetail, addLessonSchedule, deleteLessonSchedule, updateStudent, getTeachers } from "@/lib/actions/admin";
+import { Teacher as DBTeacher } from "@prisma/client";
 
 const getTodayStr = () => {
   const d = new Date();
@@ -42,6 +43,7 @@ export default function StudentDetail({
   const [student, setStudent] = useState<Student | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [studentSchedule, setStudentSchedule] = useState<LessonSchedule[]>([]);
+  const [teachers, setTeachers] = useState<DBTeacher[]>([]);
 
   // Scheduling States
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
@@ -58,7 +60,7 @@ export default function StudentDetail({
     endTime: "14:50",
     course: "英語",
     type: "General",
-    teacherName: "長谷川匠",
+    teacherName: "",
   });
 
   // Editing States
@@ -107,6 +109,13 @@ export default function StudentDetail({
 
   useEffect(() => {
     fetchStudentData();
+    getTeachers().then(data => {
+      const teacherList = data as unknown as DBTeacher[];
+      setTeachers(teacherList);
+      if (teacherList.length > 0) {
+        setNewLesson(prev => ({ ...prev, teacherName: teacherList[0].name }));
+      }
+    });
   }, [resolvedParams.id]);
 
   const refreshSchedule = () => {
@@ -128,7 +137,7 @@ export default function StudentDetail({
       return addLessonSchedule({
         studentId: student.id,
         studentName: student.name,
-        teacherName: newLesson.teacherName || "長谷川匠",
+        teacherName: newLesson.teacherName || (teachers.length > 0 ? teachers[0].name : ""),
         date: date,
         time: newLesson.time,
         duration: durationStr,
@@ -865,7 +874,7 @@ export default function StudentDetail({
                         })
                       }
                     >
-                      {DataStore.getTeachers().map((t) => (
+                      {teachers.map((t) => (
                         <option key={t.id} value={t.name}>
                           {t.name}
                         </option>

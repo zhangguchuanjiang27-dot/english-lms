@@ -28,6 +28,7 @@ export async function login(role: string, loginId: string, password?: string) {
         return { success: false, error: 'IDまたはパスワードが正しくありません' };
     } catch (error) {
         console.error('Login error:', error);
-        return { success: false, error: 'サーバーエラーが発生しました' };
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        return { success: false, error: `サーバーエラーが発生しました: ${errorMessage}` };
     }
 }

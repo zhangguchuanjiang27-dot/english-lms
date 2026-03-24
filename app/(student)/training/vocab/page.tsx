@@ -14,6 +14,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { VOCAB_QUESTIONS } from '@/lib/data/vocab';
 import XPResultsView from '@/components/training/XPResultsView';
+import TrainingHUD from '@/components/training/TrainingHUD';
 import { getLevelInfo } from '@/lib/quest-utils';
 
 function cn(...inputs: ClassValue[]) {
@@ -386,58 +387,43 @@ export default function FlashDashPage() {
                 <div className="absolute inset-0 bg-amber-500/5 animate-pulse pointer-events-none"></div>
             )}
 
-            <div className="relative z-10 w-full max-w-2xl px-6">
+            <TrainingHUD
+                theme="dark"
+                score={score}
+                combo={combo}
+                currentStep={currentIndex + 1}
+                totalSteps={gameQuestions.length}
+                onClose={() => { setIsGameOver(false); setIsPlaying(false); }}
+            />
 
-                {/* Header (HUD) */}
-                <header className="flex justify-between items-center mb-12 bg-indigo-900/50 backdrop-blur-md p-4 rounded-3xl border border-indigo-500/20">
-                    <button
-                        onClick={() => { setIsGameOver(false); setIsPlaying(false); }}
-                        className="w-10 h-10 bg-indigo-800/50 hover:bg-indigo-700 rounded-full flex items-center justify-center transition-colors border border-indigo-600/30"
-                    >
-                        <X size={20} />
-                    </button>
+            <div className="relative z-10 w-full max-w-2xl px-4 md:px-6 pt-16 md:pt-12">
 
-                    <div className="flex items-center gap-6">
-                        <div className="flex items-center gap-2">
-                            <Flame size={20} className={cn("transition-colors", combo > 2 ? "text-amber-500 animate-bounce" : "text-slate-500")} />
-                            <span className={cn("font-black text-lg", combo > 2 ? "text-amber-400" : "text-slate-400")}>x{combo}</span>
-                        </div>
-                        <div className="h-8 w-[2px] bg-indigo-800/50"></div>
-                        <div className="text-right">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-indigo-300 mb-0.5">経験値</p>
-                            <p className="text-2xl font-black leading-none flex items-baseline justify-end gap-1">
-                                {score} <span className="text-xs font-bold text-indigo-400">EXP</span>
-                            </p>
-                        </div>
-                    </div>
-                </header>
-
-                {/* Progress */}
-                <div className="flex justify-end items-end mb-4">
-                    <span className="text-xs font-bold text-indigo-300 tracking-wider">
+                {/* Progress (Optional visual detail) */}
+                <div className="flex justify-end items-end mb-3 md:mb-4 opacity-70">
+                    <span className="text-[10px] md:text-xs font-bold text-indigo-300 tracking-wider">
                         Wave {currentIndex + 1}/{gameQuestions.length}
                     </span>
                 </div>
 
                 {/* Timer Bar */}
-                <div className="h-3 w-full bg-indigo-900 rounded-full overflow-hidden border border-indigo-800 mb-8 shadow-inner relative">
+                <div className="h-2.5 md:h-3 w-full bg-indigo-900 rounded-full overflow-hidden border border-indigo-800 mb-6 md:mb-8 shadow-inner relative">
                     <div
                         className={cn("absolute top-0 left-0 h-full rounded-full transition-all duration-100",
-                            timeLeft > 5 ? "bg-emerald-400" : timeLeft > 2 ? "bg-amber-400" : "bg-rose-500"
+                            timeLeft > 5 ? "bg-emerald-400" : timeLeft > 2 ? "bg-amber-400" : "bg-rose-50"
                         )}
                         style={{ width: `${(timeLeft / 10) * 100}%` }}
                     ></div>
                 </div>
 
                 {/* Question Area */}
-                <div className="text-center mb-12 min-h-[160px] flex items-center justify-center">
-                    <h2 className="text-6xl md:text-8xl font-black text-white drop-shadow-xl tracking-tight">
+                <div className="text-center mb-8 md:mb-12 min-h-[120px] md:min-h-[160px] flex items-center justify-center">
+                    <h2 className="text-5xl md:text-8xl font-black text-white drop-shadow-xl tracking-tight break-all">
                         {question?.word}
                     </h2>
                 </div>
 
                 {/* Options (4 Choices) */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 pb-8">
                     {question?.options.map((option: string, idx: number) => {
                         let btnClass = "bg-indigo-800/60 border-indigo-600/30 hover:bg-indigo-700 hover:border-indigo-400 text-indigo-100";
 
@@ -457,7 +443,7 @@ export default function FlashDashPage() {
                                 disabled={showResult}
                                 onClick={() => handleAnswer(idx)}
                                 className={cn(
-                                    "p-6 text-xl md:text-2xl font-black rounded-[2rem] border-2 transition-all duration-200 active:scale-95 shadow-lg",
+                                    "p-5 md:p-6 text-lg md:text-2xl font-black rounded-2xl md:rounded-[2rem] border-2 transition-all duration-200 active:scale-95 shadow-lg",
                                     btnClass
                                 )}
                             >

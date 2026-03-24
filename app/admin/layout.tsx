@@ -3,13 +3,9 @@
 import {
     Users,
     Calendar,
-    CreditCard,
     LayoutGrid,
-    Settings,
     LogOut,
-    FileText,
     MessageSquare,
-    Megaphone
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -56,6 +52,12 @@ export default function AdminLayout({
                             active={pathname.startsWith('/admin/students')}
                         />
                         <AdminNavItem
+                            icon={Users}
+                            label="講師管理"
+                            href="/admin/teachers"
+                            active={pathname.startsWith('/admin/teachers')}
+                        />
+                        <AdminNavItem
                             icon={Calendar}
                             label="授業スケジュール"
                             href="/admin/schedule"
@@ -67,19 +69,6 @@ export default function AdminLayout({
                             href="/admin/messages"
                             active={pathname === '/admin/messages'}
                         />
-                        <AdminNavItem
-                            icon={Users}
-                            label="講師管理"
-                            href="/admin/teachers"
-                            active={pathname.startsWith('/admin/teachers')}
-                        />
-                        <AdminNavItem icon={Megaphone} label="お知らせ配信" href="/admin/announcements" active={pathname.includes('/admin/announcements')} />
-                        <AdminNavItem icon={CreditCard} label="請求・決済" href="/admin/billing" active={pathname.includes('/admin/billing')} />
-
-                        <div className="pt-6 pb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
-                            System
-                        </div>
-                        <AdminNavItem icon={Settings} label="設定" href="/admin/settings" active={pathname.includes('/admin/settings')} />
                     </nav>
 
                     <div className="p-4 border-t border-slate-800">

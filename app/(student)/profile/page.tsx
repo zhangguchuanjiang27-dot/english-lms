@@ -82,8 +82,9 @@ export default function StudentProfilePage() {
                                 <div className="absolute inset-0 bg-indigo-900/10 blur-[2px]" />
                                 
                                 {isEditing && (
-                                    <label className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover/cover:opacity-100 transition-opacity cursor-pointer">
-                                        <Camera className="text-white drop-shadow-md" size={32} />
+                                    <label className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 transition-opacity cursor-pointer">
+                                        <Camera className="text-white drop-shadow-md mb-1" size={32} />
+                                        <span className="text-white font-bold text-sm drop-shadow-md">背景を変更</span>
                                         <input 
                                             type="file" 
                                             className="hidden" 
@@ -107,8 +108,9 @@ export default function StudentProfilePage() {
                                     </div>
                                     
                                     {isEditing && (
-                                        <label className="absolute inset-0 rounded-full flex items-center justify-center bg-black/20 opacity-0 group-hover/avatar:opacity-100 transition-opacity cursor-pointer border-4 border-white">
+                                        <label className="absolute inset-0 rounded-full flex flex-col items-center justify-center bg-black/50 transition-opacity cursor-pointer border-4 border-white">
                                             <Camera className="text-white drop-shadow-md" size={24} />
+                                            <span className="text-white font-bold text-[10px] drop-shadow-md mt-0.5">変更</span>
                                             <input 
                                                 type="file" 
                                                 className="hidden" 
@@ -143,21 +145,6 @@ export default function StudentProfilePage() {
                                             <>プロフィールを編集</>
                                         )}
                                     </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Additional Quick Links or Stats could go here */}
-                        <div className="bg-indigo-50 border border-indigo-100 rounded-[2.5rem] p-8 space-y-4">
-                            <h4 className="text-indigo-900 font-black text-sm tracking-widest uppercase">My Activity</h4>
-                            <div className="grid grid-cols-2 gap-4 text-center">
-                                <div className="bg-white rounded-2xl p-4 shadow-sm border border-indigo-100/50">
-                                    <p className="text-xs font-bold text-slate-400">登校日数</p>
-                                    <p className="text-2xl font-black text-indigo-600">42</p>
-                                </div>
-                                <div className="bg-white rounded-2xl p-4 shadow-sm border border-indigo-100/50">
-                                    <p className="text-xs font-bold text-slate-400">達成テスト</p>
-                                    <p className="text-2xl font-black text-indigo-600">12</p>
                                 </div>
                             </div>
                         </div>
@@ -226,60 +213,31 @@ export default function StudentProfilePage() {
                             </div>
 
                             {/* Security Section (Bottom of Card 1) */}
-                            <div className="pt-8 border-t border-slate-50 flex items-center justify-between">
-                                <div className="flex items-center gap-6">
+                            <div className="pt-8 mt-6 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 w-full sm:w-auto">
                                     <button 
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="flex items-center gap-2 text-slate-400 hover:text-indigo-600 transition-colors text-xs font-bold group"
+                                        className="flex items-center justify-center sm:justify-start gap-3 text-slate-500 hover:text-indigo-600 transition-colors text-sm sm:text-xs font-bold group bg-slate-50 hover:bg-slate-100 sm:hover:bg-transparent p-3 sm:p-0 rounded-xl sm:rounded-none"
                                     >
-                                        <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center group-hover:bg-indigo-50 transition-colors">
-                                            {showPassword ? <EyeOff size={14} className="stroke-[2.5]" /> : <Eye size={14} className="stroke-[2.5]" />}
+                                        <div className="w-8 h-8 rounded-lg bg-white sm:bg-slate-50 flex items-center justify-center group-hover:bg-indigo-50 transition-colors shadow-sm sm:shadow-none">
+                                            {showPassword ? <EyeOff size={16} className="stroke-[2.5]" /> : <Eye size={16} className="stroke-[2.5]" />}
                                         </div>
                                         パスワードを確認する
                                     </button>
                                     {showPassword && (
                                         <motion.div 
-                                            initial={{ opacity: 0, x: -10 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            className="text-sm font-black text-indigo-600 tracking-wider bg-indigo-50 px-3 py-1 rounded-lg"
+                                            initial={{ opacity: 0, y: -5 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="text-base sm:text-sm font-black text-indigo-700 tracking-widest bg-indigo-50 border border-indigo-100 px-4 py-3 sm:px-3 sm:py-1.5 rounded-xl sm:rounded-lg text-center shadow-inner break-all"
                                         >
                                             {student.password}
                                         </motion.div>
                                     )}
                                 </div>
-                                <span className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">Privacy Protected</span>
+                                <span className="text-[10px] text-slate-300 font-bold uppercase tracking-widest text-center sm:text-right w-full sm:w-auto mt-2 sm:mt-0">Privacy Protected</span>
                             </div>
                         </div>
 
-                        {/* Card 2: Self Intro */}
-                        <div className="bg-white rounded-[2.5rem] p-10 border border-slate-100 shadow-sm space-y-8">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl">
-                                    <FileText size={20} className="stroke-[2.5]" />
-                                </div>
-                                <h3 className="text-xl font-black text-slate-800 tracking-tight">自己紹介・経歴</h3>
-                            </div>
-
-                            <div className="relative group">
-                                {isEditing ? (
-                                    <textarea
-                                        className="w-full min-h-[160px] p-6 bg-slate-50 border border-slate-100 rounded-[2rem] text-sm outline-none focus:border-indigo-600 focus:bg-white focus:ring-8 focus:ring-indigo-600/5 transition-all font-bold resize-none placeholder:text-slate-300"
-                                        value={formData.biography || ''}
-                                        onChange={(e) => setFormData({ ...formData, biography: e.target.value })}
-                                        placeholder="自己紹介を入力して、担当講師にあなたの学習目的を伝えましょう！"
-                                    />
-                                ) : (
-                                    <div className="p-8 bg-slate-50/70 border border-slate-50 rounded-[2rem] relative overflow-hidden">
-                                        <div className="absolute top-0 right-0 p-4 opacity-10">
-                                            <FileText size={80} />
-                                        </div>
-                                        <p className="text-sm text-slate-600 leading-relaxed font-bold whitespace-pre-wrap relative z-10">
-                                            {student.biography || '自己紹介が未設定です。自己紹介を入力して、担当講師にあなたの学習目的を伝えましょう！'}
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

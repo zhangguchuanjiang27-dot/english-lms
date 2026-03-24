@@ -186,3 +186,15 @@ export async function updateStudentTestScore(scoreId: string, data: any) {
         return { success: false, error: 'テスト結果の更新に失敗しました: ' + (error.message || '不明なエラー') };
     }
 }
+
+export async function deleteStudentTestScore(scoreId: string) {
+    try {
+        await (prisma as any).testScore.delete({
+            where: { id: scoreId }
+        });
+        return { success: true };
+    } catch (error: any) {
+        console.error('Error deleting test score:', error);
+        return { success: false, error: 'テスト結果の削除に失敗しました: ' + (error.message || '不明なエラー') };
+    }
+}

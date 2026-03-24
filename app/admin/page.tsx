@@ -14,7 +14,8 @@ import {
     Settings,
     Bell,
     LogOut,
-    FileText
+    FileText,
+    GraduationCap
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -23,6 +24,7 @@ import { getAdminDashboardData } from '@/lib/actions/admin';
 
 export default function AdminDashboard() {
     const [adminName, setAdminName] = useState('管理者');
+    const [stats, setStats] = useState({ students: 0, activeStudents: 0, teachers: 0, lessonsToday: 0 });
     const [students, setStudents] = useState<Student[]>([]);
     const [todaySchedule, setTodaySchedule] = useState<LessonSchedule[]>([]);
 
@@ -34,16 +36,14 @@ export default function AdminDashboard() {
 
         getAdminDashboardData().then(data => {
             if (data) {
+                setStats(data.stats);
                 setStudents(data.students as Student[]);
                 setTodaySchedule(data.todaySchedule as unknown as LessonSchedule[]);
             }
         });
     }, []);
 
-    // Calculate dynamic stats
-    const totalStudents = students.length;
-    const activeStudents = students.filter(s => s.status === 'Active').length;
-    const todayLessons = todaySchedule.length;
+    // Calculate dynamic stats from lesson schedules
     const completedLessons = todaySchedule.filter(l => l.status === 'Completed').length;
 
     // For demo purposes, we'll keep some static text for Revenue and Alerts
@@ -95,38 +95,30 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* KPI Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <StatCard
                         label="総生徒数"
-                        value={totalStudents.toString()}
-                        subValue={`アクティブ: ${activeStudents}人`}
+                        value={stats.students.toString()}
+                        subValue={`アクティブ: ${stats.activeStudents}人`}
                         icon={Users}
                         trend="up"
                         color="text-blue-500"
                     />
                     <StatCard
-                        label="今月の売上 (見込)"
-                        value="¥1,280,000"
-                        subValue="前月比 +12%"
-                        icon={CreditCard}
-                        trend="up"
+                        label="総講師数"
+                        value={stats.teachers.toString()}
+                        subValue="稼働中"
+                        icon={GraduationCap}
+                        trend="neutral"
                         color="text-emerald-500"
                     />
                     <StatCard
                         label="本日のレッスン"
-                        value={todayLessons.toString()}
-                        subValue={`完了: ${completedLessons} / 予定: ${todayLessons - completedLessons}`}
+                        value={stats.lessonsToday.toString()}
+                        subValue={`完了: ${completedLessons} / 予定: ${stats.lessonsToday - completedLessons}`}
                         icon={Calendar}
                         trend="neutral"
                         color="text-violet-500"
-                    />
-                    <StatCard
-                        label="体験申込"
-                        value="5"
-                        subValue="未対応: 2件"
-                        icon={TrendingUp}
-                        trend="alert"
-                        color="text-amber-500"
                     />
                 </div>
 
@@ -165,30 +157,47 @@ export default function AdminDashboard() {
                         </div>
                     </div>
 
-                    {/* Right Column: Alerts & Recent Activity */}
+                    {/* Right Column: Recent Students */}
                     <div className="space-y-6">
                         <div className="bg-card rounded-xl border border-border shadow-sm p-6">
                             <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-                                要対応アラート
+                                <Users size={20} className="text-primary" />
+                                新規登録生徒
                             </h3>
-                            <div className="space-y-3">
-                                <AlertItem label="体験申込あり: 佐藤さん" time="10分前" type="urgent" />
-                                <AlertItem label="決済失敗: ID-0042" time="1時間前" type="warning" />
-                                {students.filter(s => s.status === 'Paused').map((s, i) => (
-                                    <AlertItem key={i} label={`休会中: ${s.name}`} time="確認" type="info" />
-                                ))}
+                            <div className="space-y-4">
+                                {students.length > 0 ? (
+                                    students.map((student, i) => (
+                                        <div key={i} className="flex items-center gap-3 p-2 hover:bg-secondary/50 rounded-lg transition-colors">
+                                            <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-sm">
+                                                {student.name[0]}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-bold text-foreground truncate">{student.name}</p>
+                                                <p className="text-[10px] text-muted-foreground truncate">{student.course} • {student.joinDate || '登録日不明'}</p>
+                                            </div>
+                                            <Link href={`/admin/students/${student.id}`} className="text-xs text-primary font-medium hover:underline">
+                                                詳細
+                                            </Link>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-muted-foreground text-center py-4">登録生徒はいません</p>
+                                )}
                             </div>
+                            <Link href="/admin/students" className="block w-full text-center mt-6 text-xs text-muted-foreground hover:text-primary transition-colors">
+                                全ての生徒を表示
+                            </Link>
                         </div>
 
-                        <div className="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-xl p-6 text-white shadow-lg">
-                            <h3 className="font-bold mb-2">講師向け連絡事項</h3>
-                            <p className="text-indigo-100 text-sm mb-4">
-                                来週より新しい教材「Business Scene V2」が利用可能です。確認をお願いします。
+                        <div className="bg-indigo-600 rounded-xl p-6 text-white shadow-lg overflow-hidden relative group">
+                            <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
+                            <h3 className="font-bold mb-2 relative z-10 font-sans tracking-tight">システム管理</h3>
+                            <p className="text-indigo-100 text-sm mb-4 relative z-10 leading-relaxed">
+                                スクール設定や講師の管理を行うことができます。
                             </p>
-                            <button className="bg-white/20 hover:bg-white/30 text-white text-xs px-3 py-2 rounded-lg transition-colors w-full">
-                                詳細を確認・編集
-                            </button>
+                            <Link href="/admin/settings" className="bg-white/20 hover:bg-white/30 text-white text-xs px-3 py-2 rounded-lg transition-colors w-full inline-block text-center relative z-10 font-bold">
+                                設定へ移動
+                            </Link>
                         </div>
                     </div>
                 </div>

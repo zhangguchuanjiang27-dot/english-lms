@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import {
     ChevronRight,
     ArrowUpRight,
@@ -13,16 +13,18 @@ import {
     GraduationCap,
     Check,
     TrendingUp,
-    Pencil
+    Pencil,
+    Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { 
-    getStudentProfile, 
-    getStudentTestScores, 
-    addStudentTestScore, 
-    updateStudentTestScore 
+import {
+    getStudentProfile,
+    getStudentTestScores,
+    addStudentTestScore,
+    updateStudentTestScore,
+    deleteStudentTestScore
 } from '@/lib/actions/student';
 import { Student } from '@/lib/data-store';
 
@@ -39,6 +41,7 @@ export default function StudentAchievementsPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [testType, setTestType] = useState<TabType>('school');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const [editingScoreId, setEditingScoreId] = useState<string | null>(null);
 
     // Form states
@@ -113,6 +116,32 @@ export default function StudentAchievementsPage() {
         }
     };
 
+    const handleDelete = async () => {
+        if (!editingScoreId || !student) return;
+        
+        if (!confirm('このテスト結果を削除してもよろしいですか？')) {
+            return;
+        }
+
+        setIsDeleting(true);
+        try {
+            const res = await deleteStudentTestScore(editingScoreId);
+            if (res.success) {
+                setIsModalOpen(false);
+                resetForm();
+                const updatedScores = await getStudentTestScores(student.id);
+                setTestScores(updatedScores);
+            } else {
+                alert(res.error);
+            }
+        } catch (error) {
+            console.error(error);
+            alert('削除中にエラーが発生しました');
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
     const handleEdit = (score: any) => {
         setEditingScoreId(score.id);
         setTestType(score.type);
@@ -132,14 +161,14 @@ export default function StudentAchievementsPage() {
     const activeScores = activeTab === 'school' ? schoolTests : proficiencyTests;
 
     return (
-        <main className="flex-1 p-6 md:p-10 overflow-y-auto bg-slate-50">
+        <main className="flex-1 p-6 md:p-10 overflow-y-auto bg-slate-50 relative w-full max-w-full overflow-x-hidden flex flex-col">
             <div className="max-w-5xl mx-auto space-y-8">
 
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                    <div>
-                        <h1 className="text-3xl font-black text-slate-900 tracking-tight">学習成績・記録</h1>
-                        <p className="text-slate-500 mt-1">{student.name}さんの試験・テストの履歴</p>
+                    <div className="animate-in slide-in-from-left duration-500">
+                        <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">学習成績・記録</h1>
+                        <p className="text-slate-500 mt-1 text-sm">{student.name}さんの試験・テストの履歴</p>
                     </div>
                     <button
                         onClick={() => {
@@ -155,81 +184,73 @@ export default function StudentAchievementsPage() {
                 </div>
 
                 {/* Tab Switcher */}
-                <div className="flex p-1.5 bg-slate-200/50 rounded-[2rem] w-fit">
-                    <button
-                        onClick={() => setActiveTab('school')}
-                        className={cn(
-                            "flex items-center gap-2 px-8 py-3.5 rounded-[1.75rem] text-sm font-black transition-all",
-                            activeTab === 'school' 
-                                ? "bg-white text-indigo-600 shadow-sm" 
-                                : "text-slate-500 hover:text-slate-700"
-                        )}
-                    >
-                        <School size={18} />
-                        学校のテスト
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('proficiency')}
-                        className={cn(
-                            "flex items-center gap-2 px-8 py-3.5 rounded-[1.75rem] text-sm font-black transition-all",
-                            activeTab === 'proficiency' 
-                                ? "bg-white text-indigo-600 shadow-sm" 
-                                : "text-slate-500 hover:text-slate-700"
-                        )}
-                    >
-                        <Medal size={18} />
-                        資格・検定試験
-                    </button>
+                <div className="flex p-1.5 bg-slate-200/50 rounded-2xl md:rounded-[2rem] w-full md:w-fit overflow-x-auto scrollbar-hide -mx-2 px-2 md:mx-0 md:px-1.5">
+                    <div className="flex min-w-max md:min-w-0 w-full md:w-auto">
+                        <button
+                            onClick={() => setActiveTab('school')}
+                            className={cn(
+                                "flex items-center gap-2 px-8 py-3.5 rounded-[1.75rem] text-sm font-black transition-all",
+                                activeTab === 'school'
+                                    ? "bg-white text-indigo-600 shadow-sm"
+                                    : "text-slate-500 hover:text-slate-700"
+                            )}
+                        >
+                            <School size={18} />
+                            学校のテスト
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('proficiency')}
+                            className={cn(
+                                "flex items-center gap-2 px-8 py-3.5 rounded-[1.75rem] text-sm font-black transition-all",
+                                activeTab === 'proficiency'
+                                    ? "bg-white text-indigo-600 shadow-sm"
+                                    : "text-slate-500 hover:text-slate-700"
+                            )}
+                        >
+                            <Medal size={18} />
+                            資格・検定試験
+                        </button>
+                    </div>
                 </div>
 
-                {/* Hero Chart Section */}
+                {/* Hero Section (Replaces Chart) */}
                 <div className="space-y-6">
-                    {activeTab === 'school' && schoolTests.length >= 2 ? (
-                        <div className="bg-white rounded-[3rem] p-8 md:p-12 border border-slate-100 shadow-sm">
-                            <div className="flex items-center gap-3 mb-8">
-                                <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl">
-                                    <TrendingUp size={24} />
-                                </div>
-                                <h3 className="text-2xl font-black text-slate-800 tracking-tight">学校のテスト点数推移</h3>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={cn(
+                            "rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 text-white relative overflow-hidden shadow-xl",
+                            activeTab === 'school' 
+                                ? "bg-gradient-to-br from-indigo-600 to-indigo-800 shadow-indigo-100" 
+                                : "bg-gradient-to-br from-indigo-600 to-violet-700 shadow-indigo-100"
+                        )}
+                    >
+                        <div className="relative z-10 space-y-4 max-w-md">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black tracking-widest uppercase">
+                                Achievement Tracking
                             </div>
-                            <div className="h-[240px] w-full">
-                                <SchoolScoreChart scores={schoolTests} />
-                            </div>
+                            <h3 className="text-2xl md:text-3xl font-black leading-tight">
+                                {activeTab === 'school' ? '学校のテスト成績を' : '資格・検定試験の目標を'}<br />管理しましょう
+                            </h3>
+                            <p className="text-white/80 text-sm font-medium">
+                                {activeTab === 'school' 
+                                    ? '日々の学習の成果を記録して、一歩ずつ目標に近づいていく実感を持ちましょう。' 
+                                    : '英検やTOEICなどのスコアを記録して、将来の可能性を広げましょう。'}
+                            </p>
                         </div>
-                    ) : activeTab === 'school' ? (
-                        <div className="bg-white rounded-[3rem] p-12 border border-slate-100 shadow-sm text-center space-y-4">
-                            <div className="w-16 h-16 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <TrendingUp size={32} />
-                            </div>
-                            <h3 className="text-xl font-bold text-slate-800">推移グラフを表示するには<br/>あと2件以上の記録が必要です</h3>
-                            <p className="text-slate-400 text-sm max-w-xs mx-auto">定期試験などの点数を記録して、学習の成果を可視化しましょう。</p>
-                        </div>
-                    ) : null}
-
-                    {/* Proficiency Test Info Card */}
-                    {activeTab === 'proficiency' && (
-                        <motion.div 
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-[3rem] p-10 text-white relative overflow-hidden shadow-xl shadow-indigo-100"
-                        >
-                            <div className="relative z-10 space-y-4 max-w-md">
-                                <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold tracking-widest uppercase">
-                                    Achievement Tracking
-                                </div>
-                                <h3 className="text-3xl font-black leading-tight">資格・検定試験の目標を<br/>達成しましょう</h3>
-                                <p className="text-indigo-100/80 text-sm">英検やTOEICなどのスコアを記録して、一歩ずつ目標に近づいていく実感を持ちましょう。</p>
-                            </div>
+                        {activeTab === 'school' ? (
+                            <School size={200} className="absolute -bottom-10 -right-10 text-white/5 rotate-12 z-0" />
+                        ) : (
                             <Medal size={200} className="absolute -bottom-10 -right-10 text-white/5 rotate-12 z-0" />
-                        </motion.div>
-                    )}
+                        )}
+                    </motion.div>
                 </div>
 
                 {/* List Section */}
                 <div className="space-y-6">
                     <div className="flex items-center justify-between px-4">
                         <h4 className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                            {activeTab === 'school' ? <School size={16} /> : <Medal size={16} />} 
+                            {activeTab === 'school' ? <School size={16} /> : <Medal size={16} />}
                             {activeTab === 'school' ? '学校のテスト履歴' : '資格・検定試験履歴'}
                         </h4>
                         {activeScores.length > 0 && <span className="text-xs font-bold text-slate-400">{activeScores.length}件の記録</span>}
@@ -238,13 +259,13 @@ export default function StudentAchievementsPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {activeScores.length > 0 ? (
                             activeScores.map((s, idx) => (
-                                <ScoreCard 
-                                    key={s.id || idx} 
-                                    date={s.date.replace(/-/g, '/')} 
-                                    title={s.testName} 
-                                    score={s.score} 
-                                    total={s.totalScore} 
-                                    trend={s.trend} 
+                                <ScoreCard
+                                    key={s.id || idx}
+                                    date={s.date.replace(/-/g, '/')}
+                                    title={s.testName}
+                                    score={s.score}
+                                    total={s.totalScore}
+                                    trend={s.trend}
                                     onEdit={() => handleEdit(s)}
                                 />
                             ))
@@ -256,28 +277,19 @@ export default function StudentAchievementsPage() {
                     </div>
                 </div>
 
-                {/* Score Recording Modal */}
+                {/* Score Input Modal */}
                 <AnimatePresence>
                     {isModalOpen && (
-                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                            {/* Backdrop */}
+                        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[60] flex items-center justify-center p-2 pb-20 md:p-4 perspective-[2000px]">
                             <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                onClick={() => setIsModalOpen(false)}
-                                className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
-                            />
-
-                            {/* Modal Content */}
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                                className="relative w-full max-w-xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden"
+                                initial={{ opacity: 0, y: 40, scale: 0.95, rotateX: 10 }}
+                                animate={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
+                                exit={{ opacity: 0, y: 20, scale: 0.95, rotateX: -10 }}
+                                transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+                                className="bg-white w-full max-w-2xl rounded-[1.5rem] md:rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] md:max-h-[95vh]"
                             >
                                 {/* Modal Header */}
-                                <div className="px-8 pt-8 pb-4 flex justify-between items-center border-b border-slate-50">
+                                <div className="px-6 py-6 md:px-10 md:py-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 relative overflow-hidden flex-shrink-0">
                                     <h2 className="text-xl font-black text-slate-800 tracking-tight">
                                         {editingScoreId ? 'テスト結果を編集' : 'テスト結果を記録'}
                                     </h2>
@@ -289,22 +301,25 @@ export default function StudentAchievementsPage() {
                                     </button>
                                 </div>
 
-                                <div className="p-8 space-y-8 max-h-[70vh] overflow-y-auto">
-                                    <div className="space-y-6">
-                                        <p className="font-bold text-slate-600 text-center">どんなテストを受けましたか？</p>
-                                        <div className="grid grid-cols-2 gap-4">
+                                {/* Modal Body (Scrollable) */}
+                                <div className="p-5 md:p-10 overflow-y-auto flex-1 space-y-6 md:space-y-8">
+                                    <div className="space-y-4">
+                                        <h3 className="text-sm font-black text-slate-800 flex items-center gap-2">
+                                            テストの種類を選択
+                                        </h3>
+                                        <div className="flex flex-col sm:grid sm:grid-cols-2 gap-3 md:gap-4">
                                             {/* Card A: School Test */}
                                             <div
                                                 onClick={() => setTestType('school')}
                                                 className={cn(
-                                                    "p-6 rounded-3xl border-2 cursor-pointer transition-all text-left space-y-4 group relative",
+                                                    "p-5 md:p-6 rounded-2xl md:rounded-3xl border-2 cursor-pointer transition-all text-left space-y-3 md:space-y-4 group relative",
                                                     testType === 'school'
                                                         ? "border-indigo-600 bg-indigo-50/30 shadow-inner"
                                                         : "border-slate-50 bg-white hover:border-slate-200 shadow-sm"
                                                 )}
                                             >
                                                 <div className={cn(
-                                                    "w-12 h-12 rounded-2xl flex items-center justify-center transition-colors",
+                                                    "w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center transition-colors shrink-0",
                                                     testType === 'school' ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-400 group-hover:bg-slate-200"
                                                 )}>
                                                     <School size={24} />
@@ -315,7 +330,7 @@ export default function StudentAchievementsPage() {
                                                 </div>
                                                 {testType === 'school' && (
                                                     <div className="absolute top-4 right-4 text-indigo-600">
-                                                        <Check size={20} />
+                                                        <Check size={18} />
                                                     </div>
                                                 )}
                                             </div>
@@ -324,14 +339,14 @@ export default function StudentAchievementsPage() {
                                             <div
                                                 onClick={() => setTestType('proficiency')}
                                                 className={cn(
-                                                    "p-6 rounded-3xl border-2 cursor-pointer transition-all text-left space-y-4 group relative",
+                                                    "p-5 md:p-6 rounded-2xl md:rounded-3xl border-2 cursor-pointer transition-all text-left space-y-3 md:space-y-4 group relative",
                                                     testType === 'proficiency'
                                                         ? "border-indigo-600 bg-indigo-50/30 shadow-inner"
                                                         : "border-slate-50 bg-white hover:border-slate-200 shadow-sm"
                                                 )}
                                             >
                                                 <div className={cn(
-                                                    "w-12 h-12 rounded-2xl flex items-center justify-center transition-colors",
+                                                    "w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center transition-colors shrink-0",
                                                     testType === 'proficiency' ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-400 group-hover:bg-slate-200"
                                                 )}>
                                                     <Medal size={24} />
@@ -342,7 +357,7 @@ export default function StudentAchievementsPage() {
                                                 </div>
                                                 {testType === 'proficiency' && (
                                                     <div className="absolute top-4 right-4 text-indigo-600">
-                                                        <Check size={20} />
+                                                        <Check size={18} />
                                                     </div>
                                                 )}
                                             </div>
@@ -352,11 +367,11 @@ export default function StudentAchievementsPage() {
                                     <motion.div
                                         initial={false}
                                         animate={{ height: 'auto', opacity: 1 }}
-                                        className="space-y-6 pt-6 border-t border-slate-50"
+                                        className="space-y-4 md:space-y-6 pt-6 border-t border-slate-50"
                                     >
-                                        <div className="grid grid-cols-2 gap-6">
-                                            <div className="col-span-2 space-y-2">
-                                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                                            <div className="col-span-1 sm:col-span-2 space-y-2">
+                                                <label className="text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                                     <BookOpen size={14} /> テスト名
                                                 </label>
                                                 <input
@@ -364,29 +379,29 @@ export default function StudentAchievementsPage() {
                                                     value={formData.testName}
                                                     onChange={(e) => setFormData({ ...formData, testName: e.target.value })}
                                                     placeholder={testType === 'school' ? "例：2学期中間考査" : "例：英検2級 1次試験"}
-                                                    className="w-full px-5 py-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-indigo-200 focus:bg-white outline-none transition-all text-sm font-bold"
+                                                    className="w-full px-4 py-3 md:px-5 md:py-4 bg-slate-50 rounded-xl md:rounded-2xl border-2 border-transparent focus:border-indigo-200 focus:bg-white outline-none transition-all text-sm font-bold"
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                                <label className="text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                                     <Calendar size={14} /> 日付
                                                 </label>
                                                 <input
                                                     type="date"
                                                     value={formData.date}
                                                     onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                                    className="w-full px-5 py-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-indigo-200 focus:bg-white outline-none transition-all text-sm font-bold"
+                                                    className="w-full px-4 py-3 md:px-5 md:py-4 bg-slate-50 rounded-xl md:rounded-2xl border-2 border-transparent focus:border-indigo-200 focus:bg-white outline-none transition-all text-sm font-bold appearance-none"
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                                <label className="text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                                     <GraduationCap size={14} /> 学年
                                                 </label>
                                                 <div className="relative">
                                                     <select
                                                         value={formData.grade}
                                                         onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
-                                                        className="w-full px-5 py-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-indigo-200 focus:bg-white outline-none transition-all text-sm font-bold appearance-none cursor-pointer"
+                                                        className="w-full px-4 py-3 md:px-5 md:py-4 bg-slate-50 rounded-xl md:rounded-2xl border-2 border-transparent focus:border-indigo-200 focus:bg-white outline-none transition-all text-sm font-bold appearance-none cursor-pointer"
                                                     >
                                                         <option>小学1年</option>
                                                         <option>小学2年</option>
@@ -401,13 +416,13 @@ export default function StudentAchievementsPage() {
                                                         <option>高校2年</option>
                                                         <option>高校3年</option>
                                                     </select>
-                                                    <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                                                    <div className="absolute right-4 md:right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
                                                         <ChevronRight size={16} className="rotate-90" />
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="col-span-2 space-y-2">
-                                                <label className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                            <div className="col-span-1 sm:col-span-2 space-y-2">
+                                                <label className="text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                                                     <TrendingUp size={14} /> 点数
                                                 </label>
                                                 <div className="relative">
@@ -416,7 +431,7 @@ export default function StudentAchievementsPage() {
                                                         value={formData.score}
                                                         onChange={(e) => setFormData({ ...formData, score: e.target.value })}
                                                         placeholder={testType === 'school' ? "例：85 / 100点" : "例：合格"}
-                                                        className="w-full px-5 py-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-indigo-200 focus:bg-white outline-none transition-all text-sm font-bold"
+                                                        className="w-full px-4 py-3 md:px-5 md:py-4 bg-slate-50 rounded-xl md:rounded-2xl border-2 border-transparent focus:border-indigo-200 focus:bg-white outline-none transition-all text-sm font-bold"
                                                     />
                                                 </div>
                                             </div>
@@ -424,17 +439,30 @@ export default function StudentAchievementsPage() {
                                     </motion.div>
 
                                     {/* Modal Footer */}
-                                    <div className="flex items-center justify-between pt-4">
-                                        <button
-                                            onClick={() => setIsModalOpen(false)}
-                                            className="text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors"
-                                        >
-                                            キャンセル
-                                        </button>
+                                    <div className="flex flex-col-reverse sm:flex-row items-center justify-between pt-4 gap-4">
+                                        {/* Optional Delete Button */}
+                                        {editingScoreId ? (
+                                            <button
+                                                onClick={handleDelete}
+                                                disabled={isDeleting}
+                                                className="w-full sm:w-auto px-4 py-3.5 text-sm font-bold text-rose-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all flex items-center justify-center gap-2"
+                                            >
+                                                <Trash2 size={16} />
+                                                {isDeleting ? "削除中..." : "削除する"}
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() => setIsModalOpen(false)}
+                                                className="w-full sm:w-auto px-4 py-3.5 text-sm font-bold text-slate-400 hover:text-slate-600 transition-colors"
+                                            >
+                                                キャンセル
+                                            </button>
+                                        )}
+
                                         <button
                                             onClick={handleRecord}
                                             disabled={isSubmitting || !formData.testName || !formData.score}
-                                            className="px-8 py-4 bg-indigo-600 text-white text-sm font-black rounded-[1.25rem] shadow-lg shadow-indigo-100 hover:bg-indigo-700 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="w-full sm:w-auto px-8 py-3.5 md:py-4 bg-indigo-600 text-white text-sm font-black rounded-[1rem] md:rounded-[1.25rem] shadow-lg shadow-indigo-100 hover:bg-indigo-700 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex-1 sm:flex-none text-center"
                                         >
                                             {isSubmitting ? "保存中..." : editingScoreId ? "更新する" : "記録する"}
                                         </button>
@@ -449,128 +477,12 @@ export default function StudentAchievementsPage() {
     );
 }
 
-function SchoolScoreChart({ scores }: { scores: any[] }) {
-    if (scores.length < 2) return null;
-
-    // Parse score and sort by date
-    // Handles formats: "85", "85 / 100", "85点"
-    const data = scores
-        .map(s => {
-            const numericScore = parseInt(s.score.split('/')[0].replace(/[^0-9]/g, '')) || 0;
-            return {
-                date: s.date,
-                score: numericScore,
-            };
-        })
-        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-    const width = 800;
-    const height = 200;
-    const padding = 40;
-
-    const minScore = Math.max(0, Math.min(...data.map(d => d.score)) - 10);
-    const maxScore = Math.min(100, Math.max(...data.map(d => d.score)) + 10);
-
-    const getX = (index: number) => padding + (index * (width - 2 * padding)) / (data.length - 1);
-    const getY = (score: number) => height - padding - ((score - minScore) * (height - 2 * padding)) / (maxScore - minScore);
-
-    const points = data.map((d, i) => `${getX(i)},${getY(d.score)}`).join(' ');
-
-    return (
-        <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="w-full h-full"
-        >
-            <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full overflow-visible" preserveAspectRatio="none">
-                {/* Horizontal Guide Lines */}
-                {[0, 25, 50, 75, 100].map(val => (
-                    <g key={val}>
-                        <line x1={padding} y1={getY(val)} x2={width - padding} y2={getY(val)} stroke="#f1f5f9" strokeWidth="1" />
-                        <text x={padding - 10} y={getY(val)} textAnchor="end" alignmentBaseline="middle" className="text-[10px] fill-slate-300 font-bold">{val}</text>
-                    </g>
-                ))}
-                
-                {/* Gradient */}
-                <defs>
-                    <linearGradient id="scoreGradientMain" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#4f46e5" stopOpacity="0.2" />
-                        <stop offset="100%" stopColor="#4f46e5" stopOpacity="0" />
-                    </linearGradient>
-                </defs>
-
-                {/* Area */}
-                <motion.path
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 1 }}
-                    d={`M ${getX(0)} ${height - padding} ${data.map((d, i) => `L ${getX(i)} ${getY(d.score)}`).join(' ')} L ${getX(data.length - 1)} ${height - padding} Z`}
-                    fill="url(#scoreGradientMain)"
-                />
-
-                {/* The Line */}
-                <motion.polyline
-                    initial={{ pathLength: 0, opacity: 0 }}
-                    animate={{ pathLength: 1, opacity: 1 }}
-                    transition={{ duration: 1.5, ease: "circOut" }}
-                    fill="none"
-                    stroke="#4f46e5"
-                    strokeWidth="5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    points={points}
-                />
-
-                {/* Dots & Labels */}
-                {data.map((d, i) => (
-                    <g key={i}>
-                        <motion.circle
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ delay: 1 + i * 0.1, type: "spring", stiffness: 200 }}
-                            cx={getX(i)}
-                            cy={getY(d.score)}
-                            r="6"
-                            fill="white"
-                            stroke="#4f46e5"
-                            strokeWidth="4"
-                            className="drop-shadow-md"
-                        />
-                        <motion.text
-                            initial={{ opacity: 0, y: -5 }}
-                            animate={{ opacity: 1, y: -15 }}
-                            transition={{ delay: 1.5 + i * 0.1 }}
-                            x={getX(i)}
-                            y={getY(d.score)}
-                            textAnchor="middle"
-                            className="text-[16px] font-black fill-indigo-600"
-                        >
-                            {d.score}
-                        </motion.text>
-                        {/* Date Label */}
-                        <motion.text
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 2 }}
-                            x={getX(i)}
-                            y={height - 10}
-                            textAnchor="middle"
-                            className="text-[10px] font-bold fill-slate-400"
-                        >
-                            {d.date.split('-').slice(1).join('/')}
-                        </motion.text>
-                    </g>
-                ))}
-            </svg>
-        </motion.div>
-    );
-}
 
 function ScoreCard({ date, title, score, total, trend, color, onEdit }: any) {
     return (
-        <div 
+        <div
             onClick={onEdit}
-            className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm hover:shadow-md transition-all flex justify-between items-center group cursor-pointer border-l-4 border-l-transparent hover:border-l-indigo-600"
+            className="bg-white rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-6 border border-slate-100 shadow-sm hover:shadow-md transition-all flex justify-between items-center group cursor-pointer border-l-4 border-l-transparent hover:border-l-indigo-600"
         >
             <div className="space-y-1">
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{date}</p>

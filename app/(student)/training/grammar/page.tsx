@@ -16,6 +16,7 @@ import {
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { GRAMMAR_CATEGORIES, GrammarCategory, GrammarQuestion } from '@/lib/data/grammar';
+import TrainingHUD from '@/components/training/TrainingHUD';
 import XPResultsView from '@/components/training/XPResultsView';
 import { getLevelInfo } from '@/lib/quest-utils';
 
@@ -536,47 +537,34 @@ export default function SentenceBuilderPage() {
 
     return (
         <main className="flex-1 flex flex-col items-center justify-center bg-slate-50 font-sans min-h-screen text-slate-800 relative overflow-hidden">
-            <div className="absolute top-6 left-6 right-6 flex justify-between items-center z-20">
-                <button
-                    onClick={() => { setIsGameOver(false); setIsPlaying(false); }}
-                    className="w-12 h-12 bg-white rounded-full shadow-md flex items-center justify-center text-slate-400 hover:text-slate-600 hover:scale-105 transition-all"
-                >
-                    <X size={24} />
-                </button>
-                <div className="bg-white px-6 py-3 rounded-full shadow-sm font-black text-amber-500 flex items-center gap-4 border-2 border-amber-100">
-                    <div className="flex items-center gap-2 pr-4 relative after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:w-[2px] after:h-4 after:bg-slate-200">
-                        <Trophy size={16} className="text-emerald-500" />
-                        <span className="text-emerald-600">{score} EXP</span>
-                    </div>
-                    <div className="flex items-center gap-2 pr-4 relative after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:w-[2px] after:h-4 after:bg-slate-200">
-                        <Flame size={16} className={cn("transition-colors", combo > 2 ? "text-rose-500 animate-bounce" : "text-amber-400")} />
-                        <span>x{combo}</span>
-                    </div>
-                    <div>
-                        <span className="text-slate-400 text-sm">Step </span>
-                        {currentIndex + 1} / {gameQuestions.length}
-                    </div>
-                </div>
-            </div>
+            
+            <TrainingHUD
+                theme="light"
+                score={score}
+                combo={combo}
+                currentStep={currentIndex + 1}
+                totalSteps={gameQuestions.length}
+                onClose={() => { setIsGameOver(false); setIsPlaying(false); }}
+            />
 
-            <div className="relative z-10 w-full max-w-3xl px-6 flex flex-col items-center pb-24 mt-12">
+            <div className="relative z-10 w-full max-w-3xl px-4 md:px-6 flex flex-col items-center pb-24 mt-20 md:mt-16">
                 {/* Japanese translation question */}
-                <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100 w-full mb-10 text-center relative">
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-amber-500 text-white px-6 py-1.5 rounded-full text-xs font-black uppercase tracking-widest shadow-md shadow-amber-500/30">
+                <div className="bg-white p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-slate-100 w-full mb-6 md:mb-10 text-center relative">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-md shadow-amber-500/30">
                         Translate
                     </div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-slate-700 leading-relaxed mt-2">
+                    <h2 className="text-xl md:text-3xl font-bold text-slate-700 leading-relaxed mt-1">
                         {question?.translation}
                     </h2>
                 </div>
 
                 {/* Answer Area (Selected Words) */}
-                <div className={cn("w-full min-h-[120px] mb-8 p-4 rounded-3xl border-2 flex flex-wrap gap-3 items-center justify-center transition-all",
+                <div className={cn("w-full min-h-[100px] md:min-h-[120px] mb-6 md:mb-8 p-3 md:p-4 rounded-2xl md:rounded-3xl border-2 flex flex-wrap gap-2 md:gap-3 items-center justify-center transition-all",
                     showResult && isOk ? "bg-emerald-50 border-emerald-200" :
                         showResult && !isOk ? "bg-rose-50 border-rose-200" :
                             "bg-slate-100 border-dashed border-slate-300"
                 )}>
-                    {selectedWords.length === 0 && <span className="text-slate-400 font-bold opacity-50">下のブロックを選んで並べよう！ <br /><span className="text-xs">※セットされたブロックはドラッグして順番を入れ替えられます</span></span>}
+                    {selectedWords.length === 0 && <span className="text-slate-400 font-bold opacity-50 text-xs md:text-base text-center">下のブロックをタップして並べよう！ <br className="hidden md:block" /><span className="text-[10px] md:text-xs">※ブロックはドラッグで並べ替え可能</span></span>}
                     {selectedWords.map((word, idx) => (
                         <button
                             key={idx}
@@ -586,7 +574,7 @@ export default function SentenceBuilderPage() {
                             onDragOver={handleDragOver}
                             onDrop={(e) => handleDrop(e, idx)}
                             className={cn(
-                                "px-6 py-4 text-xl font-bold rounded-2xl shadow-sm transition-transform active:scale-95",
+                                "px-4 py-3 md:px-6 md:py-4 text-base md:text-xl font-bold rounded-xl md:rounded-2xl shadow-sm transition-transform active:scale-95",
                                 draggedIndex === idx ? "opacity-50 scale-105" : "",
                                 showResult && isOk ? "bg-white text-emerald-600 border border-emerald-200" :
                                     showResult && !isOk ? "bg-white text-rose-500 border border-rose-200" : "bg-white text-slate-800 border-b-4 border-slate-200 hover:-translate-y-1"
@@ -606,14 +594,14 @@ export default function SentenceBuilderPage() {
                 )}
 
                 {/* Word Pool (Available Words) */}
-                <div className="flex flex-wrap justify-center gap-4 w-full min-h-[100px]">
+                <div className="flex flex-wrap justify-center gap-2 md:gap-4 w-full min-h-[80px] md:min-h-[100px]">
                     {availableWords.map((word, idx) => (
                         <button
                             key={idx}
                             onClick={() => handleSelect(word, idx)}
                             disabled={showResult}
                             className={cn(
-                                "px-6 py-4 bg-white text-amber-900 border-2 border-amber-200 border-b-4 rounded-2xl text-xl font-black shadow-sm transition-all hover:bg-amber-50 hover:-translate-y-1 active:translate-y-0 active:border-b-2 hover:shadow-md",
+                                "px-4 py-3 md:px-6 md:py-4 bg-white text-amber-900 border-2 border-amber-200 border-b-4 rounded-xl md:rounded-2xl text-base md:text-xl font-black shadow-sm transition-all hover:bg-amber-50 active:translate-y-0 active:border-b-2 hover:shadow-md",
                                 showResult && "opacity-50 cursor-not-allowed transform-none shadow-none"
                             )}
                         >
@@ -623,15 +611,15 @@ export default function SentenceBuilderPage() {
                 </div>
 
                 {/* Footer Controls */}
-                <div className="fixed bottom-0 left-0 right-0 md:left-64 bg-white/80 backdrop-blur-md border-t border-slate-200/50 p-4 md:p-6 flex justify-between items-center z-30 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]">
-                    <div className="max-w-5xl mx-auto w-full flex justify-between items-center px-2 md:px-4">
+                <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-slate-200/60 p-4 md:p-6 flex justify-between items-center z-[60] shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] pb-safe-offset-2">
+                    <div className="max-w-3xl mx-auto w-full flex justify-between items-center gap-3">
                         <button
                             onClick={handleReset}
                             disabled={showResult}
-                            className="flex items-center gap-2 px-6 py-3 rounded-xl text-slate-500 font-bold hover:bg-slate-100 transition-colors disabled:opacity-50"
+                            className="flex items-center justify-center gap-2 px-4 py-3 md:px-6 rounded-xl text-slate-500 font-bold hover:bg-slate-100 transition-colors disabled:opacity-50 text-sm md:text-base whitespace-nowrap"
                         >
-                            <RefreshCcw size={20} />
-                            やり直す
+                            <RefreshCcw size={18} />
+                            <span className="hidden xs:inline">やり直す</span>
                         </button>
 
                         {!showResult ? (
@@ -639,10 +627,10 @@ export default function SentenceBuilderPage() {
                                 onClick={handleCheck}
                                 disabled={availableWords.length > 0}
                                 className={cn(
-                                    "px-10 py-4 rounded-2xl font-black text-lg transition-all flex items-center gap-2",
+                                    "flex-1 md:flex-none px-6 md:px-12 py-3.5 md:py-4 rounded-[1rem] md:rounded-[1.25rem] font-black text-sm md:text-lg transition-all flex items-center justify-center gap-2",
                                     availableWords.length === 0
                                         ? "bg-amber-500 hover:bg-amber-400 text-white shadow-xl shadow-amber-500/20 active:scale-95"
-                                        : "bg-slate-100 text-slate-400 cursor-not-allowed"
+                                        : "bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200"
                                 )}
                             >
                                 チェック！
@@ -651,11 +639,11 @@ export default function SentenceBuilderPage() {
                             <button
                                 onClick={handleNext}
                                 className={cn(
-                                    "px-10 py-4 rounded-2xl font-black text-lg shadow-xl transition-transform active:scale-95 flex items-center gap-2",
-                                    isOk ? "bg-emerald-500 hover:bg-emerald-400 text-white shadow-emerald-500/20" : "bg-rose-500 hover:bg-rose-400 text-white shadow-rose-500/20"
+                                    "flex-1 md:flex-none px-6 md:px-12 py-3.5 md:py-4 rounded-[1rem] md:rounded-[1.25rem] font-black text-sm md:text-lg shadow-xl transition-transform active:scale-95 flex items-center justify-center gap-2",
+                                    isOk ? "bg-emerald-500 hover:bg-emerald-400 text-white shadow-emerald-500/30" : "bg-rose-500 hover:bg-rose-400 text-white shadow-rose-500/30"
                                 )}
                             >
-                                次へ進む <ArrowRight size={20} />
+                                {isOk ? "次へ進む" : "次へ進む"} <ArrowRight size={18} />
                             </button>
                         )}
                     </div>

@@ -8,6 +8,9 @@ import { revalidatePath } from 'next/cache';
 export async function getAdminDashboardData() {
     try {
         const studentCount = await prisma.student.count();
+        const activeStudentCount = await prisma.student.count({
+            where: { status: 'Active' }
+        });
         const teacherCount = await prisma.teacher.count();
 
         const todayStr = new Intl.DateTimeFormat('ja-JP', {
@@ -34,6 +37,7 @@ export async function getAdminDashboardData() {
         return {
             stats: {
                 students: studentCount,
+                activeStudents: activeStudentCount,
                 teachers: teacherCount,
                 lessonsToday: todayLessons.length
             },

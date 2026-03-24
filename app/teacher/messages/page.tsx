@@ -50,8 +50,8 @@ export default function TeacherMessagesPage() {
             const allTeachers = await getTeachers();
             let found = allTeachers.find((t: any) => t.id === userId);
 
-            if (!found) {
-                found = allTeachers.find((t: any) => t.name === '長谷川匠') || allTeachers[0];
+            if (!found && allTeachers.length > 0) {
+                found = allTeachers[0];
             }
 
             if (found) {

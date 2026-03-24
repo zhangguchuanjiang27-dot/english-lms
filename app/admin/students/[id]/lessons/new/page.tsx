@@ -12,7 +12,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { LessonRecord } from '@/lib/data-store';
-import { getStudentDetail, addLessonRecord } from '@/lib/actions/admin';
+import { getStudentDetail, addLessonRecord, getTeachers } from '@/lib/actions/admin';
+import { Teacher as DBTeacher } from "@prisma/client";
 import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -21,9 +22,10 @@ export default function NewLessonRecord({ params }: { params: Promise<{ id: stri
     const id = resolvedParams.id;
     const router = useRouter();
     const [studentName, setStudentName] = useState('生徒');
+    const [teachers, setTeachers] = useState<DBTeacher[]>([]);
     const [formData, setFormData] = useState({
         title: '',
-        teacher: 'Sarah J.',
+        teacher: '',
         date: new Date().toISOString().split('T')[0],
         grammar: 50,
         vocab: 50,
@@ -36,6 +38,13 @@ export default function NewLessonRecord({ params }: { params: Promise<{ id: stri
     useEffect(() => {
         getStudentDetail(id).then((student: any) => {
             if (student) setStudentName(student.name);
+        });
+        getTeachers().then(data => {
+            const list = data as unknown as DBTeacher[];
+            setTeachers(list);
+            if (list.length > 0) {
+                setFormData(prev => ({ ...prev, teacher: list[0].name }));
+            }
         });
     }, [id]);
 
@@ -122,6 +131,19 @@ export default function NewLessonRecord({ params }: { params: Promise<{ id: stri
                                             value={formData.date}
                                             onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                                         />
+                                    </div>
+                                    <div className="space-y-1.5 col-span-2">
+                                        <label className="text-sm font-medium">担当講師</label>
+                                        <select
+                                            className="w-full px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-primary/20 outline-none"
+                                            value={formData.teacher}
+                                            onChange={(e) => setFormData({ ...formData, teacher: e.target.value })}
+                                        >
+                                            <option value="">講師を選択...</option>
+                                            {teachers.map(t => (
+                                                <option key={t.id} value={t.name}>{t.name}</option>
+                                            ))}
+                                        </select>
                                     </div>
                                 </div>
                             </section>

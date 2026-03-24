@@ -30,6 +30,8 @@ export default function StudentLayout({
     const pathname = usePathname();
     const router = useRouter();
 
+    const isTrainingMode = pathname.startsWith('/training/') && pathname !== '/training';
+
     const handleLogout = () => {
         localStorage.removeItem('user_name');
         localStorage.removeItem('user_role');
@@ -107,26 +109,25 @@ export default function StudentLayout({
                 </aside>
 
                 {/* Main Content */}
-                <div className="flex-1 flex flex-col min-h-screen pb-20 md:pb-0">
+                <div className="flex-1 flex flex-col min-h-screen pb-20 md:pb-0 max-w-[100vw] overflow-x-hidden">
                     {/* Mobile Header */}
-                    <header className="md:hidden bg-white/80 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex justify-between items-center sticky top-0 z-40">
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-indigo-100">
-                                V
+                    {!isTrainingMode && (
+                        <header className="md:hidden bg-white/80 backdrop-blur-md border-b border-slate-100 px-6 py-4 flex justify-between items-center sticky top-0 z-40">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-indigo-100">
+                                    V
+                                </div>
+                                <span className="font-bold text-lg tracking-tight text-slate-900">Voca</span>
                             </div>
-                            <span className="font-bold text-lg tracking-tight text-slate-900">Voca</span>
-                        </div>
-                        <Link href="/profile" className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 font-bold text-xs uppercase overflow-hidden">
-                            <User size={16} />
-                        </Link>
-                    </header>
+                        </header>
+                    )}
 
-                    <main className="flex-1 overflow-x-hidden">
+                    <main className="flex-1 overflow-x-hidden max-w-full">
                         {children}
                     </main>
 
                     {/* Bottom Nav for Mobile */}
-                    <MobileNav />
+                    {!isTrainingMode && <MobileNav />}
                 </div>
             </div>
         </AuthGuard>

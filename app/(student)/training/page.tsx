@@ -78,8 +78,8 @@ export default function TrainingDashboardPage() {
                         <p className="text-slate-400 mt-2 text-sm font-medium">英語の世界を冒険し、経験値を稼いでレベルアップしよう！</p>
                     </div>
 
-                    <div className="flex gap-4">
-                        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-4 flex items-center gap-4 shadow-lg">
+                    <div className="flex flex-col sm:flex-row items-stretch gap-4 w-full md:w-auto">
+                        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-4 flex items-center gap-4 shadow-lg shrink-0">
                             <div className="p-3 bg-rose-500/20 text-rose-400 rounded-xl">
                                 <Flame size={24} className="animate-pulse" />
                             </div>
@@ -88,42 +88,42 @@ export default function TrainingDashboardPage() {
                                 <p className="text-xl font-black text-rose-100">{streak} Days</p>
                             </div>
                         </div>
-                        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-4 flex items-center gap-5 shadow-lg min-w-[320px]">
+                        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-4 flex items-center gap-5 shadow-lg flex-1 md:min-w-[340px]">
                             <div className="relative flex-shrink-0">
                                 {/* Premium Level Badge */}
-                                <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl rotate-3 flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.3)] relative group-hover:rotate-6 transition-transform">
+                                <div className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl rotate-3 flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.3)] relative group-hover:rotate-6 transition-transform">
                                     <div className="absolute inset-0.5 bg-slate-900 rounded-[14px]"></div>
                                     <div className="relative z-10 flex flex-col items-center">
-                                        <span className="text-[10px] font-black text-indigo-300 leading-none">LV.</span>
-                                        <span className="text-2xl font-black text-white leading-none">{levelInfo?.level || 1}</span>
+                                        <span className="text-[9px] md:text-[10px] font-black text-indigo-300 leading-none">LV.</span>
+                                        <span className="text-xl md:text-2xl font-black text-white leading-none">{levelInfo?.level || 1}</span>
                                     </div>
                                     {/* Decorative glow */}
                                     <div className="absolute -inset-1 bg-indigo-500/20 blur-md rounded-2xl -z-10"></div>
                                 </div>
-                                <Star size={16} className="absolute -bottom-1 -right-1 text-amber-400 fill-amber-400 drop-shadow-md" />
+                                <Star size={14} className="absolute -bottom-1 -right-1 text-amber-400 fill-amber-400 drop-shadow-md md:size-4" />
                             </div>
 
-                            <div className="flex-1 space-y-2">
+                            <div className="flex-1 space-y-1.5 md:space-y-2">
                                 <div className="flex justify-between items-center">
                                     {/* Rank Title */}
                                     {levelInfo && (
-                                        <div className={cn("px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border", getRankTitle(levelInfo.level).bg, getRankTitle(levelInfo.level).color, getRankTitle(levelInfo.level).border)}>
+                                        <div className={cn("px-2 py-0.5 rounded-full text-[8px] md:text-[9px] font-black uppercase tracking-widest border", getRankTitle(levelInfo.level).bg, getRankTitle(levelInfo.level).color, getRankTitle(levelInfo.level).border)}>
                                             {getRankTitle(levelInfo.level).title}
                                         </div>
                                     )}
-                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-auto">XP Progress</p>
+                                    <p className="text-[9px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest ml-auto">XP Progress</p>
                                 </div>
 
-                                <div className="h-2.5 w-full bg-slate-750/50 rounded-full overflow-hidden border border-slate-700/30 p-[1px]">
+                                <div className="h-2 md:h-2.5 w-full bg-slate-750/50 rounded-full overflow-hidden border border-slate-700/30 p-[1px]">
                                     <div
                                         className="h-full bg-gradient-to-r from-indigo-500 to-emerald-400 rounded-full transition-all duration-1000 ease-out"
                                         style={{ width: `${levelInfo?.progress || 0}%` }}
                                     ></div>
                                 </div>
 
-                                <div className="flex justify-between text-[10px] font-bold">
+                                <div className="flex justify-between text-[9px] md:text-[10px] font-bold">
                                     <span className="text-emerald-400">{levelInfo?.xpInLevel || 0} <span className="text-slate-500">XP</span></span>
-                                    <span className="text-slate-500">{levelInfo?.xpRequired || 1000} <span className="opacity-50">to next</span></span>
+                                    <span className="text-slate-500">{levelInfo?.xpRequired || 1000} <span className="opacity-50 text-[8px] md:text-[9px]">to next</span></span>
                                 </div>
                             </div>
                         </div>
