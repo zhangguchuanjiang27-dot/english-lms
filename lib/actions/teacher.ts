@@ -98,6 +98,7 @@ export async function submitLessonKarte(data: {
     teacherName: string;
     title: string;
     feedback: string;
+    nextScope?: string;
     homework: string;
     internalNote: string;
     grammar?: number;
@@ -118,6 +119,7 @@ export async function submitLessonKarte(data: {
             teacher: data.teacherName,
             title: data.title,
             feedback: data.feedback,
+            nextScope: data.nextScope || null,
             homework: data.homework,
             internalNote: data.internalNote,
             grammar: data.grammar ?? 50,
@@ -243,3 +245,41 @@ export async function revokeLessonKarte(lessonId: string) {
         return { success: false, error: 'カルテの取り消しに失敗しました' };
     }
 }
+
+export async function searchAllStudents(query: string = '') {
+    try {
+        const whereClause = query.trim() ? {
+            OR: [
+                { name: { contains: query, mode: 'insensitive' as const } },
+                { email: { contains: query, mode: 'insensitive' as const } },
+                { course: { contains: query, mode: 'insensitive' as const } }
+            ]
+        } : {};
+        
+        const students = await prisma.student.findMany({
+            where: whereClause,
+            take: 50,
+            orderBy: {
+                name: 'asc'
+            }
+        });
+        return students;
+    } catch (error) {
+        console.error('Error searching students:', error);
+        return [];
+    }
+}
+
+export async function getAllStudentRecords(studentId: string) {
+    try {
+        const records = await prisma.lessonRecord.findMany({
+            where: { studentId },
+            orderBy: { date: 'desc' }
+        });
+        return records;
+    } catch (error) {
+        console.error('Error fetching student records:', error);
+        return [];
+    }
+}
+

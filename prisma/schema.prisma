@@ -87,6 +87,7 @@ model LessonRecord {
   teacher       String
   title         String
   feedback      String
+  nextScope     String?
   homework      String?
   internalNote  String?
   grammar       Int     @default(50)

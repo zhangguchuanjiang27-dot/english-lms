@@ -31,6 +31,8 @@ export default function StudentLayout({
     const router = useRouter();
 
     const isTrainingMode = pathname.startsWith('/training/') && pathname !== '/training';
+    const isTrainingBase = pathname.startsWith('/training');
+    const layoutBg = isTrainingBase ? "bg-slate-900" : "bg-[#F8FAFC]";
 
     const handleLogout = () => {
         localStorage.removeItem('user_name');
@@ -41,7 +43,7 @@ export default function StudentLayout({
 
     return (
         <AuthGuard allowedRoles={['student']}>
-            <div className="flex min-h-screen bg-[#F8FAFC] text-slate-900 font-sans">
+            <div className={cn("flex min-h-screen text-slate-900 font-sans", layoutBg)}>
                 {/* Sidebar - Desktop only */}
                 <aside className="w-64 bg-white border-r border-slate-200 hidden md:flex flex-col p-6 sticky top-0 h-screen">
                     <div className="flex items-center gap-3 px-2 mb-10">

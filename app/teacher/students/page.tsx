@@ -18,10 +18,17 @@ import {
     PencilLine,
     AlertCircle,
     History,
-    Video
+    Video,
+    Zap
 } from 'lucide-react';
 import { Student, LessonSchedule, LessonRecord, Teacher } from '@/lib/data-store';
 import { getTeacherStudentsData, updateLessonMeetingUrl, submitLessonKarte, getRecentRecordsByStudent, getRecordByLessonId, revokeLessonKarte } from '@/lib/actions/teacher';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+function cn(...inputs: ClassValue[]) {
+    return twMerge(clsx(inputs));
+}
 
 function formatTimeRange(time: string, durationStr: string) {
     if (!time || time.includes('~')) return time || '';
@@ -49,6 +56,7 @@ export default function TeacherStudentsPage() {
     const [assessmentData, setAssessmentData] = useState({
         title: '',
         feedback: '',
+        nextScope: '',
         homework: '',
         internalNote: ''
     });
@@ -83,6 +91,7 @@ export default function TeacherStudentsPage() {
                     setAssessmentData({
                         title: currentRecord.title || lesson.course || '',
                         feedback: currentRecord.feedback || '',
+                        nextScope: (currentRecord as any).nextScope || '',
                         homework: currentRecord.homework || '',
                         internalNote: currentRecord.internalNote || ''
                     });
@@ -90,6 +99,7 @@ export default function TeacherStudentsPage() {
                     setAssessmentData({
                         title: lesson.course || '',
                         feedback: '',
+                        nextScope: '',
                         homework: '',
                         internalNote: ''
                     });
@@ -98,6 +108,7 @@ export default function TeacherStudentsPage() {
                 setAssessmentData({
                     title: lesson.course || '',
                     feedback: '',
+                    nextScope: '',
                     homework: '',
                     internalNote: ''
                 });
@@ -111,6 +122,7 @@ export default function TeacherStudentsPage() {
             setAssessmentData({
                 title: lesson.course || '',
                 feedback: '',
+                nextScope: '',
                 homework: '',
                 internalNote: ''
             });
@@ -131,6 +143,7 @@ export default function TeacherStudentsPage() {
                 teacherName: teacher.name,
                 title: assessmentData.title || selectedLesson.course,
                 feedback: assessmentData.feedback,
+                nextScope: assessmentData.nextScope,
                 homework: assessmentData.homework,
                 internalNote: assessmentData.internalNote
             });
@@ -252,7 +265,7 @@ export default function TeacherStudentsPage() {
     if (loading) return null;
 
     return (
-        <main className="flex-1 p-6 md:p-10 overflow-y-auto bg-slate-50/50">
+        <main className="flex-1 p-6 md:p-10 overflow-y-auto bg-slate-50 min-h-screen">
             <div className="max-w-6xl mx-auto space-y-8">
 
                 <header className="flex flex-col md:flex-row justify-between md:items-center gap-6 mb-8">
@@ -307,11 +320,28 @@ export default function TeacherStudentsPage() {
                     <div className="space-y-4">
                         {filteredLessons.length > 0 ? (
                             <div className="grid grid-cols-1 gap-4">
-                                {filteredLessons.map(({ lesson, student }, idx) => (
-                                    <div key={lesson.id} className="group bg-white border border-slate-200 hover:border-emerald-300 rounded-2xl p-5 transition-all hover:shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                        <div className="flex items-center gap-4 min-w-[200px]">
-                                            <div className={`w-12 h-12 rounded-2xl flex flex-col items-center justify-center font-black ${lesson.date === todayStr ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'
-                                                }`}>
+                                {filteredLessons.map(({ lesson, student }, idx) => {
+                                    const isCompleted = lesson.status === 'Completed';
+                                    const isToday = lesson.date === todayStr;
+
+                                    return (
+                                    <div key={lesson.id} className={cn(
+                                        "group border rounded-3xl p-5 transition-all flex flex-col md:flex-row md:items-center justify-between gap-6 relative overflow-hidden",
+                                        isCompleted 
+                                            ? "bg-slate-100/50 backdrop-blur-sm border-slate-200/50 shadow-inner opacity-80" 
+                                            : "bg-white border-emerald-100/60 hover:border-emerald-300 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:shadow-emerald-200/40 hover:-translate-y-1"
+                                    )}>
+                                        {!isCompleted && (
+                                            <div className="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-emerald-400 to-teal-500 shadow-sm hidden md:block"></div>
+                                        )}
+                                        {!isCompleted && (
+                                            <div className="absolute left-0 right-0 top-0 h-1.5 bg-gradient-to-r from-emerald-400 to-teal-500 shadow-sm md:hidden"></div>
+                                        )}
+                                        <div className="flex items-center gap-4 min-w-[200px] md:pl-4">
+                                            <div className={cn(
+                                                "w-12 h-12 rounded-2xl flex flex-col items-center justify-center font-black shadow-sm",
+                                                isCompleted ? "bg-slate-200 text-slate-500" : isToday ? 'bg-amber-100 text-amber-700' : 'bg-emerald-50 text-emerald-600'
+                                            )}>
                                                 <span className="text-[10px] uppercase leading-none mb-0.5">{new Date(lesson.date).toLocaleDateString('ja-JP', { weekday: 'short' })}</span>
                                                 <span className="text-lg leading-none">{new Date(lesson.date).getDate()}</span>
                                             </div>
@@ -319,8 +349,11 @@ export default function TeacherStudentsPage() {
                                                 <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">
                                                     {new Date(lesson.date).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long' })}
                                                 </div>
-                                                <div className="flex items-center gap-2 text-slate-700 font-bold">
-                                                    <Clock size={14} className="text-slate-400" />
+                                                <div className={cn(
+                                                    "flex items-center gap-2 font-bold",
+                                                    isCompleted ? "text-slate-500" : "text-slate-700"
+                                                )}>
+                                                    <Clock size={14} className={isCompleted ? "text-slate-400" : "text-emerald-500"} />
                                                     {formatTimeRange(lesson.time, lesson.duration)}
                                                 </div>
                                             </div>
@@ -328,46 +361,65 @@ export default function TeacherStudentsPage() {
 
                                         <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-12 flex-1">
                                             <div className="flex items-center gap-3 min-w-[150px]">
-                                                <div className="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-black">
+                                                <div className={cn(
+                                                    "w-10 h-10 rounded-full flex items-center justify-center text-sm font-black shadow-sm border border-white/50",
+                                                    isCompleted ? "bg-slate-200 text-slate-400" : "bg-indigo-50 text-indigo-600"
+                                                )}>
                                                     {student?.name[0] || 'U'}
                                                 </div>
                                                 <div>
-                                                    <div className="text-sm font-bold text-slate-800">{lesson.studentName || student?.name || '不明な生徒'}</div>
-                                                    <div className="text-[10px] font-medium text-slate-500">{student?.course}</div>
+                                                    <div className={cn(
+                                                        "text-base font-black transition-colors",
+                                                        isCompleted ? "text-slate-500" : "text-slate-800 group-hover:text-emerald-700"
+                                                    )}>{lesson.studentName || student?.name || '不明な生徒'}</div>
+                                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{student?.course}</div>
                                                 </div>
                                             </div>
 
-                                            <div className="flex items-center gap-2">
-                                                <span className="px-3 py-1 bg-slate-50 border border-slate-100 rounded-full text-[11px] font-bold text-slate-600">
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                <span className={cn(
+                                                    "px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider shadow-sm",
+                                                    isCompleted ? "bg-slate-200 text-slate-500" : "bg-emerald-50 text-emerald-700 border border-emerald-100/50"
+                                                )}>
                                                     {lesson.course}
                                                 </span>
-                                                {lesson.status === 'Completed' ? (
-                                                    <span className="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[11px] font-bold">完了済み</span>
-                                                ) : lesson.date === todayStr ? (
-                                                    <span className="px-3 py-1 bg-amber-50 text-amber-600 rounded-full text-[11px] font-bold animate-pulse">本日</span>
+                                                {isCompleted ? (
+                                                    <span className="px-3 py-1.5 bg-slate-200/80 text-slate-500 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1 backdrop-blur-md border border-white/50 shadow-sm">
+                                                        <CheckCircle2 size={12} />完了済み
+                                                    </span>
+                                                ) : isToday ? (
+                                                    <span className="px-3 py-1.5 bg-amber-50 text-amber-600 rounded-lg text-[10px] font-black uppercase tracking-wider animate-pulse border border-amber-200/50 shadow-sm flex items-center gap-1">
+                                                        <Calendar size={12} />本日
+                                                    </span>
                                                 ) : (
-                                                    <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[11px] font-bold">予約済み</span>
+                                                    <span className="px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg text-[10px] font-black uppercase tracking-wider border border-blue-200/50 shadow-sm">
+                                                        予約済み
+                                                    </span>
                                                 )}
                                             </div>
                                         </div>
 
-                                        <div className="flex items-center justify-end gap-3">
+                                        <div className="flex items-center justify-end gap-3 shrink-0">
                                             <button
                                                 onClick={() => openUrlModal(lesson)}
-                                                className={`p-2 rounded-xl transition-all flex items-center gap-2 text-xs font-bold border ${lesson.meetingUrl
-                                                    ? 'bg-indigo-50 border-indigo-100 text-indigo-600 hover:bg-indigo-100'
-                                                    : 'bg-slate-50 border-slate-200 text-slate-400 hover:bg-slate-100 hover:text-slate-600'
-                                                    }`}
+                                                className={cn(
+                                                    "p-2.5 rounded-xl transition-all flex items-center gap-2 text-xs font-bold shadow-sm",
+                                                    isCompleted
+                                                        ? "bg-slate-100 text-slate-400 hover:bg-slate-200"
+                                                        : lesson.meetingUrl
+                                                            ? "bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-100/50"
+                                                            : "bg-white border border-slate-200 text-slate-400 hover:bg-slate-50 hover:text-slate-600"
+                                                )}
                                                 title={lesson.meetingUrl ? 'URLを変更' : 'URLを設定'}
                                             >
                                                 <Video size={16} />
                                                 <span className="hidden sm:inline">{lesson.meetingUrl ? 'URL設定済み' : 'URL未設定'}</span>
                                             </button>
 
-                                            {lesson.status !== 'Completed' ? (
+                                            {!isCompleted ? (
                                                 <button
                                                     onClick={() => openAssessModal(lesson)}
-                                                    className="px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 rounded-xl transition-all flex items-center gap-2 text-xs font-bold"
+                                                    className="px-4 py-2 bg-white border-2 border-emerald-500 hover:bg-emerald-50 text-emerald-600 rounded-xl transition-all flex items-center gap-2 text-xs font-bold shadow-sm shadow-emerald-500/10"
                                                 >
                                                     <FileText size={14} />
                                                     カルテ入力
@@ -375,7 +427,7 @@ export default function TeacherStudentsPage() {
                                             ) : (
                                                 <button
                                                     onClick={() => openAssessModal(lesson)}
-                                                    className="px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl transition-all flex items-center gap-2 text-xs font-bold border border-slate-200"
+                                                    className="px-4 py-2 bg-white border-2 border-slate-300 hover:bg-slate-50 text-slate-600 rounded-xl transition-all flex items-center gap-2 text-xs font-bold shadow-sm"
                                                 >
                                                     <Search size={14} />
                                                     カルテ確認
@@ -383,7 +435,7 @@ export default function TeacherStudentsPage() {
                                             )}
                                         </div>
                                     </div>
-                                ))}
+                                )})}
                             </div>
                         ) : (
                             <div className="py-20 text-center border-2 border-dashed border-slate-100 rounded-3xl">
@@ -431,7 +483,7 @@ export default function TeacherStudentsPage() {
                                 <div className="space-y-3">
                                     <h4 className="text-sm font-black text-slate-800 tracking-tight flex items-center gap-2">
                                         <MessageSquare className="text-indigo-500" size={16} />
-                                        生徒へのフィードバック
+                                        本日やったこと (生徒への公開フィードバック)
                                     </h4>
                                     <p className="text-[11px] text-slate-500 font-medium">この内容は生徒自身の学習カルテ画面に直接公開されます。</p>
                                     <textarea
@@ -440,6 +492,20 @@ export default function TeacherStudentsPage() {
                                         value={assessmentData.feedback}
                                         onChange={(e) => setAssessmentData({ ...assessmentData, feedback: e.target.value })}
                                         required
+                                    />
+                                </div>
+
+                                <div className="space-y-3">
+                                    <h4 className="text-sm font-black text-slate-800 tracking-tight flex items-center gap-2">
+                                        <Zap className="text-blue-500" size={16} />
+                                        次回の授業範囲
+                                    </h4>
+                                    <p className="text-[11px] text-slate-500 font-medium">次回レッスンで扱う予定の範囲を記入してください。（生徒に公開されます）</p>
+                                    <textarea
+                                        className="w-full h-20 p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-medium resize-none leading-relaxed"
+                                        placeholder="例: Unit 5 の Vocabulary と Grammar の解説..."
+                                        value={assessmentData.nextScope}
+                                        onChange={(e) => setAssessmentData({ ...assessmentData, nextScope: e.target.value })}
                                     />
                                 </div>
 

@@ -7,7 +7,8 @@ import {
     Settings,
     User,
     LogOut,
-    Presentation
+    Presentation,
+    Search
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -67,6 +68,12 @@ export default function TeacherLayout({
                             label="メッセージ"
                             href="/teacher/messages"
                             active={pathname.includes('/teacher/messages')}
+                        />
+                        <TeacherNavItem
+                            icon={Search}
+                            label="生徒カルテ検索"
+                            href="/teacher/records"
+                            active={pathname.includes('/teacher/records')}
                         />
                     </nav>
 

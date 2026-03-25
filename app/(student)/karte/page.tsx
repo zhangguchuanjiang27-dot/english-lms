@@ -7,7 +7,8 @@ import {
     FileText,
     PencilLine,
     BookOpen,
-    Check
+    Check,
+    Zap
 } from 'lucide-react';
 import { LessonRecord } from '@/lib/data-store';
 import { useEffect, useState } from 'react';
@@ -150,12 +151,29 @@ export default function StudentKartePage() {
                                             </div>
                                         </div>
 
-                                        {/* Right Content: homework */}
-                                        <div className="md:w-[320px] bg-amber-50/50 p-5 md:p-8 flex flex-col justify-center relative overflow-hidden border-t md:border-t-0 border-amber-100/50">
+                                        {/* Right Content: homework & next scope */}
+                                        <div className="md:w-[320px] bg-amber-50/50 flex flex-col relative overflow-hidden border-t md:border-t-0 border-amber-100/50">
                                             {/* Stylized background ornament */}
-                                            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-200/30 rounded-bl-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-700 pointer-events-none"></div>
+                                            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-200/30 rounded-bl-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-700 pointer-events-none z-0"></div>
 
-                                            <div className="space-y-4 relative z-10 w-full text-left">
+                                            <div className="p-5 md:p-8 space-y-4 relative z-10 w-full text-left flex-1 border-b border-amber-100/40">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-2 text-blue-700">
+                                                        <div className="p-1.5 bg-blue-100 rounded-lg shadow-sm shadow-blue-200/50">
+                                                            <Zap size={14} className="text-blue-600" />
+                                                        </div>
+                                                        <h4 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-blue-800">次回の授業範囲</h4>
+                                                    </div>
+                                                </div>
+
+                                                <div className="relative bg-[#f8fbff] p-5 rounded-2xl shadow-sm border border-blue-200/40 min-h-[80px] flex">
+                                                    <p className="text-sm font-bold text-slate-700 leading-relaxed whitespace-pre-wrap break-words w-full">
+                                                        {(item as any).nextScope || '未設定'}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div className="p-5 md:p-8 space-y-4 relative z-10 w-full text-left bg-amber-50/80">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-2 text-amber-700">
                                                         <div className="p-1.5 bg-amber-100 rounded-lg shadow-sm shadow-amber-200/50">

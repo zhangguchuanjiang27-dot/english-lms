@@ -183,7 +183,7 @@ export default function StudentProfilePage() {
                                 <div className="space-y-3">
                                     <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
                                         <Target size={12} className="stroke-[3]" />
-                                        大きな目標（タグ）
+                                        大きな目標
                                     </label>
                                     {isEditing ? (
                                         <input
@@ -191,21 +191,12 @@ export default function StudentProfilePage() {
                                             className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl text-sm outline-none focus:border-indigo-600 focus:bg-white transition-all font-bold"
                                             value={formData.target || ''}
                                             onChange={(e) => setFormData({ ...formData, target: e.target.value })}
-                                            placeholder="例：英検準2級合格！ #TOEIC 600点"
+                                            placeholder="例：英検準2級合格！ TOEIC 600点を目指す"
                                         />
                                     ) : (
-                                        <div className="flex flex-wrap gap-2 pt-1">
-                                            {formData.target ? (
-                                                formData.target.split(/[\s,，、/]+/).map((tag, i) => (
-                                                    <span 
-                                                        key={i} 
-                                                        className="px-4 py-1.5 bg-indigo-50 text-indigo-600 rounded-full text-xs font-black tracking-tight"
-                                                    >
-                                                        {tag.startsWith('#') ? tag : `#${tag}`}
-                                                    </span>
-                                                ))
-                                            ) : (
-                                                <p className="text-sm font-bold text-slate-300 italic">目標が設定されていません</p>
+                                        <div className="flex flex-wrap gap-2 pt-1 font-bold text-slate-700">
+                                            {formData.target || (
+                                                <p className="text-sm font-bold text-slate-300">目標が設定されていません</p>
                                             )}
                                         </div>
                                     )}
@@ -268,7 +259,7 @@ function ProfileField(
                 <div className="flex items-center gap-3 py-1 group/field">
                     <p className={cn(
                         "font-black text-slate-700 tracking-tight",
-                        !value && "text-slate-300 italic font-bold"
+                        !value && "text-slate-300 font-bold"
                     )}>
                         {value || '未設定'}
                     </p>
