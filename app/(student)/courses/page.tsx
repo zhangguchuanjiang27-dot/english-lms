@@ -39,12 +39,14 @@ const GRADES_DATA = [
         label: '中2 英語',
         description: '表現の幅を広げる応用的な文法',
         topics: [
-            { title: '未来の文 (will, be going to)', pdfName: 'jhs2_future.pdf', status: 'ready' },
-            { title: '助動詞 (must, may, should)', pdfName: 'jhs2_auxiliary.pdf', status: 'ready' },
-            { title: '不定詞 1 (名詞・副詞・形容詞)', pdfName: 'jhs2_infinitives.pdf', status: 'ready' },
-            { title: '動名詞 (-ing)', pdfName: 'jhs2_gerunds.pdf', status: 'ready' },
-            { title: '比較 (as~as, -er, -est)', pdfName: 'jhs2_comparison.pdf', status: 'ready' },
-            { title: '受動態 (be + 過去分詞)', pdfName: 'jhs2_passive.pdf', status: 'ready' },
+            { title: '未来の文 (will, be going to)', pdfName: '1未来形.pdf', status: 'ready' },
+            { title: '助動詞 (must, may, have to)', pdfName: '2助動詞.pdf', status: 'ready' },
+            { title: '接続詞 (when, if, because)', pdfName: '3接続詞.pdf', status: 'ready' },
+            { title: '不定詞 (目的・原因・形容詞的)', pdfName: '4不定詞.pdf', status: 'ready' },
+            { title: '動名詞 (〜すること)', pdfName: '5動名詞.pdf', status: 'ready' },
+            { title: '特別な働きをする動詞 (SVOO等)', pdfName: '6特別な働きをする動詞.pdf', status: 'ready' },
+            { title: '比較 (比較級・最上級)', pdfName: '7比較.pdf', status: 'ready' },
+            { title: '受動態 (〜される)', pdfName: '8受動態.pdf', status: 'ready' },
         ]
     },
     {
@@ -96,7 +98,7 @@ export default function StudentCoursesPage() {
                                     : "text-slate-500 hover:text-slate-700 hover:bg-white/50"
                             )}
                         >
-                            {grade.label}
+                            <span className="whitespace-nowrap">{grade.label}</span>
                         </button>
                     ))}
                 </div>
@@ -104,7 +106,7 @@ export default function StudentCoursesPage() {
                 {/* Grade Overview */}
                 <div className="bg-indigo-600 rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl shadow-indigo-200 animate-in zoom-in-95 duration-500">
                     <div className="relative z-10 space-y-4">
-                        <h2 className="text-3xl font-black">{currentData.label} の資料一覧</h2>
+                        <h2 className="text-3xl font-black whitespace-nowrap break-keep">{currentData.label} の資料一覧</h2>
                         <p className="text-indigo-100 max-w-xl text-lg font-medium leading-relaxed">
                             {currentData.description}
                         </p>
@@ -151,16 +153,6 @@ export default function StudentCoursesPage() {
                     ))}
                 </div>
 
-                {/* Empty State / Bottom Footer */}
-                <div className="pt-10 border-t border-slate-200 flex flex-col items-center justify-center text-center space-y-4 py-12">
-                    <div className="p-4 bg-slate-100 rounded-full text-slate-400">
-                        <BookOpen size={32} />
-                    </div>
-                    <div>
-                        <p className="text-lg font-bold text-slate-700">お探しの資料が見つかりませんか？</p>
-                        <p className="text-sm text-slate-500">追加のリクエストは担当講師または事務局までお知らせください。</p>
-                    </div>
-                </div>
 
             </div>
         </main>

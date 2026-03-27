@@ -7,6 +7,7 @@ import {
     CheckCircle2,
     RefreshCcw,
     Trophy,
+    Zap,
     ArrowRight,
     BrainCircuit,
     Flame,
@@ -460,40 +461,51 @@ export default function SentenceBuilderPage() {
                             return (
                                 <button
                                     key={i}
-                                    onClick={() => startStage(selectedLevel, selectedCategoryId, i)}
+                                    onClick={() => isAvailable && startStage(selectedLevel, selectedCategoryId, i)}
                                     className={cn("group relative block overflow-hidden rounded-3xl bg-slate-800/40 border border-slate-700/50 p-6 text-left transition-all hover:-translate-y-1 hover:bg-slate-800/80",
-                                        !isAvailable && "opacity-50 saturate-0 hover:-translate-y-0"
+                                        !isAvailable && "opacity-50 saturate-0 cursor-not-allowed hover:-translate-y-0"
                                     )}
                                 >
                                     <div className="relative z-10 flex flex-col h-full">
-                                        <div className="flex justify-between items-start mb-1 flex-wrap gap-2">
+                                        <div className="flex justify-between items-start mb-2">
                                             <div className="text-sm font-bold text-amber-500">STAGE {i + 1}</div>
-                                            <div className="flex gap-1">
-                                                {perfectClears > 0 && (
-                                                    <div className="text-[10px] bg-amber-500/20 text-amber-500 px-2 py-0.5 rounded-full font-bold border border-amber-500/30 flex items-center gap-1">
-                                                        <Trophy size={10} />
-                                                        {perfectClears}回 Perfect!
-                                                    </div>
-                                                )}
-                                            </div>
                                         </div>
                                         <h3 className="text-2xl font-black text-white mb-4">No. {startNum} - {endNum}</h3>
 
-                                        <div className="mt-auto flex justify-between items-end">
-                                            <div>
-                                                {highScore !== null && isAvailable && (
-                                                    <div className="flex items-center gap-1.5 opacity-80 group-hover:opacity-100 transition-opacity">
-                                                        <Trophy size={14} className="text-amber-400" />
-                                                        <span className="text-sm font-bold text-slate-300">
-                                                            High: <span className="text-amber-400">{highScore}</span>
+                                        {isAvailable ? (
+                                            <div className="grid grid-cols-2 gap-3 mb-6">
+                                                {/* Score Stats */}
+                                                <div className="bg-slate-900/40 rounded-xl p-2 border border-slate-500/10">
+                                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-tighter mb-1">Score</div>
+                                                    <div className="flex items-center gap-1.5">
+                                                        <Trophy size={11} className={highScore !== null ? "text-amber-400" : "text-slate-600"} />
+                                                        <span className="text-[11px] font-bold text-slate-300">
+                                                            {highScore !== null ? highScore : '-'}
                                                         </span>
                                                     </div>
-                                                )}
-                                                {!isAvailable && (
-                                                    <span className="text-xs font-bold text-slate-500 bg-slate-800 px-2 py-1 rounded">問題がありません</span>
-                                                )}
+                                                </div>
+
+                                                {/* Perfect Stats */}
+                                                <div className="bg-slate-900/40 rounded-xl p-2 border border-slate-500/10">
+                                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-tighter mb-1">Perfect</div>
+                                                    <div className="flex items-center gap-1.5">
+                                                        <Zap size={11} className={perfectClears > 0 ? "text-emerald-400" : "text-slate-600"} />
+                                                        <span className="text-[11px] font-bold text-slate-300">
+                                                            {perfectClears} <span className="text-[9px] text-slate-500">Hits</span>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="mb-6 flex">
+                                                <span className="text-xs font-bold text-slate-500 bg-slate-900/50 px-2 py-1 rounded">問題が準備されていません</span>
+                                            </div>
+                                        )}
+
+                                        <div className="mt-auto flex justify-between items-end">
+                                            <div>
                                                 {isAvailable && questionCountInChunk < QUESTIONS_PER_STAGE && (
-                                                    <span className="text-xs font-bold text-amber-500/80 bg-slate-800 px-2 py-1 rounded">全 {questionCountInChunk} 問</span>
+                                                    <span className="text-xs font-bold text-amber-500/80 bg-slate-900/40 px-2 py-1 rounded">全 {questionCountInChunk} 問</span>
                                                 )}
                                             </div>
                                             <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors">

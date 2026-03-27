@@ -117,7 +117,7 @@ export default function StudentDashboard() {
                                                     次の授業
                                                 </div>
                                                 <div>
-                                                    <h2 className="text-2xl md:text-5xl font-black leading-tight tracking-tight mb-4">
+                                                    <h2 className="text-2xl md:text-5xl font-black leading-tight tracking-tight mb-4 whitespace-nowrap">
                                                         {upcomingLesson.course}
                                                     </h2>
                                                     <div className="flex flex-col md:flex-row gap-3 text-slate-300">

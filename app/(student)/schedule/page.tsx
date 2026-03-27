@@ -208,7 +208,7 @@ export default function StudentSchedulePage() {
                                         </div>
                                         <div className="space-y-2">
                                             <h2 className="text-3xl font-black">{upcomingLesson.date} {upcomingLesson.time.split(' ')[0]} 開始</h2>
-                                            <p className="text-indigo-300 font-bold">{upcomingLesson.course}</p>
+                                            <p className="text-indigo-300 font-bold whitespace-nowrap">{upcomingLesson.course}</p>
                                         </div>
                                         <div className="flex flex-wrap gap-4 pt-2">
                                             <div className="flex items-center gap-2 text-sm text-slate-400 font-medium">
@@ -380,7 +380,7 @@ export default function StudentSchedulePage() {
                                                 <CheckCircle2 size={14} className="text-emerald-500" />
                                             )}
                                         </div>
-                                        <h4 className="font-bold text-slate-800 text-sm mb-1">{lesson.course}</h4>
+                                        <h4 className="font-bold text-slate-800 text-sm mb-1 whitespace-nowrap">{lesson.course}</h4>
                                         <p className="text-xs text-slate-500 font-medium flex items-center gap-1">
                                             <User size={12} />
                                             {lesson.teacherName} 先生
