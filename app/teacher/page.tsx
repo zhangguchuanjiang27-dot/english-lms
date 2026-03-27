@@ -18,7 +18,8 @@ import {
     AlertCircle,
     History,
     PencilLine,
-    Clock
+    Clock,
+    Plus
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -28,6 +29,20 @@ import { getTeacherDashboardData, updateLessonMeetingUrl, submitLessonKarte, get
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
+
+const parseExpressions = (data: any) => {
+    if (!data || (typeof data === 'string' && !data.trim())) {
+        return [{ expression: '', meaning: '' }];
+    }
+    if (Array.isArray(data)) return data.length > 0 ? data : [{ expression: '', meaning: '' }];
+    try {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    } catch (e) {
+        return [{ expression: String(data), meaning: '' }];
+    }
+    return [{ expression: '', meaning: '' }];
+};
 
 export default function TeacherDashboard() {
     const [teacher, setTeacher] = useState<Teacher | null>(null);
@@ -44,6 +59,7 @@ export default function TeacherDashboard() {
         title: '',
         feedback: '',
         nextScope: '',
+        importantExpressions: [{ expression: '', meaning: '' }] as { expression: string, meaning: string }[],
         homework: '',
         internalNote: '',
         grammar: 50,
@@ -79,6 +95,7 @@ export default function TeacherDashboard() {
                         title: currentRecord.title || lesson.course || '',
                         feedback: currentRecord.feedback || '',
                         nextScope: (currentRecord as any).nextScope || '',
+                        importantExpressions: parseExpressions((currentRecord as any).importantExpressions),
                         homework: currentRecord.homework || '',
                         internalNote: currentRecord.internalNote || '',
                         grammar: currentRecord.grammar || 50,
@@ -91,6 +108,7 @@ export default function TeacherDashboard() {
                         title: lesson.course || '',
                         feedback: '',
                         nextScope: '',
+                        importantExpressions: [{ expression: '', meaning: '' }],
                         homework: '',
                         internalNote: '',
                         grammar: 50,
@@ -104,6 +122,7 @@ export default function TeacherDashboard() {
                     title: lesson.course || '',
                     feedback: '',
                     nextScope: '',
+                    importantExpressions: [{ expression: '', meaning: '' }],
                     homework: '',
                     internalNote: '',
                     grammar: 50,
@@ -122,6 +141,7 @@ export default function TeacherDashboard() {
                 title: lesson.course || '',
                 feedback: '',
                 nextScope: '',
+                importantExpressions: [{ expression: '', meaning: '' }],
                 homework: '',
                 internalNote: '',
                 grammar: 50,
@@ -138,6 +158,9 @@ export default function TeacherDashboard() {
         if (!selectedLesson || !teacher) return;
 
         try {
+            const validExpressions = assessmentData.importantExpressions.filter(e => e.expression.trim() || e.meaning.trim());
+            const expressionsString = validExpressions.length > 0 ? JSON.stringify(validExpressions) : '';
+
             const result = await submitLessonKarte({
                 lessonId: selectedLesson.id,
                 studentId: selectedLesson.studentId,
@@ -146,6 +169,7 @@ export default function TeacherDashboard() {
                 title: assessmentData.title || selectedLesson.course,
                 feedback: assessmentData.feedback,
                 nextScope: assessmentData.nextScope,
+                importantExpressions: expressionsString,
                 homework: assessmentData.homework,
                 internalNote: assessmentData.internalNote,
                 grammar: assessmentData.grammar,
@@ -463,6 +487,69 @@ export default function TeacherDashboard() {
 
                                 <div className="space-y-3">
                                     <h4 className="text-sm font-black text-slate-800 tracking-tight flex items-center gap-2">
+                                        <Star className="text-yellow-500" size={16} />
+                                        本日の重要表現・単語
+                                    </h4>
+                                    <p className="text-[11px] text-slate-500 font-medium">生徒が復習しやすいように、今日学んだ重要なフレーズや単語を記入してください。（生徒に公開されます）</p>
+                                    <div className="space-y-2 mt-2">
+                                        {assessmentData.importantExpressions.map((item, index) => (
+                                            <div key={index} className="flex gap-2 items-start">
+                                                <div className="flex-1">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="英語・フレーズ"
+                                                        className="w-full p-3 bg-yellow-50/30 border border-yellow-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-yellow-500/20 focus:border-yellow-500 font-bold"
+                                                        value={item.expression}
+                                                        onChange={(e) => {
+                                                            const newExp = [...assessmentData.importantExpressions];
+                                                            newExp[index].expression = e.target.value;
+                                                            setAssessmentData({ ...assessmentData, importantExpressions: newExp });
+                                                        }}
+                                                    />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="和訳・意味"
+                                                        className="w-full p-3 bg-yellow-50/30 border border-yellow-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-yellow-500/20 focus:border-yellow-500 font-medium"
+                                                        value={item.meaning}
+                                                        onChange={(e) => {
+                                                            const newExp = [...assessmentData.importantExpressions];
+                                                            newExp[index].meaning = e.target.value;
+                                                            setAssessmentData({ ...assessmentData, importantExpressions: newExp });
+                                                        }}
+                                                    />
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const newExp = assessmentData.importantExpressions.filter((_, i) => i !== index);
+                                                        if (newExp.length === 0) newExp.push({ expression: '', meaning: '' });
+                                                        setAssessmentData({ ...assessmentData, importantExpressions: newExp });
+                                                    }}
+                                                    className="p-3 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-colors shrink-0"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setAssessmentData({
+                                                    ...assessmentData,
+                                                    importantExpressions: [...assessmentData.importantExpressions, { expression: '', meaning: '' }]
+                                                });
+                                            }}
+                                            className="text-xs font-bold text-yellow-600 hover:text-yellow-700 hover:bg-yellow-100 flex items-center gap-1 px-3 py-2 rounded-lg transition-colors mt-2"
+                                        >
+                                            <Plus size={14} /> 単語・表現を追加する
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <h4 className="text-sm font-black text-slate-800 tracking-tight flex items-center gap-2">
                                         <PencilLine className="text-amber-500" size={16} />
                                         次回までの宿題
                                     </h4>
@@ -548,6 +635,27 @@ export default function TeacherDashboard() {
                                                 {lastRecord?.feedback}
                                             </p>
                                         </div>
+
+                                        {(lastRecord as any)?.importantExpressions && (
+                                            <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200 relative mt-4">
+                                                <div className="absolute -top-3 left-4 bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded text-[10px] font-black uppercase flex items-center gap-1">
+                                                    <Star size={10} /> Expressions
+                                                </div>
+                                                <div className="mt-3 space-y-2">
+                                                    {(() => {
+                                                        const exps = parseExpressions((lastRecord as any).importantExpressions);
+                                                        return exps.map((exp: any, i: number) => (
+                                                            exp.expression ? (
+                                                                <div key={i} className="text-xs text-yellow-900 flex flex-col gap-0.5 border-b border-yellow-200/50 pb-2 last:border-0 last:pb-0">
+                                                                    <span className="font-bold">{exp.expression}</span>
+                                                                    {exp.meaning && <span className="opacity-80 leading-relaxed">{exp.meaning}</span>}
+                                                                </div>
+                                                            ) : null
+                                                        ));
+                                                    })()}
+                                                </div>
+                                            </div>
+                                        )}
 
                                         {(lastRecord as any)?.nextScope && (
                                             <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 relative mt-4">

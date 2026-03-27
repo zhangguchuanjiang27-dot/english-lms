@@ -20,9 +20,7 @@ export async function getStudentDashboardData(studentId: string) {
         const schedules = await prisma.lessonSchedule.findMany({
             where: {
                 studentId,
-                status: {
-                    in: ['Scheduled', 'Completed']
-                },
+                status: 'Scheduled',
                 date: {
                     gte: todayStr
                 }
@@ -30,7 +28,8 @@ export async function getStudentDashboardData(studentId: string) {
             orderBy: [
                 { date: 'asc' },
                 { time: 'asc' }
-            ]
+            ],
+            take: 5
         });
 
         const records = await prisma.lessonRecord.findMany({

@@ -53,6 +53,15 @@ export default function StudentDashboard() {
             const [hours, minutes] = upcomingLesson.time.split(':').map(Number);
             const lessonDate = new Date(year, month - 1, day, hours, minutes, 0, 0);
 
+            // Calculate end time
+            const durationMinutes = parseInt(upcomingLesson.duration) || 50;
+            const lessonEndDate = new Date(lessonDate.getTime() + durationMinutes * 60000);
+
+            if (now > lessonEndDate) {
+                setTimeLeft('終了');
+                return;
+            }
+
             const diff = lessonDate.getTime() - now.getTime();
             if (diff <= 0) {
                 setTimeLeft('レッスン開始時間です');
@@ -99,7 +108,7 @@ export default function StudentDashboard() {
                     <section className="group">
                         <div className="relative overflow-hidden rounded-[2.5rem] bg-slate-900 text-white p-8 md:p-12 shadow-2xl transition-all duration-500 hover:shadow-indigo-500/10 active:scale-[0.99]">
                             <div className="relative z-10 flex flex-col justify-between h-full min-h-[220px]">
-                                {upcomingLesson ? (
+                                {upcomingLesson && timeLeft !== '終了' ? (
                                     <>
                                         <div className="flex flex-col md:flex-row justify-between items-start gap-6">
                                             <div className="space-y-6">
@@ -167,13 +176,13 @@ export default function StudentDashboard() {
                                             No Upcoming Lessons
                                         </div>
                                         <h2 className="text-3xl md:text-5xl font-black leading-tight tracking-tight">
-                                            次回のレッスンを<br />予約しましょう
+                                            今後の予約は<br />ありません
                                         </h2>
                                         <p className="text-slate-400 max-w-md font-medium">
-                                            学習のリズムを維持するために、定期的な受講をおすすめしています。
+                                            レッスンの登録については、担当講師までお問い合わせください。
                                         </p>
                                         <Link href="/schedule" className="inline-flex justify-center w-full md:w-auto bg-white text-slate-900 px-8 py-3.5 rounded-2xl font-black text-sm shadow-xl hover:bg-slate-50 transition-all items-center gap-2">
-                                            空き状況を確認
+                                            全スケジュールを確認
                                             <ChevronRight size={18} />
                                         </Link>
                                     </div>
@@ -237,7 +246,7 @@ export default function StudentDashboard() {
                                 ) : (
                                     <div className="h-full flex flex-col items-center justify-center py-10 text-center opacity-60 bg-slate-50 border border-dashed border-slate-200 rounded-3xl">
                                         <FileText size={40} className="text-slate-300 mb-3" />
-                                        <p className="text-sm font-bold text-slate-500">まだカルテの記録がありません</p>
+                                        <h2 className="text-sm font-bold text-slate-500">まだカルテの記録がありません</h2>
                                         <p className="text-xs text-slate-400 mt-1">レッスンを受講するとここにフィードバックが表示されます</p>
                                     </div>
                                 )}

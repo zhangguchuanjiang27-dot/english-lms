@@ -99,6 +99,7 @@ export async function submitLessonKarte(data: {
     title: string;
     feedback: string;
     nextScope?: string;
+    importantExpressions?: string;
     homework: string;
     internalNote: string;
     grammar?: number;
@@ -120,6 +121,7 @@ export async function submitLessonKarte(data: {
             title: data.title,
             feedback: data.feedback,
             nextScope: data.nextScope || null,
+            importantExpressions: data.importantExpressions || null,
             homework: data.homework,
             internalNote: data.internalNote,
             grammar: data.grammar ?? 50,

@@ -8,7 +8,8 @@ import {
     PencilLine,
     BookOpen,
     Check,
-    Zap
+    Zap,
+    Star
 } from 'lucide-react';
 import { LessonRecord } from '@/lib/data-store';
 import { useEffect, useState } from 'react';
@@ -20,6 +21,20 @@ import { twMerge } from 'tailwind-merge';
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
+
+const parseExpressions = (data: any) => {
+    if (!data || (typeof data === 'string' && !data.trim())) {
+        return [];
+    }
+    if (Array.isArray(data)) return data;
+    try {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed)) return parsed;
+    } catch (e) {
+        return [{ expression: String(data), meaning: '' }];
+    }
+    return [];
+};
 
 function CopyButton({ text }: { text: string }) {
     const [copied, setCopied] = useState(false);
@@ -138,16 +153,66 @@ export default function StudentKartePage() {
                                                 </div>
                                             </div>
 
-                                            <div>
-                                                <h3 className="text-base md:text-xl font-black text-slate-900 mb-3 flex items-start gap-2">
-                                                    <BookOpen size={18} className="text-emerald-500 shrink-0 mt-0.5" />
+                                            <div className="space-y-4">
+                                                <h3 className="text-base md:text-xl font-black text-slate-900 flex items-start gap-2">
                                                     <span className="leading-tight">{item.title}</span>
                                                 </h3>
-                                                <div className="p-4 rounded-2xl bg-white border border-slate-100 shadow-[inset_0_2px_4px_rgba(0,0,0,0.02)]">
-                                                    <p className="text-sm text-slate-600 leading-relaxed font-medium whitespace-pre-wrap break-words">
-                                                        {item.feedback}
-                                                    </p>
+                                                
+                                                <div className="space-y-3 mt-2">
+                                                    <div className="flex items-center gap-2 text-emerald-700">
+                                                        <div className="p-1.5 bg-emerald-100 rounded-lg shadow-sm shadow-emerald-200/50">
+                                                            <BookOpen size={14} className="text-emerald-600" />
+                                                        </div>
+                                                        <h4 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-emerald-800">本日の授業内容</h4>
+                                                    </div>
+                                                    <div className="p-5 rounded-2xl bg-white border border-emerald-100/60 shadow-sm relative overflow-hidden">
+                                                        <div className="absolute top-0 right-0 w-16 h-16 bg-emerald-50 rounded-bl-full -mr-4 -mt-4 opacity-50 pointer-events-none"></div>
+                                                        <p className="text-sm text-slate-700 leading-relaxed font-bold whitespace-pre-wrap break-words relative z-10">
+                                                            {item.feedback}
+                                                        </p>
+                                                    </div>
                                                 </div>
+
+                                                {(item as any).importantExpressions && (
+                                                    <div className="space-y-3 mt-4">
+                                                        <div className="flex items-center justify-between">
+                                                            <div className="flex items-center gap-2 text-yellow-700">
+                                                                <div className="p-1.5 bg-yellow-100 rounded-lg shadow-sm shadow-yellow-200/50">
+                                                                    <Star size={14} className="text-yellow-600" />
+                                                                </div>
+                                                                <h4 className="text-[10px] md:text-xs font-black uppercase tracking-widest text-yellow-800">💡 本日の重要表現・単語</h4>
+                                                            </div>
+                                                            {(() => {
+                                                                const expressions = parseExpressions((item as any).importantExpressions);
+                                                                if (expressions.length === 0) return null;
+                                                                const copyText = expressions
+                                                                    .filter((e: any) => e.expression)
+                                                                    .map((e: any) => e.expression)
+                                                                    .join('\n');
+                                                                return <CopyButton text={copyText} />;
+                                                            })()}
+                                                        </div>
+                                                        <div className="p-5 rounded-2xl bg-gradient-to-br from-[#fffbeb] to-[#fef3c7] border border-yellow-200 shadow-sm relative overflow-hidden group-hover:border-yellow-300 transition-colors">
+                                                            <div className="absolute top-0 right-0 w-24 h-24 bg-yellow-200/30 rounded-bl-full -mr-8 -mt-8 opacity-50 pointer-events-none"></div>
+                                                            <div className="space-y-3 relative z-10">
+                                                                {parseExpressions((item as any).importantExpressions).map((exp: any, i: number) => (
+                                                                    exp.expression ? (
+                                                                        <div key={i} className="flex flex-col gap-1 border-b border-yellow-300/30 pb-3 last:border-0 last:pb-0">
+                                                                            <span className="text-sm md:text-base font-black text-yellow-950 tracking-wide font-mono">
+                                                                                {exp.expression}
+                                                                            </span>
+                                                                            {exp.meaning && (
+                                                                                <span className="text-xs md:text-sm font-bold text-yellow-800/80 leading-relaxed">
+                                                                                    {exp.meaning}
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                    ) : null
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
 

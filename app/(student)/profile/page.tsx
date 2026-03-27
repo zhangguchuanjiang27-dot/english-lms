@@ -18,19 +18,62 @@ export default function StudentProfilePage() {
     const [formData, setFormData] = useState<Partial<Student>>({});
     const [showPassword, setShowPassword] = useState(false);
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'avatar' | 'cover') => {
+    const compressImage = (file: File, maxWidth: number, maxHeight: number): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target?.result as string;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height *= maxWidth / width;
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxHeight) {
+                            width *= maxHeight / height;
+                            height = maxHeight;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx?.drawImage(img, 0, 0, width, height);
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
+                    resolve(compressedBase64);
+                };
+                img.onerror = (err) => reject(err);
+            };
+            reader.onerror = (err) => reject(err);
+        });
+    };
+
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>, type: 'avatar' | 'cover') => {
         const file = e.target.files?.[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const base64String = reader.result as string;
+            try {
+                // Resize based on type. Avatar can be smaller.
+                const maxWidth = type === 'avatar' ? 400 : 1200;
+                const maxHeight = type === 'avatar' ? 400 : 800;
+                
+                const base64String = await compressImage(file, maxWidth, maxHeight);
+                
                 if (type === 'avatar') {
                     setFormData(prev => ({ ...prev, avatarUrl: base64String }));
                 } else {
                     setFormData(prev => ({ ...prev, coverUrl: base64String }));
                 }
-            };
-            reader.readAsDataURL(file);
+            } catch (error) {
+                console.error('Failed to process image:', error);
+                alert('画像の処理に失敗しました。別の画像をお試しください。');
+            }
         }
     };
 

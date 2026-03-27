@@ -22,6 +22,7 @@ import {
 import { useState, useEffect } from 'react';
 import { LessonSchedule, LessonRecord } from '@/lib/data-store';
 import { getStudentSchedule } from '@/lib/actions/student';
+import { motion, AnimatePresence } from 'framer-motion';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -75,9 +76,9 @@ export default function StudentSchedulePage() {
             timeZone: 'Asia/Tokyo'
         }).format(new Date()).replace(/\//g, '-');
 
-        // Find the next scheduled/completed lesson from today onwards
+        // Find the next scheduled lesson from today onwards
         const next = [...schedule]
-            .filter(s => ['Scheduled', 'Completed'].includes(s.status) && s.date >= todayStr)
+            .filter(s => s.status === 'Scheduled' && s.date >= todayStr)
             .sort((a, b) => {
                 if (a.date !== b.date) return a.date.localeCompare(b.date);
                 return a.time.localeCompare(b.time);
@@ -94,6 +95,15 @@ export default function StudentSchedulePage() {
             const [year, month, day] = upcomingLesson.date.split('-').map(Number);
             const [hours, minutes] = upcomingLesson.time.split(':').map(Number);
             const lessonDate = new Date(year, month - 1, day, hours, minutes, 0, 0);
+
+            // Calculate end time
+            const durationMinutes = parseInt(upcomingLesson.duration) || 50;
+            const lessonEndDate = new Date(lessonDate.getTime() + durationMinutes * 60000);
+
+            if (now > lessonEndDate) {
+                setTimeLeft('終了');
+                return;
+            }
 
             const diff = lessonDate.getTime() - now.getTime();
             if (diff <= 0) {
@@ -189,7 +199,7 @@ export default function StudentSchedulePage() {
                 {/* Next Lesson Focus */}
                 <div className="bg-slate-900 border border-slate-800 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 text-white relative overflow-hidden shadow-2xl">
                     <div className="relative z-10">
-                        {upcomingLesson ? (
+                        {upcomingLesson && timeLeft !== '終了' ? (
                             <>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                                     <div className="space-y-6">
@@ -246,7 +256,7 @@ export default function StudentSchedulePage() {
                         ) : (
                             <div className="text-center py-8">
                                 <h2 className="text-2xl font-black mb-2">今後の予約はありません</h2>
-                                <p className="text-slate-400">定期的に受講して学習を継続しましょう！</p>
+                                <p className="text-slate-400">レッスンの登録については、担当講師までお問い合わせください。</p>
                             </div>
                         )}
                     </div>
@@ -321,7 +331,7 @@ export default function StudentSchedulePage() {
                                                             </div>
                                                         ))}
                                                     </div>
-                                                    
+
                                                     {/* Mobile View: Dots Only */}
                                                     <div className="flex md:hidden flex-wrap items-center justify-center gap-1">
                                                         {cell.schedules?.map((req, i) => (
@@ -389,122 +399,172 @@ export default function StudentSchedulePage() {
 
 
                 {/* Karte Modal (Lesson Detail) */}
-                {isKarteModalOpen && selectedLesson && (
-                    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-2 md:p-4 animate-in fade-in duration-300">
-                        <div className="bg-white rounded-[1.5rem] md:rounded-[2.5rem] w-full max-w-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
-                            {/* Modal Header */}
-                            <div className="px-6 py-6 md:px-10 md:py-8 border-b border-slate-100 flex justify-between items-start md:items-center bg-slate-50/30 shrink-0 gap-4">
-                                <div className="flex-1">
-                                    <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3 mb-1">
-                                        <h2 className="text-xl md:text-2xl font-black text-slate-900 leading-tight">授業詳細・カルテ</h2>
-                                        <span className={cn(
-                                            "inline-flex self-start px-2 py-1 md:px-3 md:py-1 rounded-full text-[10px] font-black uppercase tracking-widest",
-                                            selectedLesson.status === 'Completed' ? "bg-emerald-100 text-emerald-600" : "bg-blue-100 text-blue-600"
-                                        )}>
-                                            {selectedLesson.status === 'Completed' ? '完了' : '予約済み'}
-                                        </span>
+                <AnimatePresence>
+                    {isKarteModalOpen && selectedLesson && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                            <motion.div 
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                onClick={() => setIsKarteModalOpen(false)}
+                                className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm"
+                            />
+                            
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                                className="bg-white rounded-[2.5rem] w-full max-w-2xl shadow-[0_40px_80px_-16px_rgba(15,23,42,0.15)] overflow-hidden relative z-10 flex flex-col max-h-[90vh] border border-white"
+                            >
+                                {/* Modal Header */}
+                                <div className="px-8 py-8 md:px-12 md:py-10 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 shrink-0">
+                                    <div>
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <h2 className="text-2xl font-black text-slate-900 tracking-tight">授業詳細・カルテ</h2>
+                                            <span className={cn(
+                                                "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm",
+                                                selectedLesson.status === 'Completed' ? "bg-emerald-500 text-white" : "bg-indigo-500 text-white"
+                                            )}>
+                                                {selectedLesson.status === 'Completed' ? '完了' : '予約済み'}
+                                            </span>
+                                        </div>
+                                        <p className="text-xs font-bold text-slate-400 flex items-center gap-2">
+                                            <CalendarIcon size={14} className="text-slate-300" />
+                                            {selectedLesson.date}
+                                            <span className="w-1 h-1 rounded-full bg-slate-300" />
+                                            <Clock size={14} className="text-slate-300" />
+                                            {selectedLesson.time} ({selectedLesson.duration})
+                                        </p>
                                     </div>
-                                    <p className="text-[10px] md:text-xs font-bold text-slate-500 mt-1">{selectedLesson.date} • {selectedLesson.time} ({selectedLesson.duration})</p>
+                                    <motion.button
+                                        whileHover={{ scale: 1.1, rotate: 90 }}
+                                        whileTap={{ scale: 0.9 }}
+                                        onClick={() => setIsKarteModalOpen(false)}
+                                        className="p-3 bg-white hover:bg-slate-50 border border-slate-100 rounded-full text-slate-400 hover:text-slate-600 shadow-sm transition-all shadow-slate-200/50"
+                                    >
+                                        <X size={20} />
+                                    </motion.button>
                                 </div>
-                                <button
-                                    onClick={() => setIsKarteModalOpen(false)}
-                                    className="p-2 md:p-3 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-900 transition-all shrink-0"
-                                >
-                                    <X size={20} className="md:w-6 md:h-6" />
-                                </button>
-                            </div>
-                            {/* Modal Body */}
-                            <div className="p-6 md:p-10 overflow-y-auto flex-1">
-                                <div className="space-y-6 md:space-y-8">
-                                    {/* Course Info */}
-                                    <div className="flex items-start gap-4 md:gap-5">
-                                        <div className="bg-indigo-50 p-3 md:p-4 rounded-2xl shrink-0 border border-indigo-100/50">
-                                            <BookOpen size={20} className="text-indigo-600 md:w-6 md:h-6" />
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">コース/教材</p>
-                                            <p className="text-base md:text-lg font-bold text-slate-800 leading-tight">{selectedLesson.course || '未設定'}</p>
-                                        </div>
+
+                                {/* Modal Body */}
+                                <div className="p-8 md:p-12 overflow-y-auto flex-1 space-y-10 custom-scrollbar">
+                                    {/* Info Grid */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <ModalInfoCard 
+                                            icon={<BookOpen className="text-indigo-500" />}
+                                            label="コース / 教材"
+                                            value={selectedLesson.course || '未設定'}
+                                            bgColor="bg-indigo-50/50"
+                                            borderColor="border-indigo-100/50"
+                                        />
+                                        <ModalInfoCard 
+                                            icon={<User className="text-emerald-500" />}
+                                            label="担当講師"
+                                            value={`${selectedLesson.teacherName} 先生`}
+                                            bgColor="bg-emerald-50/50"
+                                            borderColor="border-emerald-100/50"
+                                        />
                                     </div>
 
-                                    {/* Teacher Info */}
-                                    <div className="flex items-start gap-4 md:gap-5">
-                                        <div className="bg-sky-50 p-3 md:p-4 rounded-2xl shrink-0 border border-sky-100/50">
-                                            <User size={20} className="text-sky-600 md:w-6 md:h-6" />
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">担当講師</p>
-                                            <p className="text-base md:text-lg font-bold text-slate-800 leading-tight">{selectedLesson.teacherName} 先生</p>
-                                        </div>
-                                    </div>
-
-                                    {/* Memo / URL */}
-                                    <div className="flex items-start gap-4 md:gap-5">
-                                        <div className="bg-emerald-50 p-3 md:p-4 rounded-2xl shrink-0 border border-emerald-100/50">
-                                            <LinkIcon size={20} className="text-emerald-600 md:w-6 md:h-6" />
+                                    {/* URL Section */}
+                                    <div className="bg-slate-50/80 rounded-3xl p-6 border border-slate-100 flex items-center gap-5">
+                                        <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-center shrink-0">
+                                            <LinkIcon size={20} className="text-slate-400" />
                                         </div>
                                         <div className="flex-1 overflow-hidden">
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">参加URL</p>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">教室参加URL</p>
                                             {selectedLesson.meetingUrl ? (
-                                                <a href={selectedLesson.meetingUrl} target="_blank" rel="noopener noreferrer" className="text-sm md:text-base font-bold text-indigo-600 hover:text-indigo-800 break-all">{selectedLesson.meetingUrl}</a>
+                                                <a 
+                                                    href={selectedLesson.meetingUrl} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer" 
+                                                    className="text-sm font-bold text-indigo-600 hover:text-indigo-800 hover:underline transition-all truncate block"
+                                                >
+                                                    {selectedLesson.meetingUrl}
+                                                </a>
                                             ) : (
-                                                <p className="text-xs md:text-sm font-bold text-slate-500">未設定です</p>
+                                                <p className="text-sm font-bold text-slate-400">URLはまだ設定されていません</p>
                                             )}
                                         </div>
                                     </div>
-                                </div>
 
-                                {selectedLesson.status === 'Completed' && karte ? (
-                                    <>
-                                        <div className="space-y-4">
-                                            <h3 className="text-sm font-black text-indigo-700 flex items-center gap-2">
-                                                <Star size={18} className="text-amber-500 fill-amber-500" />
-                                                次回までの宿題
-                                            </h3>
-                                            <div className="bg-indigo-50 border border-indigo-100 p-5 rounded-2xl text-slate-700 font-medium">
-                                                {karte.homework || '特にありません。'}
+                                    {/* Homework Section (Premium Design) */}
+                                    {selectedLesson.status === 'Completed' && karte ? (
+                                        <motion.div 
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className="space-y-4"
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <h3 className="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
+                                                    <Star size={16} className="text-amber-500 fill-amber-500" />
+                                                    次回までの宿題
+                                                </h3>
+                                                <div className="px-3 py-1 bg-amber-50 border border-amber-100 rounded-full text-[10px] font-black text-amber-600 uppercase">
+                                                    Homework
+                                                </div>
                                             </div>
-                                        </div>
-
-                                        {/* Feedback */}
-                                        <div className="space-y-4">
-                                            <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
-                                                <MessageSquare size={18} className="text-indigo-500" />
-                                                講師からのフィードバック
-                                            </h3>
-                                            <div className="bg-indigo-50/50 p-6 rounded-3xl border border-indigo-100">
-                                                <p className="text-slate-800 font-medium leading-relaxed whitespace-pre-wrap">
-                                                    {karte.feedback}
+                                            <div className="relative group">
+                                                <div className="absolute inset-0 bg-amber-500/5 rounded-[2rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                <div className="relative bg-[#FFFDF5] border-2 border-amber-100 p-8 rounded-[2.5rem] shadow-sm overflow-hidden min-h-[120px]">
+                                                    <div className="absolute top-0 right-0 w-24 h-24 bg-amber-100/30 rounded-bl-full -mr-8 -mt-8 opacity-40 pointer-events-none" />
+                                                    <p className="text-slate-800 font-bold leading-relaxed whitespace-pre-wrap relative z-10">
+                                                        {karte.homework || '特に指定はありません。頑張りましょう！'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    ) : (
+                                        <div className="py-16 flex flex-col items-center justify-center text-center space-y-4 bg-slate-50/50 rounded-[2.5rem] border-2 border-dashed border-slate-100">
+                                            <div className="w-16 h-16 rounded-full bg-white shadow-sm border border-slate-100 flex items-center justify-center text-slate-300">
+                                                <Clock size={32} />
+                                            </div>
+                                            <div>
+                                                <p className="text-lg font-black text-slate-800">カルテはまだありません</p>
+                                                <p className="text-xs text-slate-400 font-bold max-w-[280px] mx-auto mt-2 leading-relaxed">
+                                                    授業終了後に講師がカルテ（宿題）を記入すると、ここに表示されます。
                                                 </p>
                                             </div>
                                         </div>
-                                    </>
-                                ) : (
-                                    <div className="py-20 flex flex-col items-center justify-center text-center space-y-4 bg-slate-50 rounded-[2rem] border border-dashed border-slate-200">
-                                        <div className="w-16 h-16 rounded-full bg-slate-200 flex items-center justify-center text-slate-400">
-                                            <Clock size={32} />
-                                        </div>
-                                        <div>
-                                            <p className="text-lg font-black text-slate-800">カルテはまだありません</p>
-                                            <p className="text-sm text-slate-500 font-bold max-w-xs mx-auto mt-2">授業終了後に講師がカルテを記入すると、ここに表示されます。</p>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
+                                    )}
+                                </div>
 
-                            {/* Modal Footer */}
-                            <div className="px-10 py-8 border-t border-slate-100 bg-white shrink-0 flex gap-4">
-                                <button
-                                    onClick={() => setIsKarteModalOpen(false)}
-                                    className="flex-1 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-black shadow-xl shadow-slate-900/20 transition-all active:scale-95"
-                                >
-                                    閉じる
-                                </button>
-                            </div>
+                                {/* Modal Footer */}
+                                <div className="px-10 py-8 border-t border-slate-50 bg-white/50 backdrop-blur-md shrink-0">
+                                    <motion.button
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        onClick={() => setIsKarteModalOpen(false)}
+                                        className="w-full py-4 bg-slate-900 border border-slate-800 text-white rounded-2xl font-black shadow-xl shadow-slate-900/10 hover:shadow-slate-900/20 transition-all flex items-center justify-center gap-2"
+                                    >
+                                        閉じる
+                                    </motion.button>
+                                </div>
+                            </motion.div>
                         </div>
-                    </div>
-                )}
+                    )}
+                </AnimatePresence>
             </div>
         </main >
+    );
+}
+
+function ModalInfoCard({ icon, label, value, bgColor, borderColor }: {
+    icon: React.ReactNode,
+    label: string,
+    value: string,
+    bgColor: string,
+    borderColor: string
+}) {
+    return (
+        <div className={cn("p-6 rounded-[2rem] border flex flex-col gap-3 transition-all", bgColor, borderColor)}>
+            <div className="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center border border-white">
+                {icon}
+            </div>
+            <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">{label}</p>
+                <p className="text-sm md:text-base font-black text-slate-900 leading-tight">{value}</p>
+            </div>
+        </div>
     );
 }

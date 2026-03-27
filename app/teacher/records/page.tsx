@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search as SearchIcon, User, Calendar, BookOpen, Clock, ChevronDown, ChevronUp, History, TrendingUp, AlertCircle, FileText, MessageSquare } from 'lucide-react';
+import { Search as SearchIcon, User, Calendar, BookOpen, Clock, ChevronDown, ChevronUp, History, TrendingUp, AlertCircle, FileText, MessageSquare, Star } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { searchAllStudents, getAllStudentRecords } from '@/lib/actions/teacher';
@@ -10,6 +10,20 @@ import { Student, LessonRecord } from '@prisma/client';
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
 }
+
+const parseExpressions = (data: any) => {
+    if (!data || (typeof data === 'string' && !data.trim())) {
+        return [];
+    }
+    if (Array.isArray(data)) return data;
+    try {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed)) return parsed;
+    } catch (e) {
+        return [{ expression: String(data), meaning: '' }];
+    }
+    return [];
+};
 
 export default function StudentRecordsSearchPage() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -227,6 +241,27 @@ export default function StudentRecordsSearchPage() {
                                                                     <BookOpen size={12} /> Next Scope
                                                                 </div>
                                                                 <p className="text-sm text-blue-900 leading-relaxed font-bold whitespace-pre-wrap">{(record as any).nextScope}</p>
+                                                            </div>
+                                                        )}
+
+                                                        {(record as any).importantExpressions && (
+                                                            <div className="bg-yellow-50 p-6 rounded-2xl border border-yellow-200 relative pt-7">
+                                                                <div className="absolute -top-3 left-6 bg-yellow-200 text-yellow-800 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 shadow-sm">
+                                                                    <Star size={12} /> 本日の重要表現・単語
+                                                                </div>
+                                                                <div className="mt-4 space-y-2">
+                                                                    {(() => {
+                                                                        const exps = parseExpressions((record as any).importantExpressions);
+                                                                        return exps.map((exp: any, i: number) => (
+                                                                            exp.expression ? (
+                                                                                <div key={i} className="text-sm flex flex-col gap-0.5 border-b border-yellow-200/50 pb-2 last:border-0 last:pb-0">
+                                                                                    <span className="font-bold text-yellow-900">{exp.expression}</span>
+                                                                                    {exp.meaning && <span className="opacity-80 text-yellow-800 leading-relaxed text-xs">{exp.meaning}</span>}
+                                                                                </div>
+                                                                            ) : null
+                                                                        ));
+                                                                    })()}
+                                                                </div>
                                                             </div>
                                                         )}
 

@@ -29,7 +29,7 @@ async function main() {
         create: {
             id: 'admin',
             name: '管理者',
-            email: 'admin@luminous.edu',
+            email: 'admin@voca-academy.jp',
             loginId: 'admin',
             password: 'password123',
             role: 'Admin',
@@ -44,7 +44,7 @@ async function main() {
         create: {
             id: 'sarah',
             name: 'Sarah Wilson',
-            email: 'sarah@luminous.edu',
+            email: 'sarah@voca-academy.jp',
             loginId: 'sarah',
             password: 'password123',
             role: 'Teacher',

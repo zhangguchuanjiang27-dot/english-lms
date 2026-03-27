@@ -126,12 +126,12 @@ const DEFAULT_RECORDS: LessonRecord[] = [];
 const DEFAULT_MESSAGES: Message[] = [];
 const DEFAULT_SCHEDULE: LessonSchedule[] = [];
 const DEFAULT_TEACHERS: Teacher[] = [
-    { id: 'admin', name: '管理者', email: 'admin@luminous.edu', status: 'Active', role: 'Admin', type: 'Bilingual', joinDate: '2024-01-01', rating: 5.0, loginId: 'admin', password: 'password123' },
-    { id: 'sarah', name: 'Sarah Wilson', email: 'sarah@luminous.edu', status: 'Active', role: 'Teacher', type: 'Native', joinDate: '2024-02-01', rating: 4.9, loginId: 'sarah', password: 'password123' },
-    { id: 'takumi', name: '長谷川匠', email: 'takumi@example.com', status: 'Active', role: 'Teacher', type: 'Bilingual', joinDate: '2024-03-01', rating: 5.0, loginId: 'takumi', password: 'password123' }
+    { id: 'admin', name: '管理者', email: 'admin@voca-academy.jp', status: 'Active', role: 'Admin', type: 'Bilingual', joinDate: '2024-01-01', rating: 5.0, loginId: 'admin', password: 'password123' },
+    { id: 'sarah', name: 'Sarah Wilson', email: 'sarah@voca-academy.jp', status: 'Active', role: 'Teacher', type: 'Native', joinDate: '2024-02-01', rating: 4.9, loginId: 'sarah', password: 'password123' },
+    { id: 'takumi', name: '長谷川匠', email: 'takumi@voca-academy.jp', status: 'Active', role: 'Teacher', type: 'Bilingual', joinDate: '2024-03-01', rating: 5.0, loginId: 'takumi', password: 'password123' }
 ];
 const DEFAULT_SCHOOL_SETTINGS: SchoolSettings = {
-    schoolName: 'Luminous English Academy',
+    schoolName: 'Voca Online English Academy',
     timezone: 'Asia/Tokyo',
     defaultCourseDuration: 50,
     allowStudentCancellation: true,
@@ -166,7 +166,7 @@ function runDemoMigration() {
         items = items.filter((i: any) => !demoTeacherIds.includes(i.id));
         // Ensure the admin account exists if no teachers are left or just missing
         if (!items.find((t: any) => t.id === 'admin')) {
-            items.push({ id: 'admin', name: '管理者', email: 'admin@luminous.edu', status: 'Active', type: 'Bilingual', role: 'Admin', joinDate: '2024-01-01', rating: 5.0, loginId: 'admin', password: 'password123' });
+            items.push({ id: 'admin', name: '管理者', email: 'admin@voca-academy.jp', status: 'Active', type: 'Bilingual', role: 'Admin', joinDate: '2024-01-01', rating: 5.0, loginId: 'admin', password: 'password123' });
         }
         localStorage.setItem('lms_teachers', JSON.stringify(items));
     }

@@ -86,9 +86,10 @@ model LessonRecord {
   date          String
   teacher       String
   title         String
-  feedback      String
-  nextScope     String?
-  homework      String?
+  feedback             String
+  nextScope            String?
+  importantExpressions String?
+  homework             String?
   internalNote  String?
   grammar       Int     @default(50)
   vocab         Int     @default(50)
@@ -161,10 +162,11 @@ model VocabProgress {
   completions   Int      @default(0)
   perfectClears Int      @default(0)
   highestScore  Int      @default(0)
+  mode          String   @default("flash")
   lastPlayedAt  DateTime @default(now())
   student       Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
-  @@unique([studentId, level, stageIndex])
+  @@unique([studentId, level, stageIndex, mode])
 }
 
 model GrammarProgress {

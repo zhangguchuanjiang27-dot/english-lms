@@ -8,8 +8,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Luminous | Online English Academy",
-  description: "Premium online English learning platform used by top students.",
+  title: "Voca | Online English Academy",
+  description: "Premium online English learning platform specializing in vocabulary-first mastery.",
   viewport: "width=device-width, initial-scale=1, maximum-scale=1",
 };
 

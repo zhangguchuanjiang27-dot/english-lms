@@ -48,11 +48,20 @@ export default function FlashDashPage() {
     const [preGameStats, setPreGameStats] = useState<any>(null);
     const [postGameStats, setPostGameStats] = useState<any>(null);
 
+    const [isListeningMode, setIsListeningMode] = useState(false);
+
     type Question = { word: string; options: string[]; answer: number; };
     const [gameQuestions, setGameQuestions] = useState<Question[]>([]);
     const [wrongAnswers, setWrongAnswers] = useState<Question[]>([]);
 
     const question = gameQuestions[currentIndex];
+
+    // Audio on start for listening mode
+    useEffect(() => {
+        if (isPlaying && isListeningMode && !showResult && question) {
+            playWord(question.word);
+        }
+    }, [currentIndex, isPlaying, isListeningMode, showResult, question]);
 
     // Load completions from DB on mount
     useEffect(() => {
@@ -76,7 +85,7 @@ export default function FlashDashPage() {
                     const highScores: Record<string, number> = {};
 
                     data.forEach((item: any) => {
-                        const key = `${item.level}_${item.stageIndex}`;
+                        const key = `${item.level}_${item.stageIndex}_${item.mode || 'flash'}`;
                         completions[key] = item.completions;
                         perfectClears[key] = item.perfectClears || 0;
                         highScores[key] = item.highestScore;
@@ -112,6 +121,16 @@ export default function FlashDashPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentIndex, isGameOver, showResult, isPlaying, gameQuestions.length]);
 
+    const playWord = (text: string) => {
+        if (!window.speechSynthesis) return;
+        // Cancel any ongoing speech
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 1.0;
+        window.speechSynthesis.speak(utterance);
+    };
+
     const handleAnswer = (optionIndex: number) => {
         if (showResult || isGameOver || !question) return;
 
@@ -127,6 +146,9 @@ export default function FlashDashPage() {
             setCombo(0);
             setWrongAnswers(prev => [...prev, question]);
         }
+
+        // Play the correct word audio
+        playWord(question.word);
 
         setTimeout(() => {
             nextQuestion();
@@ -158,12 +180,13 @@ export default function FlashDashPage() {
                             score: score,
                             completed: isFullClear,
                             isPerfectClear: isFullClear && wrongAnswers.length === 0,
+                            mode: isListeningMode ? 'listen' : 'flash'
                         })
                     }).then(async res => {
                         if (res.ok) {
                             const data = await res.json();
                             const actualProgress = data.progress;
-                            const key = `${actualProgress.level}_${actualProgress.stageIndex}`;
+                            const key = `${actualProgress.level}_${actualProgress.stageIndex}_${actualProgress.mode}`;
                             setStageCompletions(prev => ({ ...prev, [key]: actualProgress.completions }));
                             setStagePerfectClears(prev => ({ ...prev, [key]: actualProgress.perfectClears || 0 }));
                             setStageHighScores(prev => ({ ...prev, [key]: actualProgress.highestScore }));
@@ -178,7 +201,7 @@ export default function FlashDashPage() {
         }
     };
 
-    const startStage = (level: Level, stageIndex: number) => {
+    const startStage = (level: Level, stageIndex: number, listening: boolean = false) => {
         const allQuestions = VOCAB_QUESTIONS[level] || [];
         const stageQuestions = allQuestions.slice(stageIndex * 50, (stageIndex + 1) * 50);
         // Shuffle and select up to 50 questions
@@ -188,6 +211,7 @@ export default function FlashDashPage() {
         setSelectedLevel(level);
         setSelectedStageIndex(stageIndex);
         setGameQuestions(selected);
+        setIsListeningMode(listening);
         setCurrentIndex(0);
         setScore(0);
         setCombo(0);
@@ -310,40 +334,72 @@ export default function FlashDashPage() {
                             const highScore = stageHighScores[completionKey] || null;
 
                             return (
-                                <button
+                                <div
                                     key={i}
-                                    onClick={() => startStage(selectedLevel, i)}
                                     className="group relative block overflow-hidden rounded-3xl bg-indigo-900/40 border border-indigo-700/50 p-6 text-left transition-all hover:-translate-y-1 hover:bg-indigo-800/60"
                                 >
                                     <div className="relative z-10 flex flex-col h-full">
-                                        <div className="flex justify-between items-start mb-1">
+                                        <div className="flex justify-between items-start mb-2">
                                             <div className="text-sm font-bold text-indigo-400">STAGE {i + 1}</div>
-                                            {perfectClears > 0 && (
-                                                <div className="text-[10px] bg-amber-500/20 text-amber-500 px-2 py-0.5 rounded-full font-bold border border-amber-500/30 flex items-center gap-1">
-                                                    <Trophy size={10} />
-                                                    {perfectClears}回 Perfect!
-                                                </div>
-                                            )}
                                         </div>
                                         <h3 className="text-2xl font-black text-white mb-4">No. {startNum} - {endNum}</h3>
 
-                                        <div className="mt-auto flex justify-between items-end">
-                                            <div>
-                                                {highScore !== null && (
-                                                    <div className="flex items-center gap-1.5 opacity-80 group-hover:opacity-100 transition-opacity">
-                                                        <Trophy size={14} className="text-amber-400" />
-                                                        <span className="text-sm font-bold text-slate-300">
-                                                            High: <span className="text-amber-400">{highScore}</span>
+                                        <div className="grid grid-cols-2 gap-4 mb-6">
+                                            {/* Flash Stats */}
+                                            <div className="bg-indigo-950/40 rounded-xl p-2 border border-indigo-500/10">
+                                                <div className="text-[10px] font-black text-indigo-400 uppercase tracking-tighter mb-1">表 (Flash)</div>
+                                                <div className="flex flex-col gap-1">
+                                                    <div className="flex items-center gap-1">
+                                                        <Trophy size={10} className={stageHighScores[`${selectedLevel}_${i}_flash`] ? "text-amber-400" : "text-slate-600"} />
+                                                        <span className="text-[11px] font-bold text-slate-300">
+                                                            {stageHighScores[`${selectedLevel}_${i}_flash`] || '-'}
                                                         </span>
                                                     </div>
-                                                )}
+                                                    <div className="flex items-center gap-1">
+                                                        <Zap size={10} className={stagePerfectClears[`${selectedLevel}_${i}_flash`] ? "text-emerald-400" : "text-slate-600"} />
+                                                        <span className="text-[10px] font-bold text-slate-400">
+                                                            {stagePerfectClears[`${selectedLevel}_${i}_flash`] || 0} Perfect
+                                                        </span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-indigo-900 transition-colors">
-                                                <ArrowRight size={20} />
+
+                                            {/* Listen Stats */}
+                                            <div className="bg-purple-950/40 rounded-xl p-2 border border-purple-500/10">
+                                                <div className="text-[10px] font-black text-purple-400 uppercase tracking-tighter mb-1">裏 (Listen)</div>
+                                                <div className="flex flex-col gap-1">
+                                                    <div className="flex items-center gap-1">
+                                                        <Trophy size={10} className={stageHighScores[`${selectedLevel}_${i}_listen`] ? "text-amber-400" : "text-slate-600"} />
+                                                        <span className="text-[11px] font-bold text-slate-300">
+                                                            {stageHighScores[`${selectedLevel}_${i}_listen`] || '-'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+                                                        <Zap size={10} className={stagePerfectClears[`${selectedLevel}_${i}_listen`] ? "text-emerald-400" : "text-slate-600"} />
+                                                        <span className="text-[10px] font-bold text-slate-400">
+                                                            {stagePerfectClears[`${selectedLevel}_${i}_listen`] || 0} Perfect
+                                                        </span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
+
+                                        <div className="mt-auto grid grid-cols-2 gap-3">
+                                            <button
+                                                onClick={() => startStage(selectedLevel, i, false)}
+                                                className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-black py-2.5 rounded-xl transition-colors shadow-lg shadow-indigo-900/20"
+                                            >
+                                                表 (Flash)
+                                            </button>
+                                            <button
+                                                onClick={() => startStage(selectedLevel, i, true)}
+                                                className="bg-purple-600 hover:bg-purple-500 text-white text-sm font-black py-2.5 rounded-xl transition-colors shadow-lg shadow-purple-900/20"
+                                            >
+                                                裏 (Listen)
+                                            </button>
+                                        </div>
                                     </div>
-                                </button>
+                                </div>
                             );
                         })}
                     </div>
@@ -362,10 +418,10 @@ export default function FlashDashPage() {
                         score={score}
                         oldLevelInfo={postGameStats.oldLevelInfo}
                         newLevelInfo={postGameStats.newLevelInfo}
-                        onRetry={wrongAnswers.length > 0 ? startWrongAnswersMode : () => startStage(selectedLevel!, selectedStageIndex!)}
+                        onRetry={wrongAnswers.length > 0 ? startWrongAnswersMode : () => startStage(selectedLevel!, selectedStageIndex!, isListeningMode)}
                         onBack={() => { setIsGameOver(false); setIsPlaying(false); }}
                         wrongAnswersCount={wrongAnswers.length}
-                        levelName={`Flash Dash - ${LEVELS.find(l => l.id === selectedLevel)?.name}`}
+                        levelName={`Flash Dash ${isListeningMode ? '(裏)' : '(表)'} - ${LEVELS.find(l => l.id === selectedLevel)?.name}`}
                     />
                 ) : (
                     <div className="relative z-10 bg-indigo-900/80 backdrop-blur-xl border border-indigo-500/30 p-8 md:p-12 rounded-[3rem] text-center max-w-2xl w-full shadow-2xl mt-12 mb-12">
@@ -417,9 +473,26 @@ export default function FlashDashPage() {
 
                 {/* Question Area */}
                 <div className="text-center mb-8 md:mb-12 min-h-[120px] md:min-h-[160px] flex items-center justify-center">
-                    <h2 className="text-5xl md:text-8xl font-black text-white drop-shadow-xl tracking-tight break-all">
-                        {question?.word}
-                    </h2>
+                    <div className="flex flex-col items-center gap-4">
+                        {isListeningMode && !showResult ? (
+                            <button
+                                onClick={() => playWord(question.word)}
+                                className="w-24 h-24 md:w-32 md:h-32 bg-indigo-600/30 hover:bg-indigo-600/50 rounded-full flex items-center justify-center border-4 border-indigo-500/30 transition-all active:scale-95"
+                            >
+                                <Zap size={48} className="text-indigo-400 animate-pulse" />
+                            </button>
+                        ) : (
+                            <h2 className={cn(
+                                "text-5xl md:text-8xl font-black drop-shadow-xl tracking-tight break-all transition-all duration-500",
+                                isListeningMode && showResult ? "text-amber-400" : "text-white"
+                            )}>
+                                {question?.word}
+                            </h2>
+                        )}
+                        {isListeningMode && !showResult && (
+                            <p className="text-indigo-300 font-bold tracking-widest animate-pulse">LISTENING...</p>
+                        )}
+                    </div>
                 </div>
 
                 {/* Options (4 Choices) */}

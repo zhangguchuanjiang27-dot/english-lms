@@ -13,6 +13,7 @@ export async function GET(request: Request) {
     try {
         const progresses = await prisma.vocabProgress.findMany({
             where: { studentId },
+            orderBy: { lastPlayedAt: 'desc' }
         });
         return NextResponse.json(progresses);
     } catch (error) {
@@ -24,7 +25,9 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { studentId, level, stageIndex, score, completed, isPerfectClear } = body;
+        const { studentId, level, stageIndex, score, completed, isPerfectClear, mode } = body;
+
+        const currentMode = mode || 'flash';
 
         if (!studentId || !level || stageIndex === undefined) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -33,10 +36,11 @@ export async function POST(request: Request) {
         // Find existing record
         const existing = await prisma.vocabProgress.findUnique({
             where: {
-                studentId_level_stageIndex: {
+                studentId_level_stageIndex_mode: {
                     studentId,
                     level,
-                    stageIndex
+                    stageIndex,
+                    mode: currentMode
                 }
             }
         });
@@ -55,10 +59,11 @@ export async function POST(request: Request) {
 
         const progress = await prisma.vocabProgress.upsert({
             where: {
-                studentId_level_stageIndex: {
+                studentId_level_stageIndex_mode: {
                     studentId,
                     level,
-                    stageIndex
+                    stageIndex,
+                    mode: currentMode
                 }
             },
             update: {
@@ -71,6 +76,7 @@ export async function POST(request: Request) {
                 studentId,
                 level,
                 stageIndex,
+                mode: currentMode,
                 completions: newCompletions,
                 perfectClears: newPerfectClears,
                 highestScore: newHighScore

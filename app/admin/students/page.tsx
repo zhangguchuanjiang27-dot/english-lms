@@ -26,7 +26,6 @@ export default function StudentsPage() {
     const [newStudent, setNewStudent] = useState({
         name: '',
         email: '',
-        course: '英語',
         loginId: '',
         password: 'password123'
     });
@@ -44,15 +43,15 @@ export default function StudentsPage() {
 
         addStudent({
             name: newStudent.name,
-            email: newStudent.email || `${newStudent.loginId}@student.luminous.com`,
-            course: newStudent.course,
+            email: newStudent.email || `${newStudent.loginId}@student.voca-academy.jp`,
+            course: '英語', // Default course
             loginId: newStudent.loginId,
             password: newStudent.password
         }).then(res => {
             if (res.success && res.student) {
                 alert(`アカウントを発行しました！\n\n【ログイン情報】\nID: ${res.student.loginId}\nPASS: ${res.student.password}\n\nこの情報を生徒・保護者へお伝えください。`);
                 setIsAddModalOpen(false);
-                setNewStudent({ name: '', email: '', course: '英語', loginId: '', password: 'password123' });
+                setNewStudent({ name: '', email: '', loginId: '', password: 'password123' });
                 refreshStudents();
             } else {
                 alert(res.error || '登録に失敗しました');
@@ -106,35 +105,16 @@ export default function StudentsPage() {
                             <form onSubmit={handleAddStudent} className="flex-1 flex flex-col overflow-hidden">
                                 <div className="flex-1 overflow-y-auto p-8 space-y-5 min-h-0">
                                     <div className="space-y-4">
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="space-y-1.5">
-                                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">氏名</label>
-                                                <input
-                                                    type="text"
-                                                    placeholder="例: 山田 太郎"
-                                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm text-slate-900 placeholder:text-slate-400"
-                                                    value={newStudent.name}
-                                                    onChange={(e) => setNewStudent({ ...newStudent, name: e.target.value, loginId: e.target.value.replace(' ', '').toLowerCase() })}
-                                                    required
-                                                />
-                                            </div>
-                                            <div className="space-y-1.5">
-                                                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">コース</label>
-                                                <select
-                                                    className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm text-slate-900"
-                                                    value={newStudent.course}
-                                                    onChange={(e) => setNewStudent({ ...newStudent, course: e.target.value })}
-                                                >
-                                                    <option value="英語">英語</option>
-                                                    <option value="中一英語">中一英語</option>
-                                                    <option value="中二英語">中二英語</option>
-                                                    <option value="中三英語">中三英語</option>
-                                                    <option value="数学">数学</option>
-                                                    <option value="中一数学">中一数学</option>
-                                                    <option value="中二数学">中二数学</option>
-                                                    <option value="中三数学">中三数学</option>
-                                                </select>
-                                            </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">氏名</label>
+                                            <input
+                                                type="text"
+                                                placeholder="例: 山田 太郎"
+                                                className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm text-slate-900 placeholder:text-slate-400"
+                                                value={newStudent.name}
+                                                onChange={(e) => setNewStudent({ ...newStudent, name: e.target.value, loginId: e.target.value.replace(' ', '').toLowerCase() })}
+                                                required
+                                            />
                                         </div>
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">メールアドレス</label>
@@ -209,10 +189,6 @@ export default function StudentsPage() {
                         />
                     </div>
                     <div className="flex gap-2 w-full md:w-auto">
-                        <button className="px-4 py-2 border border-border rounded-lg bg-background hover:bg-secondary text-sm font-medium flex items-center gap-2 transition-colors">
-                            <Filter size={16} />
-                            コースで絞り込み
-                        </button>
                         <button className="px-4 py-2 border border-border rounded-lg bg-background hover:bg-secondary text-sm font-medium transition-colors">
                             ステータス
                         </button>
@@ -225,7 +201,6 @@ export default function StudentsPage() {
                         <thead className="bg-secondary/50 text-muted-foreground border-b border-border">
                             <tr>
                                 <th className="px-6 py-4 font-medium">生徒名 / ID</th>
-                                <th className="px-6 py-4 font-medium">受講コース</th>
                                 <th className="px-6 py-4 font-medium">ステータス</th>
                                 <th className="px-6 py-4 font-medium">最終レッスン</th>
                                 <th className="px-6 py-4 font-medium">進捗</th>
@@ -250,11 +225,7 @@ export default function StudentsPage() {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4">
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100">
-                                            {student.course}
-                                        </span>
-                                    </td>
+
                                     <td className="px-6 py-4">
                                         <StatusBadge status={student.status} />
                                     </td>

@@ -541,27 +541,6 @@ export default function StudentDetail({
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                        受講コース
-                      </label>
-                      <select
-                        className="w-full px-5 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 outline-none text-sm font-black text-slate-900 transition-all"
-                        value={editDraft.course || ""}
-                        onChange={(e) =>
-                          setEditDraft({ ...editDraft, course: e.target.value })
-                        }
-                      >
-                        <option value="英語">英語</option>
-                        <option value="中一英語">中一英語</option>
-                        <option value="中二英語">中二英語</option>
-                        <option value="中三英語">中三英語</option>
-                        <option value="数学">数学</option>
-                        <option value="中一数学">中一数学</option>
-                        <option value="中二数学">中二数学</option>
-                        <option value="中三数学">中三数学</option>
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                         目標 (Target)
                       </label>
                       <input
