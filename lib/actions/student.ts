@@ -79,7 +79,6 @@ export async function getStudentSchedule(studentId: string) {
             ]
         });
 
-        // We can fetch related records simultaneously so frontend doesn't need data-store
         const records = await prisma.lessonRecord.findMany({
             where: { studentId },
             orderBy: {
@@ -87,9 +86,15 @@ export async function getStudentSchedule(studentId: string) {
             }
         });
 
+        // Fetch school settings to get the default lesson duration
+        const settings = await prisma.schoolSettings.findUnique({
+            where: { id: 1 }
+        });
+
         return {
             schedules,
-            records
+            records,
+            settings
         };
     } catch (error) {
         console.error('Error fetching student schedule:', error);

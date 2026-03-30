@@ -53,6 +53,23 @@ async function main() {
         },
     })
 
+    // 校舎設定
+    await prisma.schoolSettings.upsert({
+        where: { id: 1 },
+        update: {
+            defaultCourseDuration: 80,
+        },
+        create: {
+            id: 1,
+            schoolName: 'Voca Online English Academy',
+            timezone: 'Asia/Tokyo',
+            defaultCourseDuration: 80,
+            allowStudentCancellation: true,
+            cancellationDeadlineHours: 12,
+            monthlyGoal: 3000000,
+        },
+    })
+
     console.log('Seed data created!')
 }
 

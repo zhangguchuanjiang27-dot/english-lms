@@ -9,11 +9,17 @@ import {
     BookOpen,
     Check,
     Zap,
-    Star
+    Star,
+    BookMarked,
+    Award,
+    Activity,
+    ChevronDown
 } from 'lucide-react';
-import { LessonRecord } from '@/lib/data-store';
+import { Student, LessonRecord, SchoolSettings } from '@/lib/data-store';
 import { useEffect, useState } from 'react';
 import { getStudentSchedule } from '@/lib/actions/student';
+import { getStudentGrammarMastery } from '@/lib/actions/grammar';
+import GrammarMasteryGrid from '@/components/GrammarMasteryGrid';
 import { motion, AnimatePresence } from 'framer-motion';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -58,6 +64,9 @@ function CopyButton({ text }: { text: string }) {
 export default function StudentKartePage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [records, setRecords] = useState<LessonRecord[]>([]);
+    const [settings, setSettings] = useState<SchoolSettings | null>(null);
+    const [grammarMastery, setGrammarMastery] = useState<any[]>([]);
+    const [isGrammarOpen, setIsGrammarOpen] = useState(false);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -67,9 +76,16 @@ export default function StudentKartePage() {
             return;
         }
 
-        getStudentSchedule(studentId).then(data => {
-            if (data && data.records) {
-                setRecords(data.records as any);
+        Promise.all([
+            getStudentSchedule(studentId),
+            getStudentGrammarMastery(studentId)
+        ]).then(([scheduleData, masteryData]) => {
+            if (scheduleData) {
+                if (scheduleData.records) setRecords(scheduleData.records as any);
+                if (scheduleData.settings) setSettings(scheduleData.settings as any);
+            }
+            if (masteryData) {
+                setGrammarMastery(masteryData);
             }
             setLoading(false);
         });
@@ -102,9 +118,107 @@ export default function StudentKartePage() {
 
                     <div className="grid grid-cols-3 divide-x divide-slate-100 text-center">
                         <StatLarge label="受講回数" value={records.length} unit="回" />
-                        <StatLarge label="学習時間" value={records.length * 50 / 60 >= 1 ? (records.length * 50 / 60).toFixed(1) : (records.length * 50)} unit={records.length * 50 / 60 >= 1 ? "時間" : "分"} />
+                        <StatLarge 
+                            label="学習時間" 
+                            value={(() => {
+                                const duration = settings?.defaultCourseDuration || 80;
+                                return records.length * duration;
+                            })()} 
+                            unit="分" 
+                        />
                         <StatLarge label="指導講師" value={Array.from(new Set(records.map(r => r.teacher))).length} unit="名" />
                     </div>
+                </div>
+
+                {/* Grammar Mastery Toggle */}
+                <div className="space-y-4">
+                    <button
+                        onClick={() => setIsGrammarOpen(!isGrammarOpen)}
+                        className={cn(
+                            "w-full bg-white rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-8 border border-slate-100 shadow-sm hover:shadow-md transition-all group flex items-center justify-between",
+                            isGrammarOpen && "border-indigo-100 bg-indigo-50/20 shadow-indigo-100/20"
+                        )}
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className={cn(
+                                "w-12 h-12 rounded-2xl flex items-center justify-center transition-colors shadow-sm",
+                                isGrammarOpen ? "bg-indigo-600 text-white" : "bg-indigo-50 text-indigo-600"
+                            )}>
+                                <BookMarked size={24} />
+                            </div>
+                            <div className="text-left">
+                                <h2 className="text-base md:text-xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+                                    文法習得状況を確認する
+                                    {!isGrammarOpen && (
+                                        <span className="text-[10px] font-black bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full uppercase tracking-widest hidden sm:inline-block">Mastery Check</span>
+                                    )}
+                                </h2>
+                                <p className="text-xs text-slate-500 font-medium mt-0.5">現在の中1〜中3レベルの文法項目と習得度を表示します</p>
+                            </div>
+                        </div>
+                        <div className={cn(
+                            "w-10 h-10 rounded-xl flex items-center justify-center transition-all bg-slate-50 text-slate-400 group-hover:bg-indigo-100 group-hover:text-indigo-600",
+                            isGrammarOpen && "rotate-180 bg-indigo-100 text-indigo-600"
+                        )}>
+                            <ChevronDown size={20} />
+                        </div>
+                    </button>
+
+                    <AnimatePresence>
+                        {isGrammarOpen && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0, y: -20 }}
+                                animate={{ opacity: 1, height: 'auto', y: 0 }}
+                                exit={{ opacity: 0, height: 0, y: -20 }}
+                                transition={{ duration: 0.4, ease: "easeOut" }}
+                                className="overflow-hidden"
+                            >
+                                <div className="space-y-6 pt-2 pb-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        {['jhs1', 'jhs2', 'jhs3'].map((cat) => {
+                                            const catPoints = grammarMastery.filter(p => p.category === cat);
+                                            const masteryCount = catPoints.filter(p => p.status === 'DOUBLE_CIRCLE').length;
+                                            const goodCount = catPoints.filter(p => p.status === 'CIRCLE').length;
+                                            const total = catPoints.length;
+                                            const percent = total > 0 ? Math.round(((masteryCount + goodCount * 0.5) / total) * 100) : 0;
+                                            
+                                            return (
+                                                <div key={cat} className="bg-white/80 backdrop-blur-sm rounded-3xl p-5 border border-slate-100 shadow-sm space-y-3">
+                                                    <div className="flex justify-between items-center">
+                                                        <h5 className="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
+                                                            <Award size={14} className="text-indigo-500" />
+                                                            {cat === 'jhs1' ? '中学1年' : cat === 'jhs2' ? '中学2年' : '中学3年'}
+                                                        </h5>
+                                                        <span className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg">{percent}%</span>
+                                                    </div>
+                                                    <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                        <div 
+                                                            className="h-full bg-indigo-500 transition-all duration-1000" 
+                                                            style={{ width: `${percent}%` }}
+                                                        />
+                                                    </div>
+                                                    <div className="flex justify-between text-[9px] font-bold text-slate-400">
+                                                        <span className="flex items-center gap-1">
+                                                            <Activity size={10} />
+                                                            習得: {masteryCount + goodCount} / {total}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+
+                                    <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 border border-slate-100 shadow-xl shadow-indigo-100/20 ring-1 ring-slate-200/50">
+                                        <GrammarMasteryGrid 
+                                            studentId={localStorage.getItem('user_id') || ''} 
+                                            initialPoints={grammarMastery} 
+                                            isAdmin={false} 
+                                        />
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
 
                 {/* History List */}

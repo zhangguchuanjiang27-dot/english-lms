@@ -26,7 +26,9 @@ import Link from "next/link";
 import { useState, use, useEffect } from "react";
 import { DataStore, Student, LessonSchedule } from "@/lib/data-store";
 import { getStudentDetail, addLessonSchedule, deleteLessonSchedule, updateStudent, getTeachers } from "@/lib/actions/admin";
+import { getStudentGrammarMastery } from "@/lib/actions/grammar";
 import { Teacher as DBTeacher } from "@prisma/client";
+import GrammarMasteryGrid from "@/components/GrammarMasteryGrid";
 
 const getTodayStr = () => {
   const d = new Date();
@@ -41,6 +43,7 @@ export default function StudentDetail({
   const resolvedParams = use(params);
   const [activeTab, setActiveTab] = useState("lessons");
   const [student, setStudent] = useState<Student | null>(null);
+  const [grammarMastery, setGrammarMastery] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [studentSchedule, setStudentSchedule] = useState<LessonSchedule[]>([]);
   const [teachers, setTeachers] = useState<DBTeacher[]>([]);
@@ -73,10 +76,15 @@ export default function StudentDetail({
 
   const fetchStudentData = async () => {
     setIsLoading(true);
-    const detail = await getStudentDetail(resolvedParams.id);
+    const [detail, mastery] = await Promise.all([
+      getStudentDetail(resolvedParams.id),
+      getStudentGrammarMastery(resolvedParams.id)
+    ]);
+
     if (detail) {
       setStudent(detail as any);
       setNoteDraft(detail.internalNote || "");
+      if (mastery) setGrammarMastery(mastery);
 
       const VALID_COURSES = [
         "英語",
@@ -309,6 +317,11 @@ export default function StudentDetail({
                   onClick={() => setActiveTab("schedule")}
                   label="予約管理"
                 />
+                <TabButton
+                  active={activeTab === "grammar"}
+                  onClick={() => setActiveTab("grammar")}
+                  label="文法習得状況"
+                />
               </div>
 
               {/* Tab Content: Lessons */}
@@ -432,6 +445,28 @@ export default function StudentDetail({
                         </div>
                       )}
                     </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab Content: Grammar Mastery */}
+              {activeTab === "grammar" && (
+                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-3 duration-400">
+                  <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 md:p-10 mb-10">
+                    <div className="flex justify-between items-center mb-8">
+                      <div>
+                        <h3 className="font-black text-xl text-slate-900">
+                          文法習得状況
+                        </h3>
+                        <p className="text-sm font-bold text-slate-500 mt-1">項目をクリックして習得度（△・〇・◎）を記録できます</p>
+                      </div>
+                    </div>
+                    
+                    <GrammarMasteryGrid 
+                      studentId={student.id} 
+                      initialPoints={grammarMastery} 
+                      isAdmin={true} 
+                    />
                   </div>
                 </div>
               )}

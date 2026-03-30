@@ -25,6 +25,8 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { Teacher, LessonSchedule, Student, LessonRecord } from '@/lib/data-store';
 import { getTeacherDashboardData, updateLessonMeetingUrl, submitLessonKarte, getRecentRecordsByStudent, getRecordByLessonId, revokeLessonKarte } from '@/lib/actions/teacher';
+import { getStudentGrammarMastery } from '@/lib/actions/grammar';
+import GrammarMasteryGrid from '@/components/GrammarMasteryGrid';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -67,6 +69,11 @@ export default function TeacherDashboard() {
         pronunciation: 50,
         fluency: 50,
     });
+
+    const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
+    const [selectedStudentForProgress, setSelectedStudentForProgress] = useState<Student | null>(null);
+    const [grammarMastery, setGrammarMastery] = useState<any[]>([]);
+    const [isLoadingMastery, setIsLoadingMastery] = useState(false);
 
     useEffect(() => {
         const userId = localStorage.getItem('user_id');
@@ -151,6 +158,31 @@ export default function TeacherDashboard() {
             });
         }
         setIsAssessModalOpen(true);
+
+        // Also fetch grammar mastery for the student
+        setIsLoadingMastery(true);
+        try {
+            const mastery = await getStudentGrammarMastery(lesson.studentId);
+            setGrammarMastery(mastery);
+        } catch (error) {
+            console.error('Error fetching grammar mastery:', error);
+        } finally {
+            setIsLoadingMastery(false);
+        }
+    };
+
+    const openProgressModal = async (student: Student) => {
+        setSelectedStudentForProgress(student);
+        setIsProgressModalOpen(true);
+        setIsLoadingMastery(true);
+        try {
+            const mastery = await getStudentGrammarMastery(student.id);
+            setGrammarMastery(mastery);
+        } catch (error) {
+            console.error('Error fetching grammar mastery:', error);
+        } finally {
+            setIsLoadingMastery(false);
+        }
     };
 
     const handleAssessSubmit = async (e: React.FormEvent) => {
@@ -342,10 +374,14 @@ export default function TeacherDashboard() {
                                             {lesson.tags?.[0] || lesson.course}
                                         </span>
                                     </div>
-                                    <h3 className={cn(
-                                        "text-lg md:text-xl font-black transition-colors flex items-center gap-3",
-                                        isCompleted ? "text-slate-500" : "text-slate-800 group-hover:text-emerald-700"
-                                    )}>
+                                    <button 
+                                        type="button"
+                                        onClick={() => lesson.student && openProgressModal(lesson.student)}
+                                        className={cn(
+                                            "text-lg md:text-xl font-black transition-colors flex items-center gap-3 hover:opacity-80 active:scale-95",
+                                            isCompleted ? "text-slate-500" : "text-slate-800 group-hover:text-emerald-700"
+                                        )}
+                                    >
                                         <div className={cn(
                                             "w-8 h-8 rounded-full flex items-center justify-center text-xs font-black shrink-0 shadow-sm border border-white/50",
                                             isCompleted ? "bg-slate-200 text-slate-400" : "bg-emerald-100 text-emerald-600"
@@ -353,7 +389,7 @@ export default function TeacherDashboard() {
                                             {lesson.studentName?.[0] || '?'}
                                         </div>
                                         {lesson.studentName || 'Unknown Student'}
-                                    </h3>
+                                    </button>
                                     <p className="text-sm text-slate-500 font-medium flex items-center gap-2 mt-3 bg-slate-50/50 px-3 py-2 rounded-xl w-fit">
                                         <TrendingUp size={16} className={cn(isCompleted ? "text-slate-400" : "text-indigo-400")} />
                                         <span className="text-[10px] font-bold uppercase tracking-widest opacity-60">目標:</span> 
@@ -562,6 +598,29 @@ export default function TeacherDashboard() {
                                     />
                                 </div>
 
+                                <div className="space-y-3 pt-6 border-t border-slate-100">
+                                    <h4 className="text-sm font-black text-slate-800 tracking-tight flex items-center gap-2">
+                                        <BookOpen className="text-emerald-500" size={16} />
+                                        文法習得状況の記録
+                                    </h4>
+                                    <p className="text-[11px] text-slate-500 font-medium">中1〜中3レベルの文法項目の理解度を選択してください。</p>
+                                    
+                                    <div className="bg-slate-50 rounded-3xl p-6 md:p-8 mt-2 border border-slate-200 shadow-inner text-center">
+                                        {isLoadingMastery ? (
+                                            <div className="flex flex-col items-center justify-center py-10 gap-3">
+                                                <div className="w-8 h-8 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div>
+                                                <p className="text-xs font-bold text-slate-400">習得状況を読み込み中...</p>
+                                            </div>
+                                        ) : (
+                                            <GrammarMasteryGrid 
+                                                studentId={selectedLesson.studentId} 
+                                                initialPoints={grammarMastery} 
+                                                isAdmin={true} 
+                                            />
+                                        )}
+                                    </div>
+                                </div>
+
                                 <div className="space-y-3">
                                     <h4 className="text-sm font-black text-slate-800 tracking-tight flex items-center gap-2">
                                         <AlertCircle className="text-slate-500" size={16} />
@@ -753,6 +812,73 @@ export default function TeacherDashboard() {
                             </button>
                         </div>
                     </form>
+                </div>
+            )}
+
+            {/* Student Progress Modal */}
+            {isProgressModalOpen && selectedStudentForProgress && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsProgressModalOpen(false)}></div>
+                    <div className="relative bg-white rounded-[2.5rem] w-full max-w-4xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+                        <div className="px-8 py-6 border-b border-slate-100 bg-emerald-50 text-emerald-900 flex items-center justify-between shrink-0">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-xl font-black text-emerald-600 border border-emerald-100">
+                                    {selectedStudentForProgress.name.charAt(0)}
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-black mb-0.5">{selectedStudentForProgress.name}</h3>
+                                    <p className="text-xs font-bold text-emerald-700 tracking-wide flex items-center gap-2">
+                                        <span className="opacity-60">COURSE:</span> {selectedStudentForProgress.course}
+                                        <span className="w-1 h-1 bg-emerald-300 rounded-full"></span>
+                                        <span className="opacity-60">TARGET:</span> {selectedStudentForProgress.target || '未設定'}
+                                    </p>
+                                </div>
+                            </div>
+                            <button type="button" onClick={() => setIsProgressModalOpen(false)} className="p-2 text-emerald-600 hover:bg-emerald-100 rounded-full transition-colors">
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-8 bg-slate-50/30">
+                            <div className="space-y-8">
+                                <div className="space-y-4 text-center">
+                                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-xs font-black uppercase tracking-widest leading-none">
+                                        <BookOpen size={14} /> Grammar Mastery
+                                    </div>
+                                    <h4 className="text-2xl font-black text-slate-800 tracking-tight text-center">文法習得状況の一覧</h4>
+                                    <p className="text-sm text-slate-500 font-medium max-w-lg mx-auto text-center">
+                                        各文法項目の理解度を ◎（習得済）、◯（概ねOK）、△（要復習）の3段階で記録・確認できます。
+                                    </p>
+                                </div>
+
+                                <div className="bg-white rounded-[2rem] p-6 md:p-10 border border-slate-200 shadow-xl shadow-slate-200/40 relative overflow-hidden text-center">
+                                    <div className="absolute top-0 left-0 right-0 h-2 bg-emerald-500"></div>
+                                    {isLoadingMastery ? (
+                                        <div className="flex flex-col items-center justify-center py-20 gap-4">
+                                            <div className="w-10 h-10 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div>
+                                            <p className="text-sm font-bold text-slate-400">習得状況を読み込み中...</p>
+                                        </div>
+                                    ) : (
+                                        <GrammarMasteryGrid 
+                                            studentId={selectedStudentForProgress.id} 
+                                            initialPoints={grammarMastery} 
+                                            isAdmin={true} 
+                                        />
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="px-8 py-6 border-t border-slate-100 bg-white flex justify-center shrink-0">
+                            <button
+                                type="button"
+                                onClick={() => setIsProgressModalOpen(false)}
+                                className="px-10 py-3 text-sm font-black text-white bg-slate-800 hover:bg-slate-900 rounded-2xl shadow-lg shadow-slate-900/20 transition-all active:scale-95 flex items-center gap-2"
+                            >
+                                閉じる
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </main>

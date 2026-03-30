@@ -55,8 +55,6 @@ export default function SentenceBuilderPage() {
     const [preGameStats, setPreGameStats] = useState<any>(null);
     const [postGameStats, setPostGameStats] = useState<any>(null);
 
-    const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-
     const [gameQuestions, setGameQuestions] = useState<GrammarQuestion[]>([]);
     const [wrongAnswers, setWrongAnswers] = useState<GrammarQuestion[]>([]);
 
@@ -190,35 +188,6 @@ export default function SentenceBuilderPage() {
         newSelected.splice(index, 1);
         setSelectedWords(newSelected);
         setAvailableWords([...availableWords, word]);
-    };
-
-    const handleDragStart = (e: React.DragEvent, index: number) => {
-        if (showResult) {
-            e.preventDefault();
-            return;
-        }
-        e.dataTransfer.setData('text/plain', index.toString());
-        setDraggedIndex(index);
-    };
-
-    const handleDragOver = (e: React.DragEvent) => {
-        e.preventDefault();
-    };
-
-    const handleDrop = (e: React.DragEvent, dropIndex: number) => {
-        e.preventDefault();
-        if (showResult) return;
-
-        const dragIndexStr = e.dataTransfer.getData('text/plain');
-        if (!dragIndexStr) return;
-        const dragIndex = parseInt(dragIndexStr, 10);
-        if (dragIndex === dropIndex) return;
-
-        const newSelected = [...selectedWords];
-        const item = newSelected.splice(dragIndex, 1)[0];
-        newSelected.splice(dropIndex, 0, item);
-        setSelectedWords(newSelected);
-        setDraggedIndex(null);
     };
 
     const handleCheck = () => {
@@ -576,18 +545,13 @@ export default function SentenceBuilderPage() {
                         showResult && !isOk ? "bg-rose-50 border-rose-200" :
                             "bg-slate-100 border-dashed border-slate-300"
                 )}>
-                    {selectedWords.length === 0 && <span className="text-slate-400 font-bold opacity-50 text-xs md:text-base text-center">下のブロックをタップして並べよう！ <br className="hidden md:block" /><span className="text-[10px] md:text-xs">※ブロックはドラッグで並べ替え可能</span></span>}
+                    {selectedWords.length === 0 && <span className="text-slate-400 font-bold opacity-50 text-xs md:text-base text-center">下のブロックをタップして並べよう！</span>}
                     {selectedWords.map((word, idx) => (
                         <button
                             key={idx}
                             onClick={() => handleUndo(word, idx)}
-                            draggable={!showResult}
-                            onDragStart={(e) => handleDragStart(e, idx)}
-                            onDragOver={handleDragOver}
-                            onDrop={(e) => handleDrop(e, idx)}
                             className={cn(
                                 "px-4 py-3 md:px-6 md:py-4 text-base md:text-xl font-bold rounded-xl md:rounded-2xl shadow-sm transition-transform active:scale-95",
-                                draggedIndex === idx ? "opacity-50 scale-105" : "",
                                 showResult && isOk ? "bg-white text-emerald-600 border border-emerald-200" :
                                     showResult && !isOk ? "bg-white text-rose-500 border border-rose-200" : "bg-white text-slate-800 border-b-4 border-slate-200 hover:-translate-y-1"
                             )}

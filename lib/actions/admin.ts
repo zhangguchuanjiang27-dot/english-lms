@@ -696,7 +696,7 @@ export async function resetDatabase() {
                 id: 1,
                 schoolName: 'English LMS',
                 timezone: 'Asia/Tokyo',
-                defaultCourseDuration: 50,
+                defaultCourseDuration: 80,
                 allowStudentCancellation: true,
                 cancellationDeadlineHours: 24,
                 monthlyGoal: 100

@@ -5,7 +5,7 @@ import { Search as SearchIcon, User, Calendar, BookOpen, Clock, ChevronDown, Che
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { searchAllStudents, getAllStudentRecords } from '@/lib/actions/teacher';
-import { Student, LessonRecord } from '@prisma/client';
+import { Student, LessonRecord } from '@/prisma/generated-client';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));

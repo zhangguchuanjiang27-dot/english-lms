@@ -14,7 +14,8 @@ import {
     Check,
     TrendingUp,
     Pencil,
-    Trash2
+    Trash2,
+    BookMarked
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { clsx, type ClassValue } from 'clsx';
@@ -57,7 +58,7 @@ export default function StudentAchievementsPage() {
             getStudentProfile(userId),
             getStudentTestScores(userId)
         ]);
-
+ 
         if (profile) setStudent(profile as any);
         if (scores) setTestScores(scores);
     };
@@ -246,36 +247,38 @@ export default function StudentAchievementsPage() {
                     </motion.div>
                 </div>
 
+
+
                 {/* List Section */}
                 <div className="space-y-6">
-                    <div className="flex items-center justify-between px-4">
-                        <h4 className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                            {activeTab === 'school' ? <School size={16} /> : <Medal size={16} />}
-                            {activeTab === 'school' ? '学校のテスト履歴' : '資格・検定試験履歴'}
-                        </h4>
-                        {activeScores.length > 0 && <span className="text-xs font-bold text-slate-400">{activeScores.length}件の記録</span>}
-                    </div>
+                        <div className="flex items-center justify-between px-4">
+                            <h4 className="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                {activeTab === 'school' ? <School size={16} /> : <Medal size={16} />}
+                                {activeTab === 'school' ? '学校のテスト履歴' : '資格・検定試験履歴'}
+                            </h4>
+                            {activeScores.length > 0 && <span className="text-xs font-bold text-slate-400">{activeScores.length}件の記録</span>}
+                        </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {activeScores.length > 0 ? (
-                            activeScores.map((s, idx) => (
-                                <ScoreCard
-                                    key={s.id || idx}
-                                    date={s.date.replace(/-/g, '/')}
-                                    title={s.testName}
-                                    score={s.score}
-                                    total={s.totalScore}
-                                    trend={s.trend}
-                                    onEdit={() => handleEdit(s)}
-                                />
-                            ))
-                        ) : (
-                            <div className="col-span-full bg-white rounded-[2.5rem] p-16 text-center border border-slate-100 shadow-sm">
-                                <p className="text-slate-400 text-sm italic">まだ記録がありません</p>
-                            </div>
-                        )}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {activeScores.length > 0 ? (
+                                activeScores.map((s, idx) => (
+                                    <ScoreCard
+                                        key={s.id || idx}
+                                        date={s.date.replace(/-/g, '/')}
+                                        title={s.testName}
+                                        score={s.score}
+                                        total={s.totalScore}
+                                        trend={s.trend}
+                                        onEdit={() => handleEdit(s)}
+                                    />
+                                ))
+                            ) : (
+                                <div className="col-span-full bg-white rounded-[2.5rem] p-16 text-center border border-slate-100 shadow-sm">
+                                    <p className="text-slate-400 text-sm italic">まだ記録がありません</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                </div>
 
                 {/* Score Input Modal */}
                 <AnimatePresence>

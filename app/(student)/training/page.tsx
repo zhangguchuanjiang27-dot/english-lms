@@ -175,7 +175,7 @@ export default function TrainingDashboardPage() {
                                 </div>
                                 <h2 className="text-3xl font-black text-white">Sentence Builder</h2>
                                 <p className="text-amber-100 text-sm font-medium max-w-[80%]">
-                                    散らばった単語ブロックを正しい順番に組み上げて、文法の呪文を完成させよう。直感的なドラッグ＆ドロップ！
+                                    散らばった単語ブロックを正しい順番に組み上げて、文法の呪文を完成させよう。ブロックをタップして並べよう！
                                 </p>
                             </div>
 
