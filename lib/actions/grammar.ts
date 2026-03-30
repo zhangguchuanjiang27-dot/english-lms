@@ -86,12 +86,7 @@ export async function seedGrammarPoints() {
     let order = 0;
     for (const group of SEED_DATA) {
         for (const label of group.items) {
-            await prisma.grammarPoint.upsert({
-                where: { id: `point-${group.category}-${order}` }, // Consistent IDs for idempotency if possible, but schema doesn't have unique string id other than cuid
-                // Since I don't have a unique constraint on label/category other than auto-id, I'll just check if exists
-            });
-            
-            // Actually, let's just create if not exists by label and category
+            // Create if not exists by label and category
             const existing = await prisma.grammarPoint.findFirst({
                 where: { label, category: group.category }
             });
