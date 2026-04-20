@@ -112,7 +112,7 @@ export default function StudentsPage() {
                                                 placeholder="例: 山田 太郎"
                                                 className="w-full px-4 py-2.5 rounded-xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm text-slate-900 placeholder:text-slate-400"
                                                 value={newStudent.name}
-                                                onChange={(e) => setNewStudent({ ...newStudent, name: e.target.value, loginId: e.target.value.replace(' ', '').toLowerCase() })}
+                                                onChange={(e) => setNewStudent({ ...newStudent, name: e.target.value, loginId: e.target.value.replace(/[\s\u3000]/g, '').toLowerCase() })}
                                                 required
                                             />
                                         </div>

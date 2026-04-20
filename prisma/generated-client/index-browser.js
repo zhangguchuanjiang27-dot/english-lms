@@ -115,9 +115,6 @@ Prisma.NullTypes = {
  */
 
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
-  ReadUncommitted: 'ReadUncommitted',
-  ReadCommitted: 'ReadCommitted',
-  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -277,6 +274,17 @@ exports.Prisma.GrammarProgressScalarFieldEnum = {
   lastPlayedAt: 'lastPlayedAt'
 };
 
+exports.Prisma.DrillProgressScalarFieldEnum = {
+  id: 'id',
+  studentId: 'studentId',
+  level: 'level',
+  categoryId: 'categoryId',
+  completions: 'completions',
+  perfectClears: 'perfectClears',
+  highestScore: 'highestScore',
+  lastPlayedAt: 'lastPlayedAt'
+};
+
 exports.Prisma.GrammarPointScalarFieldEnum = {
   id: 'id',
   label: 'label',
@@ -297,11 +305,6 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
-exports.Prisma.QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
-};
-
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
@@ -320,6 +323,7 @@ exports.Prisma.ModelName = {
   SchoolSettings: 'SchoolSettings',
   VocabProgress: 'VocabProgress',
   GrammarProgress: 'GrammarProgress',
+  DrillProgress: 'DrillProgress',
   GrammarPoint: 'GrammarPoint',
   GrammarMastery: 'GrammarMastery'
 };

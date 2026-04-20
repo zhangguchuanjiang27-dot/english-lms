@@ -10,7 +10,9 @@ import {
     BookOpen,
     BrainCircuit,
     ArrowRight,
-    Star
+    Star,
+    Wrench,
+    Keyboard
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -29,6 +31,12 @@ const getRankTitle = (level: number) => {
     if (level >= 10) return { title: 'Apprentice', color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30' };
     return { title: 'Novice', color: 'text-slate-400', bg: 'bg-slate-500/10', border: 'border-slate-500/30' };
 };
+
+const LEVELS = [
+    { id: 'jhs1', name: '中学1年生', sub: 'Level 1' },
+    { id: 'jhs2', name: '中学2年生', sub: 'Level 2' },
+    { id: 'jhs3', name: '中学3年生', sub: 'Level 3' },
+];
 
 export default function TrainingDashboardPage() {
     const router = useRouter();
@@ -191,6 +199,29 @@ export default function TrainingDashboardPage() {
                             </div>
                         </div>
                     </Link>
+
+                {/* Skill Drills Section (Minimalist & Sequential) */}
+                <div className="bg-slate-800/30 rounded-[2.5rem] border border-slate-700/50 p-8">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-indigo-500/20 text-indigo-400 rounded-2xl shadow-lg shadow-indigo-500/10">
+                                <Keyboard size={28} />
+                            </div>
+                            <div>
+                                <h2 className="text-2xl font-black text-white uppercase tracking-tight">Skill Drills</h2>
+                                <p className="text-slate-500 text-sm font-medium">動詞→過去形→過去分詞の変形を10問ずつ、ステージ形式で特訓しよう</p>
+                            </div>
+                        </div>
+                        
+                        <Link 
+                            href="/training/drills"
+                            className="group flex items-center gap-4 bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-4 rounded-2xl font-black transition-all shadow-xl shadow-indigo-600/20 active:scale-95"
+                        >
+                            ステージを選択
+                            <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                        </Link>
+                    </div>
+                </div>
 
                     {/* Reading Quest (Coming Soon) */}
                     <div className="group relative block overflow-hidden rounded-[2.5rem] bg-slate-800 p-8 shadow-inner border border-slate-700 opacity-60">

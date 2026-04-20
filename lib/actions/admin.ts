@@ -162,9 +162,18 @@ export async function addStudent(data: {
         });
         revalidatePath('/admin/students');
         return { success: true, student };
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error adding student:', error);
-        return { success: false, error: '生徒の登録に失敗しました' };
+        if (error.code === 'P2002') {
+            const target = error.meta?.target || [];
+            if (target.includes('email')) {
+                return { success: false, error: 'このメールアドレスは既に登録されています' };
+            }
+            if (target.includes('loginId')) {
+                return { success: false, error: 'このログインIDは既に登録されています' };
+            }
+        }
+        return { success: false, error: error.message || '生徒の登録に失敗しました' };
     }
 }
 

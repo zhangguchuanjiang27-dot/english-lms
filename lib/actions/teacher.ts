@@ -285,3 +285,37 @@ export async function getAllStudentRecords(studentId: string) {
     }
 }
 
+export async function getStudentTrainingStats(studentId: string) {
+    try {
+        const student = await prisma.student.findUnique({
+            where: { id: studentId },
+            select: {
+                questXP: true,
+                questLevel: true,
+                questStreak: true,
+            }
+        });
+
+        const grammar = await prisma.grammarProgress.findMany({
+            where: { studentId }
+        });
+
+        const vocab = await prisma.vocabProgress.findMany({
+            where: { studentId }
+        });
+
+        const drills = await prisma.drillProgress.findMany({
+            where: { studentId }
+        });
+
+        return {
+            student,
+            grammar,
+            vocab,
+            drills
+        };
+    } catch (error) {
+        console.error('Error fetching student training stats:', error);
+        return null;
+    }
+}

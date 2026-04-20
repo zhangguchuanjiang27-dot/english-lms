@@ -69,6 +69,11 @@ export type VocabProgress = $Result.DefaultSelection<Prisma.$VocabProgressPayloa
  */
 export type GrammarProgress = $Result.DefaultSelection<Prisma.$GrammarProgressPayload>
 /**
+ * Model DrillProgress
+ * 
+ */
+export type DrillProgress = $Result.DefaultSelection<Prisma.$DrillProgressPayload>
+/**
  * Model GrammarPoint
  * 
  */
@@ -306,6 +311,16 @@ export class PrismaClient<
     * ```
     */
   get grammarProgress(): Prisma.GrammarProgressDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.drillProgress`: Exposes CRUD operations for the **DrillProgress** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DrillProgresses
+    * const drillProgresses = await prisma.drillProgress.findMany()
+    * ```
+    */
+  get drillProgress(): Prisma.DrillProgressDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.grammarPoint`: Exposes CRUD operations for the **GrammarPoint** model.
@@ -778,6 +793,7 @@ export namespace Prisma {
     SchoolSettings: 'SchoolSettings',
     VocabProgress: 'VocabProgress',
     GrammarProgress: 'GrammarProgress',
+    DrillProgress: 'DrillProgress',
     GrammarPoint: 'GrammarPoint',
     GrammarMastery: 'GrammarMastery'
   };
@@ -798,7 +814,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "student" | "teacher" | "lessonSchedule" | "lessonRecord" | "testScore" | "message" | "announcement" | "invoice" | "schoolSettings" | "vocabProgress" | "grammarProgress" | "grammarPoint" | "grammarMastery"
+      modelProps: "student" | "teacher" | "lessonSchedule" | "lessonRecord" | "testScore" | "message" | "announcement" | "invoice" | "schoolSettings" | "vocabProgress" | "grammarProgress" | "drillProgress" | "grammarPoint" | "grammarMastery"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1616,6 +1632,80 @@ export namespace Prisma {
           }
         }
       }
+      DrillProgress: {
+        payload: Prisma.$DrillProgressPayload<ExtArgs>
+        fields: Prisma.DrillProgressFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DrillProgressFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DrillProgressPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DrillProgressFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DrillProgressPayload>
+          }
+          findFirst: {
+            args: Prisma.DrillProgressFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DrillProgressPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DrillProgressFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DrillProgressPayload>
+          }
+          findMany: {
+            args: Prisma.DrillProgressFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DrillProgressPayload>[]
+          }
+          create: {
+            args: Prisma.DrillProgressCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DrillProgressPayload>
+          }
+          createMany: {
+            args: Prisma.DrillProgressCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DrillProgressCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DrillProgressPayload>[]
+          }
+          delete: {
+            args: Prisma.DrillProgressDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DrillProgressPayload>
+          }
+          update: {
+            args: Prisma.DrillProgressUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DrillProgressPayload>
+          }
+          deleteMany: {
+            args: Prisma.DrillProgressDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DrillProgressUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DrillProgressUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DrillProgressPayload>[]
+          }
+          upsert: {
+            args: Prisma.DrillProgressUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DrillProgressPayload>
+          }
+          aggregate: {
+            args: Prisma.DrillProgressAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDrillProgress>
+          }
+          groupBy: {
+            args: Prisma.DrillProgressGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DrillProgressGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DrillProgressCountArgs<ExtArgs>
+            result: $Utils.Optional<DrillProgressCountAggregateOutputType> | number
+          }
+        }
+      }
       GrammarPoint: {
         payload: Prisma.$GrammarPointPayload<ExtArgs>
         fields: Prisma.GrammarPointFieldRefs
@@ -1871,6 +1961,7 @@ export namespace Prisma {
     schoolSettings?: SchoolSettingsOmit
     vocabProgress?: VocabProgressOmit
     grammarProgress?: GrammarProgressOmit
+    drillProgress?: DrillProgressOmit
     grammarPoint?: GrammarPointOmit
     grammarMastery?: GrammarMasteryOmit
   }
@@ -1961,6 +2052,7 @@ export namespace Prisma {
     messages: number
     testScores: number
     vocabProgresses: number
+    drillProgresses: number
   }
 
   export type StudentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1972,6 +2064,7 @@ export namespace Prisma {
     messages?: boolean | StudentCountOutputTypeCountMessagesArgs
     testScores?: boolean | StudentCountOutputTypeCountTestScoresArgs
     vocabProgresses?: boolean | StudentCountOutputTypeCountVocabProgressesArgs
+    drillProgresses?: boolean | StudentCountOutputTypeCountDrillProgressesArgs
   }
 
   // Custom InputTypes
@@ -2039,6 +2132,13 @@ export namespace Prisma {
    */
   export type StudentCountOutputTypeCountVocabProgressesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: VocabProgressWhereInput
+  }
+
+  /**
+   * StudentCountOutputType without action
+   */
+  export type StudentCountOutputTypeCountDrillProgressesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DrillProgressWhereInput
   }
 
 
@@ -2562,6 +2662,7 @@ export namespace Prisma {
     messages?: boolean | Student$messagesArgs<ExtArgs>
     testScores?: boolean | Student$testScoresArgs<ExtArgs>
     vocabProgresses?: boolean | Student$vocabProgressesArgs<ExtArgs>
+    drillProgresses?: boolean | Student$drillProgressesArgs<ExtArgs>
     _count?: boolean | StudentCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["student"]>
 
@@ -2677,6 +2778,7 @@ export namespace Prisma {
     messages?: boolean | Student$messagesArgs<ExtArgs>
     testScores?: boolean | Student$testScoresArgs<ExtArgs>
     vocabProgresses?: boolean | Student$vocabProgressesArgs<ExtArgs>
+    drillProgresses?: boolean | Student$drillProgressesArgs<ExtArgs>
     _count?: boolean | StudentCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type StudentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2693,6 +2795,7 @@ export namespace Prisma {
       messages: Prisma.$MessagePayload<ExtArgs>[]
       testScores: Prisma.$TestScorePayload<ExtArgs>[]
       vocabProgresses: Prisma.$VocabProgressPayload<ExtArgs>[]
+      drillProgresses: Prisma.$DrillProgressPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -3128,6 +3231,7 @@ export namespace Prisma {
     messages<T extends Student$messagesArgs<ExtArgs> = {}>(args?: Subset<T, Student$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     testScores<T extends Student$testScoresArgs<ExtArgs> = {}>(args?: Subset<T, Student$testScoresArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TestScorePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     vocabProgresses<T extends Student$vocabProgressesArgs<ExtArgs> = {}>(args?: Subset<T, Student$vocabProgressesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VocabProgressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    drillProgresses<T extends Student$drillProgressesArgs<ExtArgs> = {}>(args?: Subset<T, Student$drillProgressesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DrillProgressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3417,7 +3521,6 @@ export namespace Prisma {
      * The data used to create many Students.
      */
     data: StudentCreateManyInput | StudentCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -3436,7 +3539,6 @@ export namespace Prisma {
      * The data used to create many Students.
      */
     data: StudentCreateManyInput | StudentCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -3765,6 +3867,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: VocabProgressScalarFieldEnum | VocabProgressScalarFieldEnum[]
+  }
+
+  /**
+   * Student.drillProgresses
+   */
+  export type Student$drillProgressesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DrillProgress
+     */
+    select?: DrillProgressSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DrillProgress
+     */
+    omit?: DrillProgressOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DrillProgressInclude<ExtArgs> | null
+    where?: DrillProgressWhereInput
+    orderBy?: DrillProgressOrderByWithRelationInput | DrillProgressOrderByWithRelationInput[]
+    cursor?: DrillProgressWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DrillProgressScalarFieldEnum | DrillProgressScalarFieldEnum[]
   }
 
   /**
@@ -4754,7 +4880,6 @@ export namespace Prisma {
      * The data used to create many Teachers.
      */
     data: TeacherCreateManyInput | TeacherCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -4773,7 +4898,6 @@ export namespace Prisma {
      * The data used to create many Teachers.
      */
     data: TeacherCreateManyInput | TeacherCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -5932,7 +6056,6 @@ export namespace Prisma {
      * The data used to create many LessonSchedules.
      */
     data: LessonScheduleCreateManyInput | LessonScheduleCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -5951,7 +6074,6 @@ export namespace Prisma {
      * The data used to create many LessonSchedules.
      */
     data: LessonScheduleCreateManyInput | LessonScheduleCreateManyInput[]
-    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -7166,7 +7288,6 @@ export namespace Prisma {
      * The data used to create many LessonRecords.
      */
     data: LessonRecordCreateManyInput | LessonRecordCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -7185,7 +7306,6 @@ export namespace Prisma {
      * The data used to create many LessonRecords.
      */
     data: LessonRecordCreateManyInput | LessonRecordCreateManyInput[]
-    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -8289,7 +8409,6 @@ export namespace Prisma {
      * The data used to create many TestScores.
      */
     data: TestScoreCreateManyInput | TestScoreCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -8308,7 +8427,6 @@ export namespace Prisma {
      * The data used to create many TestScores.
      */
     data: TestScoreCreateManyInput | TestScoreCreateManyInput[]
-    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -9381,7 +9499,6 @@ export namespace Prisma {
      * The data used to create many Messages.
      */
     data: MessageCreateManyInput | MessageCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -9400,7 +9517,6 @@ export namespace Prisma {
      * The data used to create many Messages.
      */
     data: MessageCreateManyInput | MessageCreateManyInput[]
-    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -10432,7 +10548,6 @@ export namespace Prisma {
      * The data used to create many Announcements.
      */
     data: AnnouncementCreateManyInput | AnnouncementCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -10451,7 +10566,6 @@ export namespace Prisma {
      * The data used to create many Announcements.
      */
     data: AnnouncementCreateManyInput | AnnouncementCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -11526,7 +11640,6 @@ export namespace Prisma {
      * The data used to create many Invoices.
      */
     data: InvoiceCreateManyInput | InvoiceCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -11545,7 +11658,6 @@ export namespace Prisma {
      * The data used to create many Invoices.
      */
     data: InvoiceCreateManyInput | InvoiceCreateManyInput[]
-    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -12617,7 +12729,6 @@ export namespace Prisma {
      * The data used to create many SchoolSettings.
      */
     data: SchoolSettingsCreateManyInput | SchoolSettingsCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -12636,7 +12747,6 @@ export namespace Prisma {
      * The data used to create many SchoolSettings.
      */
     data: SchoolSettingsCreateManyInput | SchoolSettingsCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -13749,7 +13859,6 @@ export namespace Prisma {
      * The data used to create many VocabProgresses.
      */
     data: VocabProgressCreateManyInput | VocabProgressCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -13768,7 +13877,6 @@ export namespace Prisma {
      * The data used to create many VocabProgresses.
      */
     data: VocabProgressCreateManyInput | VocabProgressCreateManyInput[]
-    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -14892,7 +15000,6 @@ export namespace Prisma {
      * The data used to create many GrammarProgresses.
      */
     data: GrammarProgressCreateManyInput | GrammarProgressCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -14911,7 +15018,6 @@ export namespace Prisma {
      * The data used to create many GrammarProgresses.
      */
     data: GrammarProgressCreateManyInput | GrammarProgressCreateManyInput[]
-    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -15074,6 +15180,1143 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: GrammarProgressInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model DrillProgress
+   */
+
+  export type AggregateDrillProgress = {
+    _count: DrillProgressCountAggregateOutputType | null
+    _avg: DrillProgressAvgAggregateOutputType | null
+    _sum: DrillProgressSumAggregateOutputType | null
+    _min: DrillProgressMinAggregateOutputType | null
+    _max: DrillProgressMaxAggregateOutputType | null
+  }
+
+  export type DrillProgressAvgAggregateOutputType = {
+    completions: number | null
+    perfectClears: number | null
+    highestScore: number | null
+  }
+
+  export type DrillProgressSumAggregateOutputType = {
+    completions: number | null
+    perfectClears: number | null
+    highestScore: number | null
+  }
+
+  export type DrillProgressMinAggregateOutputType = {
+    id: string | null
+    studentId: string | null
+    level: string | null
+    categoryId: string | null
+    completions: number | null
+    perfectClears: number | null
+    highestScore: number | null
+    lastPlayedAt: Date | null
+  }
+
+  export type DrillProgressMaxAggregateOutputType = {
+    id: string | null
+    studentId: string | null
+    level: string | null
+    categoryId: string | null
+    completions: number | null
+    perfectClears: number | null
+    highestScore: number | null
+    lastPlayedAt: Date | null
+  }
+
+  export type DrillProgressCountAggregateOutputType = {
+    id: number
+    studentId: number
+    level: number
+    categoryId: number
+    completions: number
+    perfectClears: number
+    highestScore: number
+    lastPlayedAt: number
+    _all: number
+  }
+
+
+  export type DrillProgressAvgAggregateInputType = {
+    completions?: true
+    perfectClears?: true
+    highestScore?: true
+  }
+
+  export type DrillProgressSumAggregateInputType = {
+    completions?: true
+    perfectClears?: true
+    highestScore?: true
+  }
+
+  export type DrillProgressMinAggregateInputType = {
+    id?: true
+    studentId?: true
+    level?: true
+    categoryId?: true
+    completions?: true
+    perfectClears?: true
+    highestScore?: true
+    lastPlayedAt?: true
+  }
+
+  export type DrillProgressMaxAggregateInputType = {
+    id?: true
+    studentId?: true
+    level?: true
+    categoryId?: true
+    completions?: true
+    perfectClears?: true
+    highestScore?: true
+    lastPlayedAt?: true
+  }
+
+  export type DrillProgressCountAggregateInputType = {
+    id?: true
+    studentId?: true
+    level?: true
+    categoryId?: true
+    completions?: true
+    perfectClears?: true
+    highestScore?: true
+    lastPlayedAt?: true
+    _all?: true
+  }
+
+  export type DrillProgressAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DrillProgress to aggregate.
+     */
+    where?: DrillProgressWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DrillProgresses to fetch.
+     */
+    orderBy?: DrillProgressOrderByWithRelationInput | DrillProgressOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DrillProgressWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DrillProgresses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DrillProgresses.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DrillProgresses
+    **/
+    _count?: true | DrillProgressCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DrillProgressAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DrillProgressSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DrillProgressMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DrillProgressMaxAggregateInputType
+  }
+
+  export type GetDrillProgressAggregateType<T extends DrillProgressAggregateArgs> = {
+        [P in keyof T & keyof AggregateDrillProgress]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDrillProgress[P]>
+      : GetScalarType<T[P], AggregateDrillProgress[P]>
+  }
+
+
+
+
+  export type DrillProgressGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DrillProgressWhereInput
+    orderBy?: DrillProgressOrderByWithAggregationInput | DrillProgressOrderByWithAggregationInput[]
+    by: DrillProgressScalarFieldEnum[] | DrillProgressScalarFieldEnum
+    having?: DrillProgressScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DrillProgressCountAggregateInputType | true
+    _avg?: DrillProgressAvgAggregateInputType
+    _sum?: DrillProgressSumAggregateInputType
+    _min?: DrillProgressMinAggregateInputType
+    _max?: DrillProgressMaxAggregateInputType
+  }
+
+  export type DrillProgressGroupByOutputType = {
+    id: string
+    studentId: string
+    level: string
+    categoryId: string
+    completions: number
+    perfectClears: number
+    highestScore: number
+    lastPlayedAt: Date
+    _count: DrillProgressCountAggregateOutputType | null
+    _avg: DrillProgressAvgAggregateOutputType | null
+    _sum: DrillProgressSumAggregateOutputType | null
+    _min: DrillProgressMinAggregateOutputType | null
+    _max: DrillProgressMaxAggregateOutputType | null
+  }
+
+  type GetDrillProgressGroupByPayload<T extends DrillProgressGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DrillProgressGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DrillProgressGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DrillProgressGroupByOutputType[P]>
+            : GetScalarType<T[P], DrillProgressGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DrillProgressSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    level?: boolean
+    categoryId?: boolean
+    completions?: boolean
+    perfectClears?: boolean
+    highestScore?: boolean
+    lastPlayedAt?: boolean
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["drillProgress"]>
+
+  export type DrillProgressSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    level?: boolean
+    categoryId?: boolean
+    completions?: boolean
+    perfectClears?: boolean
+    highestScore?: boolean
+    lastPlayedAt?: boolean
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["drillProgress"]>
+
+  export type DrillProgressSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    studentId?: boolean
+    level?: boolean
+    categoryId?: boolean
+    completions?: boolean
+    perfectClears?: boolean
+    highestScore?: boolean
+    lastPlayedAt?: boolean
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["drillProgress"]>
+
+  export type DrillProgressSelectScalar = {
+    id?: boolean
+    studentId?: boolean
+    level?: boolean
+    categoryId?: boolean
+    completions?: boolean
+    perfectClears?: boolean
+    highestScore?: boolean
+    lastPlayedAt?: boolean
+  }
+
+  export type DrillProgressOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "studentId" | "level" | "categoryId" | "completions" | "perfectClears" | "highestScore" | "lastPlayedAt", ExtArgs["result"]["drillProgress"]>
+  export type DrillProgressInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+  }
+  export type DrillProgressIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+  }
+  export type DrillProgressIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    student?: boolean | StudentDefaultArgs<ExtArgs>
+  }
+
+  export type $DrillProgressPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DrillProgress"
+    objects: {
+      student: Prisma.$StudentPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      studentId: string
+      level: string
+      categoryId: string
+      completions: number
+      perfectClears: number
+      highestScore: number
+      lastPlayedAt: Date
+    }, ExtArgs["result"]["drillProgress"]>
+    composites: {}
+  }
+
+  type DrillProgressGetPayload<S extends boolean | null | undefined | DrillProgressDefaultArgs> = $Result.GetResult<Prisma.$DrillProgressPayload, S>
+
+  type DrillProgressCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DrillProgressFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DrillProgressCountAggregateInputType | true
+    }
+
+  export interface DrillProgressDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DrillProgress'], meta: { name: 'DrillProgress' } }
+    /**
+     * Find zero or one DrillProgress that matches the filter.
+     * @param {DrillProgressFindUniqueArgs} args - Arguments to find a DrillProgress
+     * @example
+     * // Get one DrillProgress
+     * const drillProgress = await prisma.drillProgress.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DrillProgressFindUniqueArgs>(args: SelectSubset<T, DrillProgressFindUniqueArgs<ExtArgs>>): Prisma__DrillProgressClient<$Result.GetResult<Prisma.$DrillProgressPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one DrillProgress that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DrillProgressFindUniqueOrThrowArgs} args - Arguments to find a DrillProgress
+     * @example
+     * // Get one DrillProgress
+     * const drillProgress = await prisma.drillProgress.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DrillProgressFindUniqueOrThrowArgs>(args: SelectSubset<T, DrillProgressFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DrillProgressClient<$Result.GetResult<Prisma.$DrillProgressPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DrillProgress that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DrillProgressFindFirstArgs} args - Arguments to find a DrillProgress
+     * @example
+     * // Get one DrillProgress
+     * const drillProgress = await prisma.drillProgress.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DrillProgressFindFirstArgs>(args?: SelectSubset<T, DrillProgressFindFirstArgs<ExtArgs>>): Prisma__DrillProgressClient<$Result.GetResult<Prisma.$DrillProgressPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DrillProgress that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DrillProgressFindFirstOrThrowArgs} args - Arguments to find a DrillProgress
+     * @example
+     * // Get one DrillProgress
+     * const drillProgress = await prisma.drillProgress.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DrillProgressFindFirstOrThrowArgs>(args?: SelectSubset<T, DrillProgressFindFirstOrThrowArgs<ExtArgs>>): Prisma__DrillProgressClient<$Result.GetResult<Prisma.$DrillProgressPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more DrillProgresses that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DrillProgressFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DrillProgresses
+     * const drillProgresses = await prisma.drillProgress.findMany()
+     * 
+     * // Get first 10 DrillProgresses
+     * const drillProgresses = await prisma.drillProgress.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const drillProgressWithIdOnly = await prisma.drillProgress.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DrillProgressFindManyArgs>(args?: SelectSubset<T, DrillProgressFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DrillProgressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a DrillProgress.
+     * @param {DrillProgressCreateArgs} args - Arguments to create a DrillProgress.
+     * @example
+     * // Create one DrillProgress
+     * const DrillProgress = await prisma.drillProgress.create({
+     *   data: {
+     *     // ... data to create a DrillProgress
+     *   }
+     * })
+     * 
+     */
+    create<T extends DrillProgressCreateArgs>(args: SelectSubset<T, DrillProgressCreateArgs<ExtArgs>>): Prisma__DrillProgressClient<$Result.GetResult<Prisma.$DrillProgressPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many DrillProgresses.
+     * @param {DrillProgressCreateManyArgs} args - Arguments to create many DrillProgresses.
+     * @example
+     * // Create many DrillProgresses
+     * const drillProgress = await prisma.drillProgress.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DrillProgressCreateManyArgs>(args?: SelectSubset<T, DrillProgressCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DrillProgresses and returns the data saved in the database.
+     * @param {DrillProgressCreateManyAndReturnArgs} args - Arguments to create many DrillProgresses.
+     * @example
+     * // Create many DrillProgresses
+     * const drillProgress = await prisma.drillProgress.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DrillProgresses and only return the `id`
+     * const drillProgressWithIdOnly = await prisma.drillProgress.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DrillProgressCreateManyAndReturnArgs>(args?: SelectSubset<T, DrillProgressCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DrillProgressPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a DrillProgress.
+     * @param {DrillProgressDeleteArgs} args - Arguments to delete one DrillProgress.
+     * @example
+     * // Delete one DrillProgress
+     * const DrillProgress = await prisma.drillProgress.delete({
+     *   where: {
+     *     // ... filter to delete one DrillProgress
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DrillProgressDeleteArgs>(args: SelectSubset<T, DrillProgressDeleteArgs<ExtArgs>>): Prisma__DrillProgressClient<$Result.GetResult<Prisma.$DrillProgressPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one DrillProgress.
+     * @param {DrillProgressUpdateArgs} args - Arguments to update one DrillProgress.
+     * @example
+     * // Update one DrillProgress
+     * const drillProgress = await prisma.drillProgress.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DrillProgressUpdateArgs>(args: SelectSubset<T, DrillProgressUpdateArgs<ExtArgs>>): Prisma__DrillProgressClient<$Result.GetResult<Prisma.$DrillProgressPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more DrillProgresses.
+     * @param {DrillProgressDeleteManyArgs} args - Arguments to filter DrillProgresses to delete.
+     * @example
+     * // Delete a few DrillProgresses
+     * const { count } = await prisma.drillProgress.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DrillProgressDeleteManyArgs>(args?: SelectSubset<T, DrillProgressDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DrillProgresses.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DrillProgressUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DrillProgresses
+     * const drillProgress = await prisma.drillProgress.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DrillProgressUpdateManyArgs>(args: SelectSubset<T, DrillProgressUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DrillProgresses and returns the data updated in the database.
+     * @param {DrillProgressUpdateManyAndReturnArgs} args - Arguments to update many DrillProgresses.
+     * @example
+     * // Update many DrillProgresses
+     * const drillProgress = await prisma.drillProgress.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more DrillProgresses and only return the `id`
+     * const drillProgressWithIdOnly = await prisma.drillProgress.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DrillProgressUpdateManyAndReturnArgs>(args: SelectSubset<T, DrillProgressUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DrillProgressPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one DrillProgress.
+     * @param {DrillProgressUpsertArgs} args - Arguments to update or create a DrillProgress.
+     * @example
+     * // Update or create a DrillProgress
+     * const drillProgress = await prisma.drillProgress.upsert({
+     *   create: {
+     *     // ... data to create a DrillProgress
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DrillProgress we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DrillProgressUpsertArgs>(args: SelectSubset<T, DrillProgressUpsertArgs<ExtArgs>>): Prisma__DrillProgressClient<$Result.GetResult<Prisma.$DrillProgressPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of DrillProgresses.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DrillProgressCountArgs} args - Arguments to filter DrillProgresses to count.
+     * @example
+     * // Count the number of DrillProgresses
+     * const count = await prisma.drillProgress.count({
+     *   where: {
+     *     // ... the filter for the DrillProgresses we want to count
+     *   }
+     * })
+    **/
+    count<T extends DrillProgressCountArgs>(
+      args?: Subset<T, DrillProgressCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DrillProgressCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DrillProgress.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DrillProgressAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DrillProgressAggregateArgs>(args: Subset<T, DrillProgressAggregateArgs>): Prisma.PrismaPromise<GetDrillProgressAggregateType<T>>
+
+    /**
+     * Group by DrillProgress.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DrillProgressGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DrillProgressGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DrillProgressGroupByArgs['orderBy'] }
+        : { orderBy?: DrillProgressGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DrillProgressGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDrillProgressGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DrillProgress model
+   */
+  readonly fields: DrillProgressFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DrillProgress.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DrillProgressClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    student<T extends StudentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, StudentDefaultArgs<ExtArgs>>): Prisma__StudentClient<$Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DrillProgress model
+   */
+  interface DrillProgressFieldRefs {
+    readonly id: FieldRef<"DrillProgress", 'String'>
+    readonly studentId: FieldRef<"DrillProgress", 'String'>
+    readonly level: FieldRef<"DrillProgress", 'String'>
+    readonly categoryId: FieldRef<"DrillProgress", 'String'>
+    readonly completions: FieldRef<"DrillProgress", 'Int'>
+    readonly perfectClears: FieldRef<"DrillProgress", 'Int'>
+    readonly highestScore: FieldRef<"DrillProgress", 'Int'>
+    readonly lastPlayedAt: FieldRef<"DrillProgress", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DrillProgress findUnique
+   */
+  export type DrillProgressFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DrillProgress
+     */
+    select?: DrillProgressSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DrillProgress
+     */
+    omit?: DrillProgressOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DrillProgressInclude<ExtArgs> | null
+    /**
+     * Filter, which DrillProgress to fetch.
+     */
+    where: DrillProgressWhereUniqueInput
+  }
+
+  /**
+   * DrillProgress findUniqueOrThrow
+   */
+  export type DrillProgressFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DrillProgress
+     */
+    select?: DrillProgressSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DrillProgress
+     */
+    omit?: DrillProgressOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DrillProgressInclude<ExtArgs> | null
+    /**
+     * Filter, which DrillProgress to fetch.
+     */
+    where: DrillProgressWhereUniqueInput
+  }
+
+  /**
+   * DrillProgress findFirst
+   */
+  export type DrillProgressFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DrillProgress
+     */
+    select?: DrillProgressSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DrillProgress
+     */
+    omit?: DrillProgressOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DrillProgressInclude<ExtArgs> | null
+    /**
+     * Filter, which DrillProgress to fetch.
+     */
+    where?: DrillProgressWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DrillProgresses to fetch.
+     */
+    orderBy?: DrillProgressOrderByWithRelationInput | DrillProgressOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DrillProgresses.
+     */
+    cursor?: DrillProgressWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DrillProgresses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DrillProgresses.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DrillProgresses.
+     */
+    distinct?: DrillProgressScalarFieldEnum | DrillProgressScalarFieldEnum[]
+  }
+
+  /**
+   * DrillProgress findFirstOrThrow
+   */
+  export type DrillProgressFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DrillProgress
+     */
+    select?: DrillProgressSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DrillProgress
+     */
+    omit?: DrillProgressOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DrillProgressInclude<ExtArgs> | null
+    /**
+     * Filter, which DrillProgress to fetch.
+     */
+    where?: DrillProgressWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DrillProgresses to fetch.
+     */
+    orderBy?: DrillProgressOrderByWithRelationInput | DrillProgressOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DrillProgresses.
+     */
+    cursor?: DrillProgressWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DrillProgresses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DrillProgresses.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DrillProgresses.
+     */
+    distinct?: DrillProgressScalarFieldEnum | DrillProgressScalarFieldEnum[]
+  }
+
+  /**
+   * DrillProgress findMany
+   */
+  export type DrillProgressFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DrillProgress
+     */
+    select?: DrillProgressSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DrillProgress
+     */
+    omit?: DrillProgressOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DrillProgressInclude<ExtArgs> | null
+    /**
+     * Filter, which DrillProgresses to fetch.
+     */
+    where?: DrillProgressWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DrillProgresses to fetch.
+     */
+    orderBy?: DrillProgressOrderByWithRelationInput | DrillProgressOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DrillProgresses.
+     */
+    cursor?: DrillProgressWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DrillProgresses from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DrillProgresses.
+     */
+    skip?: number
+    distinct?: DrillProgressScalarFieldEnum | DrillProgressScalarFieldEnum[]
+  }
+
+  /**
+   * DrillProgress create
+   */
+  export type DrillProgressCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DrillProgress
+     */
+    select?: DrillProgressSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DrillProgress
+     */
+    omit?: DrillProgressOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DrillProgressInclude<ExtArgs> | null
+    /**
+     * The data needed to create a DrillProgress.
+     */
+    data: XOR<DrillProgressCreateInput, DrillProgressUncheckedCreateInput>
+  }
+
+  /**
+   * DrillProgress createMany
+   */
+  export type DrillProgressCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DrillProgresses.
+     */
+    data: DrillProgressCreateManyInput | DrillProgressCreateManyInput[]
+  }
+
+  /**
+   * DrillProgress createManyAndReturn
+   */
+  export type DrillProgressCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DrillProgress
+     */
+    select?: DrillProgressSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DrillProgress
+     */
+    omit?: DrillProgressOmit<ExtArgs> | null
+    /**
+     * The data used to create many DrillProgresses.
+     */
+    data: DrillProgressCreateManyInput | DrillProgressCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DrillProgressIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DrillProgress update
+   */
+  export type DrillProgressUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DrillProgress
+     */
+    select?: DrillProgressSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DrillProgress
+     */
+    omit?: DrillProgressOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DrillProgressInclude<ExtArgs> | null
+    /**
+     * The data needed to update a DrillProgress.
+     */
+    data: XOR<DrillProgressUpdateInput, DrillProgressUncheckedUpdateInput>
+    /**
+     * Choose, which DrillProgress to update.
+     */
+    where: DrillProgressWhereUniqueInput
+  }
+
+  /**
+   * DrillProgress updateMany
+   */
+  export type DrillProgressUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DrillProgresses.
+     */
+    data: XOR<DrillProgressUpdateManyMutationInput, DrillProgressUncheckedUpdateManyInput>
+    /**
+     * Filter which DrillProgresses to update
+     */
+    where?: DrillProgressWhereInput
+    /**
+     * Limit how many DrillProgresses to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DrillProgress updateManyAndReturn
+   */
+  export type DrillProgressUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DrillProgress
+     */
+    select?: DrillProgressSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DrillProgress
+     */
+    omit?: DrillProgressOmit<ExtArgs> | null
+    /**
+     * The data used to update DrillProgresses.
+     */
+    data: XOR<DrillProgressUpdateManyMutationInput, DrillProgressUncheckedUpdateManyInput>
+    /**
+     * Filter which DrillProgresses to update
+     */
+    where?: DrillProgressWhereInput
+    /**
+     * Limit how many DrillProgresses to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DrillProgressIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * DrillProgress upsert
+   */
+  export type DrillProgressUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DrillProgress
+     */
+    select?: DrillProgressSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DrillProgress
+     */
+    omit?: DrillProgressOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DrillProgressInclude<ExtArgs> | null
+    /**
+     * The filter to search for the DrillProgress to update in case it exists.
+     */
+    where: DrillProgressWhereUniqueInput
+    /**
+     * In case the DrillProgress found by the `where` argument doesn't exist, create a new DrillProgress with this data.
+     */
+    create: XOR<DrillProgressCreateInput, DrillProgressUncheckedCreateInput>
+    /**
+     * In case the DrillProgress was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DrillProgressUpdateInput, DrillProgressUncheckedUpdateInput>
+  }
+
+  /**
+   * DrillProgress delete
+   */
+  export type DrillProgressDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DrillProgress
+     */
+    select?: DrillProgressSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DrillProgress
+     */
+    omit?: DrillProgressOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DrillProgressInclude<ExtArgs> | null
+    /**
+     * Filter which DrillProgress to delete.
+     */
+    where: DrillProgressWhereUniqueInput
+  }
+
+  /**
+   * DrillProgress deleteMany
+   */
+  export type DrillProgressDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DrillProgresses to delete
+     */
+    where?: DrillProgressWhereInput
+    /**
+     * Limit how many DrillProgresses to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * DrillProgress without action
+   */
+  export type DrillProgressDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DrillProgress
+     */
+    select?: DrillProgressSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DrillProgress
+     */
+    omit?: DrillProgressOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DrillProgressInclude<ExtArgs> | null
   }
 
 
@@ -15967,7 +17210,6 @@ export namespace Prisma {
      * The data used to create many GrammarPoints.
      */
     data: GrammarPointCreateManyInput | GrammarPointCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -15986,7 +17228,6 @@ export namespace Prisma {
      * The data used to create many GrammarPoints.
      */
     data: GrammarPointCreateManyInput | GrammarPointCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -17049,7 +18290,6 @@ export namespace Prisma {
      * The data used to create many GrammarMasteries.
      */
     data: GrammarMasteryCreateManyInput | GrammarMasteryCreateManyInput[]
-    skipDuplicates?: boolean
   }
 
   /**
@@ -17068,7 +18308,6 @@ export namespace Prisma {
      * The data used to create many GrammarMasteries.
      */
     data: GrammarMasteryCreateManyInput | GrammarMasteryCreateManyInput[]
-    skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
@@ -17239,9 +18478,6 @@ export namespace Prisma {
    */
 
   export const TransactionIsolationLevel: {
-    ReadUncommitted: 'ReadUncommitted',
-    ReadCommitted: 'ReadCommitted',
-    RepeatableRead: 'RepeatableRead',
     Serializable: 'Serializable'
   };
 
@@ -17437,6 +18673,20 @@ export namespace Prisma {
   export type GrammarProgressScalarFieldEnum = (typeof GrammarProgressScalarFieldEnum)[keyof typeof GrammarProgressScalarFieldEnum]
 
 
+  export const DrillProgressScalarFieldEnum: {
+    id: 'id',
+    studentId: 'studentId',
+    level: 'level',
+    categoryId: 'categoryId',
+    completions: 'completions',
+    perfectClears: 'perfectClears',
+    highestScore: 'highestScore',
+    lastPlayedAt: 'lastPlayedAt'
+  };
+
+  export type DrillProgressScalarFieldEnum = (typeof DrillProgressScalarFieldEnum)[keyof typeof DrillProgressScalarFieldEnum]
+
+
   export const GrammarPointScalarFieldEnum: {
     id: 'id',
     label: 'label',
@@ -17466,14 +18716,6 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
-  export const QueryMode: {
-    default: 'default',
-    insensitive: 'insensitive'
-  };
-
-  export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
-
-
   export const NullsOrder: {
     first: 'first',
     last: 'last'
@@ -17495,23 +18737,9 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'String[]'
-   */
-  export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'String[]'>
-    
-
-
-  /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -17523,23 +18751,9 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'DateTime[]'
-   */
-  export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
-    
-
-
-  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-  /**
-   * Reference to a field of type 'Float[]'
-   */
-  export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 
@@ -17596,6 +18810,7 @@ export namespace Prisma {
     messages?: MessageListRelationFilter
     testScores?: TestScoreListRelationFilter
     vocabProgresses?: VocabProgressListRelationFilter
+    drillProgresses?: DrillProgressListRelationFilter
   }
 
   export type StudentOrderByWithRelationInput = {
@@ -17638,6 +18853,7 @@ export namespace Prisma {
     messages?: MessageOrderByRelationAggregateInput
     testScores?: TestScoreOrderByRelationAggregateInput
     vocabProgresses?: VocabProgressOrderByRelationAggregateInput
+    drillProgresses?: DrillProgressOrderByRelationAggregateInput
   }
 
   export type StudentWhereUniqueInput = Prisma.AtLeast<{
@@ -17683,6 +18899,7 @@ export namespace Prisma {
     messages?: MessageListRelationFilter
     testScores?: TestScoreListRelationFilter
     vocabProgresses?: VocabProgressListRelationFilter
+    drillProgresses?: DrillProgressListRelationFilter
   }, "id" | "email" | "loginId">
 
   export type StudentOrderByWithAggregationInput = {
@@ -18532,6 +19749,79 @@ export namespace Prisma {
     lastPlayedAt?: DateTimeWithAggregatesFilter<"GrammarProgress"> | Date | string
   }
 
+  export type DrillProgressWhereInput = {
+    AND?: DrillProgressWhereInput | DrillProgressWhereInput[]
+    OR?: DrillProgressWhereInput[]
+    NOT?: DrillProgressWhereInput | DrillProgressWhereInput[]
+    id?: StringFilter<"DrillProgress"> | string
+    studentId?: StringFilter<"DrillProgress"> | string
+    level?: StringFilter<"DrillProgress"> | string
+    categoryId?: StringFilter<"DrillProgress"> | string
+    completions?: IntFilter<"DrillProgress"> | number
+    perfectClears?: IntFilter<"DrillProgress"> | number
+    highestScore?: IntFilter<"DrillProgress"> | number
+    lastPlayedAt?: DateTimeFilter<"DrillProgress"> | Date | string
+    student?: XOR<StudentScalarRelationFilter, StudentWhereInput>
+  }
+
+  export type DrillProgressOrderByWithRelationInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    level?: SortOrder
+    categoryId?: SortOrder
+    completions?: SortOrder
+    perfectClears?: SortOrder
+    highestScore?: SortOrder
+    lastPlayedAt?: SortOrder
+    student?: StudentOrderByWithRelationInput
+  }
+
+  export type DrillProgressWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    studentId_level_categoryId?: DrillProgressStudentIdLevelCategoryIdCompoundUniqueInput
+    AND?: DrillProgressWhereInput | DrillProgressWhereInput[]
+    OR?: DrillProgressWhereInput[]
+    NOT?: DrillProgressWhereInput | DrillProgressWhereInput[]
+    studentId?: StringFilter<"DrillProgress"> | string
+    level?: StringFilter<"DrillProgress"> | string
+    categoryId?: StringFilter<"DrillProgress"> | string
+    completions?: IntFilter<"DrillProgress"> | number
+    perfectClears?: IntFilter<"DrillProgress"> | number
+    highestScore?: IntFilter<"DrillProgress"> | number
+    lastPlayedAt?: DateTimeFilter<"DrillProgress"> | Date | string
+    student?: XOR<StudentScalarRelationFilter, StudentWhereInput>
+  }, "id" | "studentId_level_categoryId">
+
+  export type DrillProgressOrderByWithAggregationInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    level?: SortOrder
+    categoryId?: SortOrder
+    completions?: SortOrder
+    perfectClears?: SortOrder
+    highestScore?: SortOrder
+    lastPlayedAt?: SortOrder
+    _count?: DrillProgressCountOrderByAggregateInput
+    _avg?: DrillProgressAvgOrderByAggregateInput
+    _max?: DrillProgressMaxOrderByAggregateInput
+    _min?: DrillProgressMinOrderByAggregateInput
+    _sum?: DrillProgressSumOrderByAggregateInput
+  }
+
+  export type DrillProgressScalarWhereWithAggregatesInput = {
+    AND?: DrillProgressScalarWhereWithAggregatesInput | DrillProgressScalarWhereWithAggregatesInput[]
+    OR?: DrillProgressScalarWhereWithAggregatesInput[]
+    NOT?: DrillProgressScalarWhereWithAggregatesInput | DrillProgressScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"DrillProgress"> | string
+    studentId?: StringWithAggregatesFilter<"DrillProgress"> | string
+    level?: StringWithAggregatesFilter<"DrillProgress"> | string
+    categoryId?: StringWithAggregatesFilter<"DrillProgress"> | string
+    completions?: IntWithAggregatesFilter<"DrillProgress"> | number
+    perfectClears?: IntWithAggregatesFilter<"DrillProgress"> | number
+    highestScore?: IntWithAggregatesFilter<"DrillProgress"> | number
+    lastPlayedAt?: DateTimeWithAggregatesFilter<"DrillProgress"> | Date | string
+  }
+
   export type GrammarPointWhereInput = {
     AND?: GrammarPointWhereInput | GrammarPointWhereInput[]
     OR?: GrammarPointWhereInput[]
@@ -18683,6 +19973,7 @@ export namespace Prisma {
     messages?: MessageCreateNestedManyWithoutStudentInput
     testScores?: TestScoreCreateNestedManyWithoutStudentInput
     vocabProgresses?: VocabProgressCreateNestedManyWithoutStudentInput
+    drillProgresses?: DrillProgressCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateInput = {
@@ -18725,6 +20016,7 @@ export namespace Prisma {
     messages?: MessageUncheckedCreateNestedManyWithoutStudentInput
     testScores?: TestScoreUncheckedCreateNestedManyWithoutStudentInput
     vocabProgresses?: VocabProgressUncheckedCreateNestedManyWithoutStudentInput
+    drillProgresses?: DrillProgressUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUpdateInput = {
@@ -18767,6 +20059,7 @@ export namespace Prisma {
     messages?: MessageUpdateManyWithoutStudentNestedInput
     testScores?: TestScoreUpdateManyWithoutStudentNestedInput
     vocabProgresses?: VocabProgressUpdateManyWithoutStudentNestedInput
+    drillProgresses?: DrillProgressUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateInput = {
@@ -18809,6 +20102,7 @@ export namespace Prisma {
     messages?: MessageUncheckedUpdateManyWithoutStudentNestedInput
     testScores?: TestScoreUncheckedUpdateManyWithoutStudentNestedInput
     vocabProgresses?: VocabProgressUncheckedUpdateManyWithoutStudentNestedInput
+    drillProgresses?: DrillProgressUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentCreateManyInput = {
@@ -19760,6 +21054,82 @@ export namespace Prisma {
     lastPlayedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DrillProgressCreateInput = {
+    id?: string
+    level: string
+    categoryId: string
+    completions?: number
+    perfectClears?: number
+    highestScore?: number
+    lastPlayedAt?: Date | string
+    student: StudentCreateNestedOneWithoutDrillProgressesInput
+  }
+
+  export type DrillProgressUncheckedCreateInput = {
+    id?: string
+    studentId: string
+    level: string
+    categoryId: string
+    completions?: number
+    perfectClears?: number
+    highestScore?: number
+    lastPlayedAt?: Date | string
+  }
+
+  export type DrillProgressUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    level?: StringFieldUpdateOperationsInput | string
+    categoryId?: StringFieldUpdateOperationsInput | string
+    completions?: IntFieldUpdateOperationsInput | number
+    perfectClears?: IntFieldUpdateOperationsInput | number
+    highestScore?: IntFieldUpdateOperationsInput | number
+    lastPlayedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    student?: StudentUpdateOneRequiredWithoutDrillProgressesNestedInput
+  }
+
+  export type DrillProgressUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    level?: StringFieldUpdateOperationsInput | string
+    categoryId?: StringFieldUpdateOperationsInput | string
+    completions?: IntFieldUpdateOperationsInput | number
+    perfectClears?: IntFieldUpdateOperationsInput | number
+    highestScore?: IntFieldUpdateOperationsInput | number
+    lastPlayedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DrillProgressCreateManyInput = {
+    id?: string
+    studentId: string
+    level: string
+    categoryId: string
+    completions?: number
+    perfectClears?: number
+    highestScore?: number
+    lastPlayedAt?: Date | string
+  }
+
+  export type DrillProgressUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    level?: StringFieldUpdateOperationsInput | string
+    categoryId?: StringFieldUpdateOperationsInput | string
+    completions?: IntFieldUpdateOperationsInput | number
+    perfectClears?: IntFieldUpdateOperationsInput | number
+    highestScore?: IntFieldUpdateOperationsInput | number
+    lastPlayedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DrillProgressUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    studentId?: StringFieldUpdateOperationsInput | string
+    level?: StringFieldUpdateOperationsInput | string
+    categoryId?: StringFieldUpdateOperationsInput | string
+    completions?: IntFieldUpdateOperationsInput | number
+    perfectClears?: IntFieldUpdateOperationsInput | number
+    highestScore?: IntFieldUpdateOperationsInput | number
+    lastPlayedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type GrammarPointCreateInput = {
     id?: string
     label: string
@@ -19869,8 +21239,8 @@ export namespace Prisma {
 
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    in?: string[]
+    notIn?: string[]
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -19878,14 +21248,13 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
     not?: NestedStringFilter<$PrismaModel> | string
   }
 
   export type StringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -19893,14 +21262,13 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -19910,8 +21278,8 @@ export namespace Prisma {
 
   export type IntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -19921,8 +21289,8 @@ export namespace Prisma {
 
   export type DateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -19978,6 +21346,12 @@ export namespace Prisma {
     none?: VocabProgressWhereInput
   }
 
+  export type DrillProgressListRelationFilter = {
+    every?: DrillProgressWhereInput
+    some?: DrillProgressWhereInput
+    none?: DrillProgressWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -20012,6 +21386,10 @@ export namespace Prisma {
   }
 
   export type VocabProgressOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type DrillProgressOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -20147,8 +21525,8 @@ export namespace Prisma {
 
   export type StringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    in?: string[]
+    notIn?: string[]
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -20156,7 +21534,6 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
     not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedStringFilter<$PrismaModel>
@@ -20165,8 +21542,8 @@ export namespace Prisma {
 
   export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -20174,7 +21551,6 @@ export namespace Prisma {
     contains?: string | StringFieldRefInput<$PrismaModel>
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
     not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
@@ -20183,8 +21559,8 @@ export namespace Prisma {
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -20199,8 +21575,8 @@ export namespace Prisma {
 
   export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -20215,8 +21591,8 @@ export namespace Prisma {
 
   export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -20229,8 +21605,8 @@ export namespace Prisma {
 
   export type FloatNullableFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
     lt?: number | FloatFieldRefInput<$PrismaModel>
     lte?: number | FloatFieldRefInput<$PrismaModel>
     gt?: number | FloatFieldRefInput<$PrismaModel>
@@ -20287,8 +21663,8 @@ export namespace Prisma {
 
   export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
     lt?: number | FloatFieldRefInput<$PrismaModel>
     lte?: number | FloatFieldRefInput<$PrismaModel>
     gt?: number | FloatFieldRefInput<$PrismaModel>
@@ -20424,8 +21800,8 @@ export namespace Prisma {
 
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -20474,8 +21850,8 @@ export namespace Prisma {
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -20753,6 +22129,57 @@ export namespace Prisma {
     highestScore?: SortOrder
   }
 
+  export type DrillProgressStudentIdLevelCategoryIdCompoundUniqueInput = {
+    studentId: string
+    level: string
+    categoryId: string
+  }
+
+  export type DrillProgressCountOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    level?: SortOrder
+    categoryId?: SortOrder
+    completions?: SortOrder
+    perfectClears?: SortOrder
+    highestScore?: SortOrder
+    lastPlayedAt?: SortOrder
+  }
+
+  export type DrillProgressAvgOrderByAggregateInput = {
+    completions?: SortOrder
+    perfectClears?: SortOrder
+    highestScore?: SortOrder
+  }
+
+  export type DrillProgressMaxOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    level?: SortOrder
+    categoryId?: SortOrder
+    completions?: SortOrder
+    perfectClears?: SortOrder
+    highestScore?: SortOrder
+    lastPlayedAt?: SortOrder
+  }
+
+  export type DrillProgressMinOrderByAggregateInput = {
+    id?: SortOrder
+    studentId?: SortOrder
+    level?: SortOrder
+    categoryId?: SortOrder
+    completions?: SortOrder
+    perfectClears?: SortOrder
+    highestScore?: SortOrder
+    lastPlayedAt?: SortOrder
+  }
+
+  export type DrillProgressSumOrderByAggregateInput = {
+    completions?: SortOrder
+    perfectClears?: SortOrder
+    highestScore?: SortOrder
+  }
+
   export type GrammarPointCountOrderByAggregateInput = {
     id?: SortOrder
     label?: SortOrder
@@ -20872,6 +22299,13 @@ export namespace Prisma {
     connect?: VocabProgressWhereUniqueInput | VocabProgressWhereUniqueInput[]
   }
 
+  export type DrillProgressCreateNestedManyWithoutStudentInput = {
+    create?: XOR<DrillProgressCreateWithoutStudentInput, DrillProgressUncheckedCreateWithoutStudentInput> | DrillProgressCreateWithoutStudentInput[] | DrillProgressUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: DrillProgressCreateOrConnectWithoutStudentInput | DrillProgressCreateOrConnectWithoutStudentInput[]
+    createMany?: DrillProgressCreateManyStudentInputEnvelope
+    connect?: DrillProgressWhereUniqueInput | DrillProgressWhereUniqueInput[]
+  }
+
   export type GrammarProgressUncheckedCreateNestedManyWithoutStudentInput = {
     create?: XOR<GrammarProgressCreateWithoutStudentInput, GrammarProgressUncheckedCreateWithoutStudentInput> | GrammarProgressCreateWithoutStudentInput[] | GrammarProgressUncheckedCreateWithoutStudentInput[]
     connectOrCreate?: GrammarProgressCreateOrConnectWithoutStudentInput | GrammarProgressCreateOrConnectWithoutStudentInput[]
@@ -20926,6 +22360,13 @@ export namespace Prisma {
     connectOrCreate?: VocabProgressCreateOrConnectWithoutStudentInput | VocabProgressCreateOrConnectWithoutStudentInput[]
     createMany?: VocabProgressCreateManyStudentInputEnvelope
     connect?: VocabProgressWhereUniqueInput | VocabProgressWhereUniqueInput[]
+  }
+
+  export type DrillProgressUncheckedCreateNestedManyWithoutStudentInput = {
+    create?: XOR<DrillProgressCreateWithoutStudentInput, DrillProgressUncheckedCreateWithoutStudentInput> | DrillProgressCreateWithoutStudentInput[] | DrillProgressUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: DrillProgressCreateOrConnectWithoutStudentInput | DrillProgressCreateOrConnectWithoutStudentInput[]
+    createMany?: DrillProgressCreateManyStudentInputEnvelope
+    connect?: DrillProgressWhereUniqueInput | DrillProgressWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -21068,6 +22509,20 @@ export namespace Prisma {
     deleteMany?: VocabProgressScalarWhereInput | VocabProgressScalarWhereInput[]
   }
 
+  export type DrillProgressUpdateManyWithoutStudentNestedInput = {
+    create?: XOR<DrillProgressCreateWithoutStudentInput, DrillProgressUncheckedCreateWithoutStudentInput> | DrillProgressCreateWithoutStudentInput[] | DrillProgressUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: DrillProgressCreateOrConnectWithoutStudentInput | DrillProgressCreateOrConnectWithoutStudentInput[]
+    upsert?: DrillProgressUpsertWithWhereUniqueWithoutStudentInput | DrillProgressUpsertWithWhereUniqueWithoutStudentInput[]
+    createMany?: DrillProgressCreateManyStudentInputEnvelope
+    set?: DrillProgressWhereUniqueInput | DrillProgressWhereUniqueInput[]
+    disconnect?: DrillProgressWhereUniqueInput | DrillProgressWhereUniqueInput[]
+    delete?: DrillProgressWhereUniqueInput | DrillProgressWhereUniqueInput[]
+    connect?: DrillProgressWhereUniqueInput | DrillProgressWhereUniqueInput[]
+    update?: DrillProgressUpdateWithWhereUniqueWithoutStudentInput | DrillProgressUpdateWithWhereUniqueWithoutStudentInput[]
+    updateMany?: DrillProgressUpdateManyWithWhereWithoutStudentInput | DrillProgressUpdateManyWithWhereWithoutStudentInput[]
+    deleteMany?: DrillProgressScalarWhereInput | DrillProgressScalarWhereInput[]
+  }
+
   export type GrammarProgressUncheckedUpdateManyWithoutStudentNestedInput = {
     create?: XOR<GrammarProgressCreateWithoutStudentInput, GrammarProgressUncheckedCreateWithoutStudentInput> | GrammarProgressCreateWithoutStudentInput[] | GrammarProgressUncheckedCreateWithoutStudentInput[]
     connectOrCreate?: GrammarProgressCreateOrConnectWithoutStudentInput | GrammarProgressCreateOrConnectWithoutStudentInput[]
@@ -21178,6 +22633,20 @@ export namespace Prisma {
     update?: VocabProgressUpdateWithWhereUniqueWithoutStudentInput | VocabProgressUpdateWithWhereUniqueWithoutStudentInput[]
     updateMany?: VocabProgressUpdateManyWithWhereWithoutStudentInput | VocabProgressUpdateManyWithWhereWithoutStudentInput[]
     deleteMany?: VocabProgressScalarWhereInput | VocabProgressScalarWhereInput[]
+  }
+
+  export type DrillProgressUncheckedUpdateManyWithoutStudentNestedInput = {
+    create?: XOR<DrillProgressCreateWithoutStudentInput, DrillProgressUncheckedCreateWithoutStudentInput> | DrillProgressCreateWithoutStudentInput[] | DrillProgressUncheckedCreateWithoutStudentInput[]
+    connectOrCreate?: DrillProgressCreateOrConnectWithoutStudentInput | DrillProgressCreateOrConnectWithoutStudentInput[]
+    upsert?: DrillProgressUpsertWithWhereUniqueWithoutStudentInput | DrillProgressUpsertWithWhereUniqueWithoutStudentInput[]
+    createMany?: DrillProgressCreateManyStudentInputEnvelope
+    set?: DrillProgressWhereUniqueInput | DrillProgressWhereUniqueInput[]
+    disconnect?: DrillProgressWhereUniqueInput | DrillProgressWhereUniqueInput[]
+    delete?: DrillProgressWhereUniqueInput | DrillProgressWhereUniqueInput[]
+    connect?: DrillProgressWhereUniqueInput | DrillProgressWhereUniqueInput[]
+    update?: DrillProgressUpdateWithWhereUniqueWithoutStudentInput | DrillProgressUpdateWithWhereUniqueWithoutStudentInput[]
+    updateMany?: DrillProgressUpdateManyWithWhereWithoutStudentInput | DrillProgressUpdateManyWithWhereWithoutStudentInput[]
+    deleteMany?: DrillProgressScalarWhereInput | DrillProgressScalarWhereInput[]
   }
 
   export type MessageCreateNestedManyWithoutTeacherInput = {
@@ -21352,6 +22821,20 @@ export namespace Prisma {
     update?: XOR<XOR<StudentUpdateToOneWithWhereWithoutGrammarProgressesInput, StudentUpdateWithoutGrammarProgressesInput>, StudentUncheckedUpdateWithoutGrammarProgressesInput>
   }
 
+  export type StudentCreateNestedOneWithoutDrillProgressesInput = {
+    create?: XOR<StudentCreateWithoutDrillProgressesInput, StudentUncheckedCreateWithoutDrillProgressesInput>
+    connectOrCreate?: StudentCreateOrConnectWithoutDrillProgressesInput
+    connect?: StudentWhereUniqueInput
+  }
+
+  export type StudentUpdateOneRequiredWithoutDrillProgressesNestedInput = {
+    create?: XOR<StudentCreateWithoutDrillProgressesInput, StudentUncheckedCreateWithoutDrillProgressesInput>
+    connectOrCreate?: StudentCreateOrConnectWithoutDrillProgressesInput
+    upsert?: StudentUpsertWithoutDrillProgressesInput
+    connect?: StudentWhereUniqueInput
+    update?: XOR<XOR<StudentUpdateToOneWithWhereWithoutDrillProgressesInput, StudentUpdateWithoutDrillProgressesInput>, StudentUncheckedUpdateWithoutDrillProgressesInput>
+  }
+
   export type GrammarMasteryCreateNestedManyWithoutGrammarPointInput = {
     create?: XOR<GrammarMasteryCreateWithoutGrammarPointInput, GrammarMasteryUncheckedCreateWithoutGrammarPointInput> | GrammarMasteryCreateWithoutGrammarPointInput[] | GrammarMasteryUncheckedCreateWithoutGrammarPointInput[]
     connectOrCreate?: GrammarMasteryCreateOrConnectWithoutGrammarPointInput | GrammarMasteryCreateOrConnectWithoutGrammarPointInput[]
@@ -21424,8 +22907,8 @@ export namespace Prisma {
 
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    in?: string[]
+    notIn?: string[]
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -21438,8 +22921,8 @@ export namespace Prisma {
 
   export type NestedStringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -21452,8 +22935,8 @@ export namespace Prisma {
 
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -21463,8 +22946,8 @@ export namespace Prisma {
 
   export type NestedIntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -21474,8 +22957,8 @@ export namespace Prisma {
 
   export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -21485,8 +22968,8 @@ export namespace Prisma {
 
   export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    in?: string[]
+    notIn?: string[]
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -21502,8 +22985,8 @@ export namespace Prisma {
 
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
     lt?: string | StringFieldRefInput<$PrismaModel>
     lte?: string | StringFieldRefInput<$PrismaModel>
     gt?: string | StringFieldRefInput<$PrismaModel>
@@ -21519,8 +23002,8 @@ export namespace Prisma {
 
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -21535,8 +23018,8 @@ export namespace Prisma {
 
   export type NestedFloatFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    in?: number[]
+    notIn?: number[]
     lt?: number | FloatFieldRefInput<$PrismaModel>
     lte?: number | FloatFieldRefInput<$PrismaModel>
     gt?: number | FloatFieldRefInput<$PrismaModel>
@@ -21546,8 +23029,8 @@ export namespace Prisma {
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
     lt?: number | IntFieldRefInput<$PrismaModel>
     lte?: number | IntFieldRefInput<$PrismaModel>
     gt?: number | IntFieldRefInput<$PrismaModel>
@@ -21562,8 +23045,8 @@ export namespace Prisma {
 
   export type NestedFloatNullableFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
     lt?: number | FloatFieldRefInput<$PrismaModel>
     lte?: number | FloatFieldRefInput<$PrismaModel>
     gt?: number | FloatFieldRefInput<$PrismaModel>
@@ -21573,8 +23056,8 @@ export namespace Prisma {
 
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -21587,8 +23070,8 @@ export namespace Prisma {
 
   export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
     lt?: number | FloatFieldRefInput<$PrismaModel>
     lte?: number | FloatFieldRefInput<$PrismaModel>
     gt?: number | FloatFieldRefInput<$PrismaModel>
@@ -21603,8 +23086,8 @@ export namespace Prisma {
 
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -21614,8 +23097,8 @@ export namespace Prisma {
 
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[]
+    notIn?: Date[] | string[]
     lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
@@ -21666,7 +23149,6 @@ export namespace Prisma {
 
   export type GrammarProgressCreateManyStudentInputEnvelope = {
     data: GrammarProgressCreateManyStudentInput | GrammarProgressCreateManyStudentInput[]
-    skipDuplicates?: boolean
   }
 
   export type GrammarMasteryCreateWithoutStudentInput = {
@@ -21690,7 +23172,6 @@ export namespace Prisma {
 
   export type GrammarMasteryCreateManyStudentInputEnvelope = {
     data: GrammarMasteryCreateManyStudentInput | GrammarMasteryCreateManyStudentInput[]
-    skipDuplicates?: boolean
   }
 
   export type InvoiceCreateWithoutStudentInput = {
@@ -21718,7 +23199,6 @@ export namespace Prisma {
 
   export type InvoiceCreateManyStudentInputEnvelope = {
     data: InvoiceCreateManyStudentInput | InvoiceCreateManyStudentInput[]
-    skipDuplicates?: boolean
   }
 
   export type LessonRecordCreateWithoutStudentInput = {
@@ -21762,7 +23242,6 @@ export namespace Prisma {
 
   export type LessonRecordCreateManyStudentInputEnvelope = {
     data: LessonRecordCreateManyStudentInput | LessonRecordCreateManyStudentInput[]
-    skipDuplicates?: boolean
   }
 
   export type LessonScheduleCreateWithoutStudentInput = {
@@ -21802,7 +23281,6 @@ export namespace Prisma {
 
   export type LessonScheduleCreateManyStudentInputEnvelope = {
     data: LessonScheduleCreateManyStudentInput | LessonScheduleCreateManyStudentInput[]
-    skipDuplicates?: boolean
   }
 
   export type MessageCreateWithoutStudentInput = {
@@ -21830,7 +23308,6 @@ export namespace Prisma {
 
   export type MessageCreateManyStudentInputEnvelope = {
     data: MessageCreateManyStudentInput | MessageCreateManyStudentInput[]
-    skipDuplicates?: boolean
   }
 
   export type TestScoreCreateWithoutStudentInput = {
@@ -21864,7 +23341,6 @@ export namespace Prisma {
 
   export type TestScoreCreateManyStudentInputEnvelope = {
     data: TestScoreCreateManyStudentInput | TestScoreCreateManyStudentInput[]
-    skipDuplicates?: boolean
   }
 
   export type VocabProgressCreateWithoutStudentInput = {
@@ -21896,7 +23372,35 @@ export namespace Prisma {
 
   export type VocabProgressCreateManyStudentInputEnvelope = {
     data: VocabProgressCreateManyStudentInput | VocabProgressCreateManyStudentInput[]
-    skipDuplicates?: boolean
+  }
+
+  export type DrillProgressCreateWithoutStudentInput = {
+    id?: string
+    level: string
+    categoryId: string
+    completions?: number
+    perfectClears?: number
+    highestScore?: number
+    lastPlayedAt?: Date | string
+  }
+
+  export type DrillProgressUncheckedCreateWithoutStudentInput = {
+    id?: string
+    level: string
+    categoryId: string
+    completions?: number
+    perfectClears?: number
+    highestScore?: number
+    lastPlayedAt?: Date | string
+  }
+
+  export type DrillProgressCreateOrConnectWithoutStudentInput = {
+    where: DrillProgressWhereUniqueInput
+    create: XOR<DrillProgressCreateWithoutStudentInput, DrillProgressUncheckedCreateWithoutStudentInput>
+  }
+
+  export type DrillProgressCreateManyStudentInputEnvelope = {
+    data: DrillProgressCreateManyStudentInput | DrillProgressCreateManyStudentInput[]
   }
 
   export type GrammarProgressUpsertWithWhereUniqueWithoutStudentInput = {
@@ -22149,6 +23653,36 @@ export namespace Prisma {
     lastPlayedAt?: DateTimeFilter<"VocabProgress"> | Date | string
   }
 
+  export type DrillProgressUpsertWithWhereUniqueWithoutStudentInput = {
+    where: DrillProgressWhereUniqueInput
+    update: XOR<DrillProgressUpdateWithoutStudentInput, DrillProgressUncheckedUpdateWithoutStudentInput>
+    create: XOR<DrillProgressCreateWithoutStudentInput, DrillProgressUncheckedCreateWithoutStudentInput>
+  }
+
+  export type DrillProgressUpdateWithWhereUniqueWithoutStudentInput = {
+    where: DrillProgressWhereUniqueInput
+    data: XOR<DrillProgressUpdateWithoutStudentInput, DrillProgressUncheckedUpdateWithoutStudentInput>
+  }
+
+  export type DrillProgressUpdateManyWithWhereWithoutStudentInput = {
+    where: DrillProgressScalarWhereInput
+    data: XOR<DrillProgressUpdateManyMutationInput, DrillProgressUncheckedUpdateManyWithoutStudentInput>
+  }
+
+  export type DrillProgressScalarWhereInput = {
+    AND?: DrillProgressScalarWhereInput | DrillProgressScalarWhereInput[]
+    OR?: DrillProgressScalarWhereInput[]
+    NOT?: DrillProgressScalarWhereInput | DrillProgressScalarWhereInput[]
+    id?: StringFilter<"DrillProgress"> | string
+    studentId?: StringFilter<"DrillProgress"> | string
+    level?: StringFilter<"DrillProgress"> | string
+    categoryId?: StringFilter<"DrillProgress"> | string
+    completions?: IntFilter<"DrillProgress"> | number
+    perfectClears?: IntFilter<"DrillProgress"> | number
+    highestScore?: IntFilter<"DrillProgress"> | number
+    lastPlayedAt?: DateTimeFilter<"DrillProgress"> | Date | string
+  }
+
   export type MessageCreateWithoutTeacherInput = {
     id?: string
     sender: string
@@ -22174,7 +23708,6 @@ export namespace Prisma {
 
   export type MessageCreateManyTeacherInputEnvelope = {
     data: MessageCreateManyTeacherInput | MessageCreateManyTeacherInput[]
-    skipDuplicates?: boolean
   }
 
   export type MessageUpsertWithWhereUniqueWithoutTeacherInput = {
@@ -22232,6 +23765,7 @@ export namespace Prisma {
     messages?: MessageCreateNestedManyWithoutStudentInput
     testScores?: TestScoreCreateNestedManyWithoutStudentInput
     vocabProgresses?: VocabProgressCreateNestedManyWithoutStudentInput
+    drillProgresses?: DrillProgressCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutSchedulesInput = {
@@ -22273,6 +23807,7 @@ export namespace Prisma {
     messages?: MessageUncheckedCreateNestedManyWithoutStudentInput
     testScores?: TestScoreUncheckedCreateNestedManyWithoutStudentInput
     vocabProgresses?: VocabProgressUncheckedCreateNestedManyWithoutStudentInput
+    drillProgresses?: DrillProgressUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutSchedulesInput = {
@@ -22330,6 +23865,7 @@ export namespace Prisma {
     messages?: MessageUpdateManyWithoutStudentNestedInput
     testScores?: TestScoreUpdateManyWithoutStudentNestedInput
     vocabProgresses?: VocabProgressUpdateManyWithoutStudentNestedInput
+    drillProgresses?: DrillProgressUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutSchedulesInput = {
@@ -22371,6 +23907,7 @@ export namespace Prisma {
     messages?: MessageUncheckedUpdateManyWithoutStudentNestedInput
     testScores?: TestScoreUncheckedUpdateManyWithoutStudentNestedInput
     vocabProgresses?: VocabProgressUncheckedUpdateManyWithoutStudentNestedInput
+    drillProgresses?: DrillProgressUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentCreateWithoutRecordsInput = {
@@ -22412,6 +23949,7 @@ export namespace Prisma {
     messages?: MessageCreateNestedManyWithoutStudentInput
     testScores?: TestScoreCreateNestedManyWithoutStudentInput
     vocabProgresses?: VocabProgressCreateNestedManyWithoutStudentInput
+    drillProgresses?: DrillProgressCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutRecordsInput = {
@@ -22453,6 +23991,7 @@ export namespace Prisma {
     messages?: MessageUncheckedCreateNestedManyWithoutStudentInput
     testScores?: TestScoreUncheckedCreateNestedManyWithoutStudentInput
     vocabProgresses?: VocabProgressUncheckedCreateNestedManyWithoutStudentInput
+    drillProgresses?: DrillProgressUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutRecordsInput = {
@@ -22510,6 +24049,7 @@ export namespace Prisma {
     messages?: MessageUpdateManyWithoutStudentNestedInput
     testScores?: TestScoreUpdateManyWithoutStudentNestedInput
     vocabProgresses?: VocabProgressUpdateManyWithoutStudentNestedInput
+    drillProgresses?: DrillProgressUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutRecordsInput = {
@@ -22551,6 +24091,7 @@ export namespace Prisma {
     messages?: MessageUncheckedUpdateManyWithoutStudentNestedInput
     testScores?: TestScoreUncheckedUpdateManyWithoutStudentNestedInput
     vocabProgresses?: VocabProgressUncheckedUpdateManyWithoutStudentNestedInput
+    drillProgresses?: DrillProgressUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentCreateWithoutTestScoresInput = {
@@ -22592,6 +24133,7 @@ export namespace Prisma {
     schedules?: LessonScheduleCreateNestedManyWithoutStudentInput
     messages?: MessageCreateNestedManyWithoutStudentInput
     vocabProgresses?: VocabProgressCreateNestedManyWithoutStudentInput
+    drillProgresses?: DrillProgressCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutTestScoresInput = {
@@ -22633,6 +24175,7 @@ export namespace Prisma {
     schedules?: LessonScheduleUncheckedCreateNestedManyWithoutStudentInput
     messages?: MessageUncheckedCreateNestedManyWithoutStudentInput
     vocabProgresses?: VocabProgressUncheckedCreateNestedManyWithoutStudentInput
+    drillProgresses?: DrillProgressUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutTestScoresInput = {
@@ -22690,6 +24233,7 @@ export namespace Prisma {
     schedules?: LessonScheduleUpdateManyWithoutStudentNestedInput
     messages?: MessageUpdateManyWithoutStudentNestedInput
     vocabProgresses?: VocabProgressUpdateManyWithoutStudentNestedInput
+    drillProgresses?: DrillProgressUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutTestScoresInput = {
@@ -22731,6 +24275,7 @@ export namespace Prisma {
     schedules?: LessonScheduleUncheckedUpdateManyWithoutStudentNestedInput
     messages?: MessageUncheckedUpdateManyWithoutStudentNestedInput
     vocabProgresses?: VocabProgressUncheckedUpdateManyWithoutStudentNestedInput
+    drillProgresses?: DrillProgressUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type TeacherCreateWithoutMessagesInput = {
@@ -22803,6 +24348,7 @@ export namespace Prisma {
     schedules?: LessonScheduleCreateNestedManyWithoutStudentInput
     testScores?: TestScoreCreateNestedManyWithoutStudentInput
     vocabProgresses?: VocabProgressCreateNestedManyWithoutStudentInput
+    drillProgresses?: DrillProgressCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutMessagesInput = {
@@ -22844,6 +24390,7 @@ export namespace Prisma {
     schedules?: LessonScheduleUncheckedCreateNestedManyWithoutStudentInput
     testScores?: TestScoreUncheckedCreateNestedManyWithoutStudentInput
     vocabProgresses?: VocabProgressUncheckedCreateNestedManyWithoutStudentInput
+    drillProgresses?: DrillProgressUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutMessagesInput = {
@@ -22938,6 +24485,7 @@ export namespace Prisma {
     schedules?: LessonScheduleUpdateManyWithoutStudentNestedInput
     testScores?: TestScoreUpdateManyWithoutStudentNestedInput
     vocabProgresses?: VocabProgressUpdateManyWithoutStudentNestedInput
+    drillProgresses?: DrillProgressUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutMessagesInput = {
@@ -22979,6 +24527,7 @@ export namespace Prisma {
     schedules?: LessonScheduleUncheckedUpdateManyWithoutStudentNestedInput
     testScores?: TestScoreUncheckedUpdateManyWithoutStudentNestedInput
     vocabProgresses?: VocabProgressUncheckedUpdateManyWithoutStudentNestedInput
+    drillProgresses?: DrillProgressUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentCreateWithoutInvoicesInput = {
@@ -23020,6 +24569,7 @@ export namespace Prisma {
     messages?: MessageCreateNestedManyWithoutStudentInput
     testScores?: TestScoreCreateNestedManyWithoutStudentInput
     vocabProgresses?: VocabProgressCreateNestedManyWithoutStudentInput
+    drillProgresses?: DrillProgressCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutInvoicesInput = {
@@ -23061,6 +24611,7 @@ export namespace Prisma {
     messages?: MessageUncheckedCreateNestedManyWithoutStudentInput
     testScores?: TestScoreUncheckedCreateNestedManyWithoutStudentInput
     vocabProgresses?: VocabProgressUncheckedCreateNestedManyWithoutStudentInput
+    drillProgresses?: DrillProgressUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutInvoicesInput = {
@@ -23118,6 +24669,7 @@ export namespace Prisma {
     messages?: MessageUpdateManyWithoutStudentNestedInput
     testScores?: TestScoreUpdateManyWithoutStudentNestedInput
     vocabProgresses?: VocabProgressUpdateManyWithoutStudentNestedInput
+    drillProgresses?: DrillProgressUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutInvoicesInput = {
@@ -23159,6 +24711,7 @@ export namespace Prisma {
     messages?: MessageUncheckedUpdateManyWithoutStudentNestedInput
     testScores?: TestScoreUncheckedUpdateManyWithoutStudentNestedInput
     vocabProgresses?: VocabProgressUncheckedUpdateManyWithoutStudentNestedInput
+    drillProgresses?: DrillProgressUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentCreateWithoutVocabProgressesInput = {
@@ -23200,6 +24753,7 @@ export namespace Prisma {
     schedules?: LessonScheduleCreateNestedManyWithoutStudentInput
     messages?: MessageCreateNestedManyWithoutStudentInput
     testScores?: TestScoreCreateNestedManyWithoutStudentInput
+    drillProgresses?: DrillProgressCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutVocabProgressesInput = {
@@ -23241,6 +24795,7 @@ export namespace Prisma {
     schedules?: LessonScheduleUncheckedCreateNestedManyWithoutStudentInput
     messages?: MessageUncheckedCreateNestedManyWithoutStudentInput
     testScores?: TestScoreUncheckedCreateNestedManyWithoutStudentInput
+    drillProgresses?: DrillProgressUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutVocabProgressesInput = {
@@ -23298,6 +24853,7 @@ export namespace Prisma {
     schedules?: LessonScheduleUpdateManyWithoutStudentNestedInput
     messages?: MessageUpdateManyWithoutStudentNestedInput
     testScores?: TestScoreUpdateManyWithoutStudentNestedInput
+    drillProgresses?: DrillProgressUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutVocabProgressesInput = {
@@ -23339,6 +24895,7 @@ export namespace Prisma {
     schedules?: LessonScheduleUncheckedUpdateManyWithoutStudentNestedInput
     messages?: MessageUncheckedUpdateManyWithoutStudentNestedInput
     testScores?: TestScoreUncheckedUpdateManyWithoutStudentNestedInput
+    drillProgresses?: DrillProgressUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentCreateWithoutGrammarProgressesInput = {
@@ -23380,6 +24937,7 @@ export namespace Prisma {
     messages?: MessageCreateNestedManyWithoutStudentInput
     testScores?: TestScoreCreateNestedManyWithoutStudentInput
     vocabProgresses?: VocabProgressCreateNestedManyWithoutStudentInput
+    drillProgresses?: DrillProgressCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutGrammarProgressesInput = {
@@ -23421,6 +24979,7 @@ export namespace Prisma {
     messages?: MessageUncheckedCreateNestedManyWithoutStudentInput
     testScores?: TestScoreUncheckedCreateNestedManyWithoutStudentInput
     vocabProgresses?: VocabProgressUncheckedCreateNestedManyWithoutStudentInput
+    drillProgresses?: DrillProgressUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutGrammarProgressesInput = {
@@ -23478,6 +25037,7 @@ export namespace Prisma {
     messages?: MessageUpdateManyWithoutStudentNestedInput
     testScores?: TestScoreUpdateManyWithoutStudentNestedInput
     vocabProgresses?: VocabProgressUpdateManyWithoutStudentNestedInput
+    drillProgresses?: DrillProgressUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutGrammarProgressesInput = {
@@ -23519,6 +25079,191 @@ export namespace Prisma {
     messages?: MessageUncheckedUpdateManyWithoutStudentNestedInput
     testScores?: TestScoreUncheckedUpdateManyWithoutStudentNestedInput
     vocabProgresses?: VocabProgressUncheckedUpdateManyWithoutStudentNestedInput
+    drillProgresses?: DrillProgressUncheckedUpdateManyWithoutStudentNestedInput
+  }
+
+  export type StudentCreateWithoutDrillProgressesInput = {
+    id?: string
+    name: string
+    email: string
+    course: string
+    status?: string
+    lastLesson?: string | null
+    progress?: number
+    loginId: string
+    password: string
+    level?: number
+    target?: string | null
+    phone?: string | null
+    joinDate?: string | null
+    totalLessons?: number
+    internalNote?: string | null
+    toeicScore?: string | null
+    cefr?: string | null
+    vocabScore?: number | null
+    grammarScore?: number | null
+    listeningScore?: number | null
+    speakingScore?: number | null
+    goalTarget?: string | null
+    goalProgress?: number | null
+    biography?: string | null
+    occupation?: string | null
+    avatarUrl?: string | null
+    coverUrl?: string | null
+    questLevel?: number
+    questXP?: number
+    questStreak?: number
+    lastQuestPlayedAt?: Date | string | null
+    grammarProgresses?: GrammarProgressCreateNestedManyWithoutStudentInput
+    grammarMasteries?: GrammarMasteryCreateNestedManyWithoutStudentInput
+    invoices?: InvoiceCreateNestedManyWithoutStudentInput
+    records?: LessonRecordCreateNestedManyWithoutStudentInput
+    schedules?: LessonScheduleCreateNestedManyWithoutStudentInput
+    messages?: MessageCreateNestedManyWithoutStudentInput
+    testScores?: TestScoreCreateNestedManyWithoutStudentInput
+    vocabProgresses?: VocabProgressCreateNestedManyWithoutStudentInput
+  }
+
+  export type StudentUncheckedCreateWithoutDrillProgressesInput = {
+    id?: string
+    name: string
+    email: string
+    course: string
+    status?: string
+    lastLesson?: string | null
+    progress?: number
+    loginId: string
+    password: string
+    level?: number
+    target?: string | null
+    phone?: string | null
+    joinDate?: string | null
+    totalLessons?: number
+    internalNote?: string | null
+    toeicScore?: string | null
+    cefr?: string | null
+    vocabScore?: number | null
+    grammarScore?: number | null
+    listeningScore?: number | null
+    speakingScore?: number | null
+    goalTarget?: string | null
+    goalProgress?: number | null
+    biography?: string | null
+    occupation?: string | null
+    avatarUrl?: string | null
+    coverUrl?: string | null
+    questLevel?: number
+    questXP?: number
+    questStreak?: number
+    lastQuestPlayedAt?: Date | string | null
+    grammarProgresses?: GrammarProgressUncheckedCreateNestedManyWithoutStudentInput
+    grammarMasteries?: GrammarMasteryUncheckedCreateNestedManyWithoutStudentInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutStudentInput
+    records?: LessonRecordUncheckedCreateNestedManyWithoutStudentInput
+    schedules?: LessonScheduleUncheckedCreateNestedManyWithoutStudentInput
+    messages?: MessageUncheckedCreateNestedManyWithoutStudentInput
+    testScores?: TestScoreUncheckedCreateNestedManyWithoutStudentInput
+    vocabProgresses?: VocabProgressUncheckedCreateNestedManyWithoutStudentInput
+  }
+
+  export type StudentCreateOrConnectWithoutDrillProgressesInput = {
+    where: StudentWhereUniqueInput
+    create: XOR<StudentCreateWithoutDrillProgressesInput, StudentUncheckedCreateWithoutDrillProgressesInput>
+  }
+
+  export type StudentUpsertWithoutDrillProgressesInput = {
+    update: XOR<StudentUpdateWithoutDrillProgressesInput, StudentUncheckedUpdateWithoutDrillProgressesInput>
+    create: XOR<StudentCreateWithoutDrillProgressesInput, StudentUncheckedCreateWithoutDrillProgressesInput>
+    where?: StudentWhereInput
+  }
+
+  export type StudentUpdateToOneWithWhereWithoutDrillProgressesInput = {
+    where?: StudentWhereInput
+    data: XOR<StudentUpdateWithoutDrillProgressesInput, StudentUncheckedUpdateWithoutDrillProgressesInput>
+  }
+
+  export type StudentUpdateWithoutDrillProgressesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    course?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    lastLesson?: NullableStringFieldUpdateOperationsInput | string | null
+    progress?: IntFieldUpdateOperationsInput | number
+    loginId?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    level?: IntFieldUpdateOperationsInput | number
+    target?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    joinDate?: NullableStringFieldUpdateOperationsInput | string | null
+    totalLessons?: IntFieldUpdateOperationsInput | number
+    internalNote?: NullableStringFieldUpdateOperationsInput | string | null
+    toeicScore?: NullableStringFieldUpdateOperationsInput | string | null
+    cefr?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabScore?: NullableIntFieldUpdateOperationsInput | number | null
+    grammarScore?: NullableIntFieldUpdateOperationsInput | number | null
+    listeningScore?: NullableIntFieldUpdateOperationsInput | number | null
+    speakingScore?: NullableIntFieldUpdateOperationsInput | number | null
+    goalTarget?: NullableStringFieldUpdateOperationsInput | string | null
+    goalProgress?: NullableIntFieldUpdateOperationsInput | number | null
+    biography?: NullableStringFieldUpdateOperationsInput | string | null
+    occupation?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    questLevel?: IntFieldUpdateOperationsInput | number
+    questXP?: IntFieldUpdateOperationsInput | number
+    questStreak?: IntFieldUpdateOperationsInput | number
+    lastQuestPlayedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grammarProgresses?: GrammarProgressUpdateManyWithoutStudentNestedInput
+    grammarMasteries?: GrammarMasteryUpdateManyWithoutStudentNestedInput
+    invoices?: InvoiceUpdateManyWithoutStudentNestedInput
+    records?: LessonRecordUpdateManyWithoutStudentNestedInput
+    schedules?: LessonScheduleUpdateManyWithoutStudentNestedInput
+    messages?: MessageUpdateManyWithoutStudentNestedInput
+    testScores?: TestScoreUpdateManyWithoutStudentNestedInput
+    vocabProgresses?: VocabProgressUpdateManyWithoutStudentNestedInput
+  }
+
+  export type StudentUncheckedUpdateWithoutDrillProgressesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    course?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    lastLesson?: NullableStringFieldUpdateOperationsInput | string | null
+    progress?: IntFieldUpdateOperationsInput | number
+    loginId?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    level?: IntFieldUpdateOperationsInput | number
+    target?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    joinDate?: NullableStringFieldUpdateOperationsInput | string | null
+    totalLessons?: IntFieldUpdateOperationsInput | number
+    internalNote?: NullableStringFieldUpdateOperationsInput | string | null
+    toeicScore?: NullableStringFieldUpdateOperationsInput | string | null
+    cefr?: NullableStringFieldUpdateOperationsInput | string | null
+    vocabScore?: NullableIntFieldUpdateOperationsInput | number | null
+    grammarScore?: NullableIntFieldUpdateOperationsInput | number | null
+    listeningScore?: NullableIntFieldUpdateOperationsInput | number | null
+    speakingScore?: NullableIntFieldUpdateOperationsInput | number | null
+    goalTarget?: NullableStringFieldUpdateOperationsInput | string | null
+    goalProgress?: NullableIntFieldUpdateOperationsInput | number | null
+    biography?: NullableStringFieldUpdateOperationsInput | string | null
+    occupation?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    questLevel?: IntFieldUpdateOperationsInput | number
+    questXP?: IntFieldUpdateOperationsInput | number
+    questStreak?: IntFieldUpdateOperationsInput | number
+    lastQuestPlayedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    grammarProgresses?: GrammarProgressUncheckedUpdateManyWithoutStudentNestedInput
+    grammarMasteries?: GrammarMasteryUncheckedUpdateManyWithoutStudentNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutStudentNestedInput
+    records?: LessonRecordUncheckedUpdateManyWithoutStudentNestedInput
+    schedules?: LessonScheduleUncheckedUpdateManyWithoutStudentNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutStudentNestedInput
+    testScores?: TestScoreUncheckedUpdateManyWithoutStudentNestedInput
+    vocabProgresses?: VocabProgressUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type GrammarMasteryCreateWithoutGrammarPointInput = {
@@ -23542,7 +25287,6 @@ export namespace Prisma {
 
   export type GrammarMasteryCreateManyGrammarPointInputEnvelope = {
     data: GrammarMasteryCreateManyGrammarPointInput | GrammarMasteryCreateManyGrammarPointInput[]
-    skipDuplicates?: boolean
   }
 
   export type GrammarMasteryUpsertWithWhereUniqueWithoutGrammarPointInput = {
@@ -23600,6 +25344,7 @@ export namespace Prisma {
     messages?: MessageCreateNestedManyWithoutStudentInput
     testScores?: TestScoreCreateNestedManyWithoutStudentInput
     vocabProgresses?: VocabProgressCreateNestedManyWithoutStudentInput
+    drillProgresses?: DrillProgressCreateNestedManyWithoutStudentInput
   }
 
   export type StudentUncheckedCreateWithoutGrammarMasteriesInput = {
@@ -23641,6 +25386,7 @@ export namespace Prisma {
     messages?: MessageUncheckedCreateNestedManyWithoutStudentInput
     testScores?: TestScoreUncheckedCreateNestedManyWithoutStudentInput
     vocabProgresses?: VocabProgressUncheckedCreateNestedManyWithoutStudentInput
+    drillProgresses?: DrillProgressUncheckedCreateNestedManyWithoutStudentInput
   }
 
   export type StudentCreateOrConnectWithoutGrammarMasteriesInput = {
@@ -23717,6 +25463,7 @@ export namespace Prisma {
     messages?: MessageUpdateManyWithoutStudentNestedInput
     testScores?: TestScoreUpdateManyWithoutStudentNestedInput
     vocabProgresses?: VocabProgressUpdateManyWithoutStudentNestedInput
+    drillProgresses?: DrillProgressUpdateManyWithoutStudentNestedInput
   }
 
   export type StudentUncheckedUpdateWithoutGrammarMasteriesInput = {
@@ -23758,6 +25505,7 @@ export namespace Prisma {
     messages?: MessageUncheckedUpdateManyWithoutStudentNestedInput
     testScores?: TestScoreUncheckedUpdateManyWithoutStudentNestedInput
     vocabProgresses?: VocabProgressUncheckedUpdateManyWithoutStudentNestedInput
+    drillProgresses?: DrillProgressUncheckedUpdateManyWithoutStudentNestedInput
   }
 
   export type GrammarPointUpsertWithoutMasteriesInput = {
@@ -23872,6 +25620,16 @@ export namespace Prisma {
     perfectClears?: number
     highestScore?: number
     mode?: string
+    lastPlayedAt?: Date | string
+  }
+
+  export type DrillProgressCreateManyStudentInput = {
+    id?: string
+    level: string
+    categoryId: string
+    completions?: number
+    perfectClears?: number
+    highestScore?: number
     lastPlayedAt?: Date | string
   }
 
@@ -24142,6 +25900,36 @@ export namespace Prisma {
     perfectClears?: IntFieldUpdateOperationsInput | number
     highestScore?: IntFieldUpdateOperationsInput | number
     mode?: StringFieldUpdateOperationsInput | string
+    lastPlayedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DrillProgressUpdateWithoutStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    level?: StringFieldUpdateOperationsInput | string
+    categoryId?: StringFieldUpdateOperationsInput | string
+    completions?: IntFieldUpdateOperationsInput | number
+    perfectClears?: IntFieldUpdateOperationsInput | number
+    highestScore?: IntFieldUpdateOperationsInput | number
+    lastPlayedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DrillProgressUncheckedUpdateWithoutStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    level?: StringFieldUpdateOperationsInput | string
+    categoryId?: StringFieldUpdateOperationsInput | string
+    completions?: IntFieldUpdateOperationsInput | number
+    perfectClears?: IntFieldUpdateOperationsInput | number
+    highestScore?: IntFieldUpdateOperationsInput | number
+    lastPlayedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DrillProgressUncheckedUpdateManyWithoutStudentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    level?: StringFieldUpdateOperationsInput | string
+    categoryId?: StringFieldUpdateOperationsInput | string
+    completions?: IntFieldUpdateOperationsInput | number
+    perfectClears?: IntFieldUpdateOperationsInput | number
+    highestScore?: IntFieldUpdateOperationsInput | number
     lastPlayedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

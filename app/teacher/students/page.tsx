@@ -27,6 +27,7 @@ import { Student, LessonSchedule, LessonRecord, Teacher } from '@/lib/data-store
 import { getTeacherStudentsData, updateLessonMeetingUrl, submitLessonKarte, getRecentRecordsByStudent, getRecordByLessonId, revokeLessonKarte } from '@/lib/actions/teacher';
 import { getStudentGrammarMastery } from '@/lib/actions/grammar';
 import GrammarMasteryGrid from '@/components/GrammarMasteryGrid';
+import StudentTrainingProgress from '@/components/StudentTrainingProgress';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -84,6 +85,7 @@ export default function TeacherStudentsPage() {
 
     const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
     const [selectedStudentForProgress, setSelectedStudentForProgress] = useState<Student | null>(null);
+    const [progressTab, setProgressTab] = useState<'mastery' | 'training'>('mastery');
 
     useEffect(() => {
         const userId = localStorage.getItem('user_id');
@@ -105,6 +107,7 @@ export default function TeacherStudentsPage() {
     const openProgressModal = async (student: Student) => {
         setSelectedStudentForProgress(student);
         setIsProgressModalOpen(true);
+        setProgressTab('mastery');
         setIsLoadingMastery(true);
         try {
             const mastery = await getStudentGrammarMastery(student.id);
@@ -874,33 +877,64 @@ export default function TeacherStudentsPage() {
                         </div>
 
                         <div className="flex-1 overflow-y-auto p-8 bg-slate-50/30">
-                            <div className="space-y-8">
-                                <div className="space-y-4 text-center">
-                                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-xs font-black uppercase tracking-widest leading-none">
-                                        <BookOpen size={14} /> Grammar Mastery
-                                    </div>
-                                    <h4 className="text-2xl font-black text-slate-800 tracking-tight text-center">文法習得状況の一覧</h4>
-                                    <p className="text-sm text-slate-500 font-medium max-w-lg mx-auto text-center">
-                                        各文法項目の理解度を ◎（習得済）、◯（概ねOK）、△（要復習）の3段階で記録・確認できます。
-                                    </p>
-                                </div>
-
-                                <div className="bg-white rounded-[2rem] p-6 md:p-10 border border-slate-200 shadow-xl shadow-slate-200/40 relative overflow-hidden">
-                                    <div className="absolute top-0 left-0 right-0 h-2 bg-emerald-500"></div>
-                                    {isLoadingMastery ? (
-                                        <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
-                                            <div className="w-10 h-10 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div>
-                                            <p className="text-sm font-bold text-slate-400">習得状況を読み込み中...</p>
-                                        </div>
-                                    ) : (
-                                        <GrammarMasteryGrid 
-                                            studentId={selectedStudentForProgress.id} 
-                                            initialPoints={grammarMastery} 
-                                            isAdmin={true} 
-                                        />
-                                    )}
+                            <div className="flex justify-center mb-8">
+                                <div className="bg-slate-100 p-1.5 rounded-2xl flex gap-2 w-full max-w-sm relative z-10">
+                                    <button
+                                        type="button"
+                                        onClick={() => setProgressTab('mastery')}
+                                        className={cn(
+                                            "flex-1 py-2.5 rounded-xl text-sm font-black transition-all",
+                                            progressTab === 'mastery' ? "bg-white text-emerald-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                                        )}
+                                    >
+                                        文法カルテ
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setProgressTab('training')}
+                                        className={cn(
+                                            "flex-1 py-2.5 rounded-xl text-sm font-black transition-all",
+                                            progressTab === 'training' ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                                        )}
+                                    >
+                                        自己学習・進捗
+                                    </button>
                                 </div>
                             </div>
+                            
+                            {progressTab === 'mastery' ? (
+                                <div className="space-y-8 animate-in fade-in duration-500">
+                                    <div className="space-y-4 text-center">
+                                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-xs font-black uppercase tracking-widest leading-none">
+                                            <BookOpen size={14} /> Grammar Mastery
+                                        </div>
+                                        <h4 className="text-2xl font-black text-slate-800 tracking-tight text-center">文法習得状況の一覧</h4>
+                                        <p className="text-sm text-slate-500 font-medium max-w-lg mx-auto text-center">
+                                            各文法項目の理解度を ◎（習得済）、◯（概ねOK）、△（要復習）の3段階で記録・確認できます。
+                                        </p>
+                                    </div>
+
+                                    <div className="bg-white rounded-[2rem] p-6 md:p-10 border border-slate-200 shadow-xl shadow-slate-200/40 relative overflow-hidden">
+                                        <div className="absolute top-0 left-0 right-0 h-2 bg-emerald-500"></div>
+                                        {isLoadingMastery ? (
+                                            <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
+                                                <div className="w-10 h-10 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div>
+                                                <p className="text-sm font-bold text-slate-400">習得状況を読み込み中...</p>
+                                            </div>
+                                        ) : (
+                                            <GrammarMasteryGrid 
+                                                studentId={selectedStudentForProgress.id} 
+                                                initialPoints={grammarMastery} 
+                                                isAdmin={true} 
+                                            />
+                                        )}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="max-w-3xl mx-auto">
+                                    <StudentTrainingProgress studentId={selectedStudentForProgress.id} />
+                                </div>
+                            )}
                         </div>
 
                         <div className="px-8 py-6 border-t border-slate-100 bg-white flex justify-center shrink-0">

@@ -1,11 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search as SearchIcon, User, Calendar, BookOpen, Clock, ChevronDown, ChevronUp, History, TrendingUp, AlertCircle, FileText, MessageSquare, Star } from 'lucide-react';
+import { Search as SearchIcon, User, Calendar, BookOpen, Clock, ChevronDown, ChevronUp, History, TrendingUp, AlertCircle, FileText, MessageSquare, Star, X } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { searchAllStudents, getAllStudentRecords } from '@/lib/actions/teacher';
+import { getStudentGrammarMastery } from '@/lib/actions/grammar';
 import { Student, LessonRecord } from '@/prisma/generated-client';
+import GrammarMasteryGrid from '@/components/GrammarMasteryGrid';
+import StudentTrainingProgress from '@/components/StudentTrainingProgress';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -33,6 +36,12 @@ export default function StudentRecordsSearchPage() {
     const [studentRecords, setStudentRecords] = useState<LessonRecord[]>([]);
     const [isLoadingRecords, setIsLoadingRecords] = useState(false);
     const [expandedRecordId, setExpandedRecordId] = useState<string | null>(null);
+
+    // Progress Modal States
+    const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
+    const [progressTab, setProgressTab] = useState<'mastery' | 'training'>('mastery');
+    const [isLoadingMastery, setIsLoadingMastery] = useState(false);
+    const [grammarMastery, setGrammarMastery] = useState<any[]>([]);
 
     useEffect(() => {
         // Load initial students when component mounts
@@ -67,6 +76,22 @@ export default function StudentRecordsSearchPage() {
 
     const toggleRecord = (id: string) => {
         setExpandedRecordId(prev => prev === id ? null : id);
+    };
+
+    const openProgressModal = async (tab: 'mastery' | 'training' = 'mastery') => {
+        if (!selectedStudent) return;
+        setIsProgressModalOpen(true);
+        setProgressTab(tab);
+        setIsLoadingMastery(true);
+        try {
+            const mastery = await getStudentGrammarMastery(selectedStudent.id);
+            setGrammarMastery(mastery);
+        } catch (error) {
+            console.error('Error fetching grammar mastery:', error);
+            setGrammarMastery([]);
+        } finally {
+            setIsLoadingMastery(false);
+        }
     };
 
     return (
@@ -176,6 +201,12 @@ export default function StudentRecordsSearchPage() {
                                     <span className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-blue-100/50">
                                         <History size={14} /> 総受講回数: {selectedStudent.totalLessons}回
                                     </span>
+                                    <button
+                                        onClick={() => openProgressModal('mastery')}
+                                        className="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 border border-indigo-100 hover:bg-indigo-100 transition-colors ml-auto sm:ml-0 md:ml-auto"
+                                    >
+                                        <BookOpen size={14} /> 学習進捗・カルテを表示
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -299,6 +330,104 @@ export default function StudentRecordsSearchPage() {
                 )}
 
             </div>
+
+            {/* Student Progress Modal */}
+            {isProgressModalOpen && selectedStudent && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setIsProgressModalOpen(false)}></div>
+                    <div className="relative bg-white rounded-[2.5rem] w-full max-w-4xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+                        <div className="px-8 py-6 border-b border-slate-100 bg-emerald-50 text-emerald-900 flex items-center justify-between shrink-0">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-xl font-black text-emerald-600 border border-emerald-100">
+                                    {selectedStudent.name.charAt(0)}
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-black mb-0.5 text-left">{selectedStudent.name}</h3>
+                                    <p className="text-xs font-bold text-emerald-700 tracking-wide flex items-center gap-2">
+                                        <span className="opacity-60">COURSE:</span> {selectedStudent.course}
+                                        <span className="w-1 h-1 bg-emerald-300 rounded-full"></span>
+                                        <span className="opacity-60">TARGET:</span> {selectedStudent.target || '未設定'}
+                                    </p>
+                                </div>
+                            </div>
+                            <button type="button" onClick={() => setIsProgressModalOpen(false)} className="p-2 text-emerald-600 hover:bg-emerald-100 rounded-full transition-colors">
+                                <X size={24} />
+                            </button>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-8 bg-slate-50/30">
+                            <div className="flex justify-center mb-8">
+                                <div className="bg-slate-100 p-1.5 rounded-2xl flex gap-2 w-full max-w-sm relative z-10">
+                                    <button
+                                        type="button"
+                                        onClick={() => setProgressTab('mastery')}
+                                        className={cn(
+                                            "flex-1 py-2.5 rounded-xl text-sm font-black transition-all",
+                                            progressTab === 'mastery' ? "bg-white text-emerald-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                                        )}
+                                    >
+                                        文法カルテ
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setProgressTab('training')}
+                                        className={cn(
+                                            "flex-1 py-2.5 rounded-xl text-sm font-black transition-all",
+                                            progressTab === 'training' ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                                        )}
+                                    >
+                                        自己学習・進捗
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            {progressTab === 'mastery' ? (
+                                <div className="space-y-8 animate-in fade-in duration-500">
+                                    <div className="space-y-4 text-center">
+                                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-xs font-black uppercase tracking-widest leading-none">
+                                            <BookOpen size={14} /> Grammar Mastery
+                                        </div>
+                                        <h4 className="text-2xl font-black text-slate-800 tracking-tight text-center">文法習得状況の一覧</h4>
+                                        <p className="text-sm text-slate-500 font-medium max-w-lg mx-auto text-center">
+                                            各文法項目の理解度を ◎（習得済）、◯（概ねOK）、△（要復習）の3段階で記録・確認できます。
+                                        </p>
+                                    </div>
+
+                                    <div className="bg-white rounded-[2rem] p-6 md:p-10 border border-slate-200 shadow-xl shadow-slate-200/40 relative overflow-hidden">
+                                        <div className="absolute top-0 left-0 right-0 h-2 bg-emerald-500"></div>
+                                        {isLoadingMastery ? (
+                                            <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
+                                                <div className="w-10 h-10 border-4 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div>
+                                                <p className="text-sm font-bold text-slate-400">習得状況を読み込み中...</p>
+                                            </div>
+                                        ) : (
+                                            <GrammarMasteryGrid 
+                                                studentId={selectedStudent.id} 
+                                                initialPoints={grammarMastery} 
+                                                isAdmin={true} 
+                                            />
+                                        )}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="max-w-3xl mx-auto">
+                                    <StudentTrainingProgress studentId={selectedStudent.id} />
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="px-8 py-6 border-t border-slate-100 bg-white flex justify-center shrink-0">
+                            <button
+                                type="button"
+                                onClick={() => setIsProgressModalOpen(false)}
+                                className="px-10 py-3 text-sm font-black text-white bg-slate-800 hover:bg-slate-900 rounded-2xl shadow-lg shadow-slate-900/20 transition-all active:scale-95 flex items-center gap-2"
+                            >
+                                閉じる
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </main>
     );
 }

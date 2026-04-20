@@ -442,42 +442,39 @@ export default function SentenceBuilderPage() {
                                         <h3 className="text-2xl font-black text-white mb-4">No. {startNum} - {endNum}</h3>
 
                                         {isAvailable ? (
-                                            <div className="grid grid-cols-2 gap-3 mb-6">
-                                                {/* Score Stats */}
-                                                <div className="bg-slate-900/40 rounded-xl p-2 border border-slate-500/10">
-                                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-tighter mb-1">Score</div>
+                                            <div className="bg-slate-950/40 rounded-xl p-3 border border-amber-500/10 mb-6">
+                                                <div className="flex items-center justify-between mb-2">
                                                     <div className="flex items-center gap-1.5">
-                                                        <Trophy size={11} className={highScore !== null ? "text-amber-400" : "text-slate-600"} />
-                                                        <span className="text-[11px] font-bold text-slate-300">
+                                                        <Trophy size={12} className={highScore !== null ? "text-amber-400" : "text-slate-600"} />
+                                                        <span className="text-xs font-bold text-slate-300">
                                                             {highScore !== null ? highScore : '-'}
                                                         </span>
                                                     </div>
+                                                    <div className="text-[10px] font-black text-amber-400 uppercase tracking-tighter">Score</div>
                                                 </div>
-
-                                                {/* Perfect Stats */}
-                                                <div className="bg-slate-900/40 rounded-xl p-2 border border-slate-500/10">
-                                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-tighter mb-1">Perfect</div>
+                                                <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-1.5">
-                                                        <Zap size={11} className={perfectClears > 0 ? "text-emerald-400" : "text-slate-600"} />
-                                                        <span className="text-[11px] font-bold text-slate-300">
-                                                            {perfectClears} <span className="text-[9px] text-slate-500">Hits</span>
+                                                        <Zap size={12} className={perfectClears > 0 ? "text-emerald-400" : "text-slate-600"} />
+                                                        <span className="text-xs font-bold text-slate-300">
+                                                            {perfectClears} <span className="text-[10px] text-slate-500">Perfect</span>
                                                         </span>
                                                     </div>
+                                                    <div className="text-[10px] font-black text-emerald-400 uppercase tracking-tighter">Hits</div>
                                                 </div>
                                             </div>
                                         ) : (
                                             <div className="mb-6 flex">
-                                                <span className="text-xs font-bold text-slate-500 bg-slate-900/50 px-2 py-1 rounded">問題が準備されていません</span>
+                                                <span className="text-xs font-bold text-slate-500 bg-slate-900/50 px-2 py-1 rounded">問題未作成</span>
                                             </div>
                                         )}
 
                                         <div className="mt-auto flex justify-between items-end">
                                             <div>
                                                 {isAvailable && questionCountInChunk < QUESTIONS_PER_STAGE && (
-                                                    <span className="text-xs font-bold text-amber-500/80 bg-slate-900/40 px-2 py-1 rounded">全 {questionCountInChunk} 問</span>
+                                                    <span className="text-[10px] font-black text-amber-500/60 uppercase tracking-widest bg-amber-500/5 px-2 py-1 rounded border border-amber-500/10">{questionCountInChunk} Questions</span>
                                                 )}
                                             </div>
-                                            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors">
+                                            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-all transform group-hover:rotate-12 group-hover:scale-110 shadow-lg group-hover:shadow-amber-500/40">
                                                 <ArrowRight size={20} />
                                             </div>
                                         </div>
