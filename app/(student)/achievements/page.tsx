@@ -155,7 +155,7 @@ export default function StudentAchievementsPage() {
         setIsModalOpen(true);
     };
 
-    if (!student) return null;
+    const displayName = student?.name || 'ゲスト';
 
     const schoolTests = testScores.filter(s => s.type === 'school');
     const proficiencyTests = testScores.filter(s => s.type === 'proficiency');
@@ -169,7 +169,7 @@ export default function StudentAchievementsPage() {
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div className="animate-in slide-in-from-left duration-500">
                         <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">学習成績・記録</h1>
-                        <p className="text-slate-500 mt-1 text-sm">{student.name}さんの試験・テストの履歴</p>
+                        <p className="text-slate-500 mt-1 text-sm">{displayName}さんの試験・テストの履歴</p>
                     </div>
                     <button
                         onClick={() => {

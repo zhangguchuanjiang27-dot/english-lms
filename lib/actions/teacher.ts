@@ -316,6 +316,11 @@ export async function getStudentTrainingStats(studentId: string) {
         };
     } catch (error) {
         console.error('Error fetching student training stats:', error);
-        return null;
+        return {
+            student: { questXP: 0, questLevel: 1, questStreak: 0 },
+            grammar: [],
+            vocab: [],
+            drills: []
+        };
     }
 }

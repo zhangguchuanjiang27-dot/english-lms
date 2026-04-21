@@ -36,6 +36,23 @@ export default function LoginPage() {
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
+
+        // 開発環境用のバイパス (DBへ接続できない時のUI確認用)
+        if (loginId === 'dev') {
+            localStorage.setItem('user_name', 'ローカルテスト用 (Dev)');
+            localStorage.setItem('user_id', 'local-dev-id');
+            localStorage.setItem('user_role', role);
+
+            if (role === 'admin') {
+                router.push('/admin');
+            } else if (role === 'teacher') {
+                router.push('/teacher');
+            } else {
+                router.push('/dashboard');
+            }
+            return;
+        }
+
         setIsLoading(true);
         setError('');
 

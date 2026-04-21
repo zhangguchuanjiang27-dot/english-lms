@@ -4,27 +4,37 @@ import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 
 export async function getGrammarPoints() {
-    return await prisma.grammarPoint.findMany({
-        orderBy: { order: 'asc' }
-    });
+    try {
+        return await prisma.grammarPoint.findMany({
+            orderBy: { order: 'asc' }
+        });
+    } catch (e) {
+        console.error('Error fetching grammar points:', e);
+        return [];
+    }
 }
 
 export async function getStudentGrammarMastery(studentId: string) {
-    const points = await prisma.grammarPoint.findMany({
-        orderBy: [{ category: 'asc' }, { order: 'asc' }]
-    });
+    try {
+        const points = await prisma.grammarPoint.findMany({
+            orderBy: [{ category: 'asc' }, { order: 'asc' }]
+        });
 
-    const masteries = await prisma.grammarMastery.findMany({
-        where: { studentId }
-    });
+        const masteries = await prisma.grammarMastery.findMany({
+            where: { studentId }
+        });
 
-    // Create a map for quick lookup
-    const masteryMap = new Map(masteries.map(m => [m.grammarPointId, m.status]));
+        // Create a map for quick lookup
+        const masteryMap = new Map(masteries.map(m => [m.grammarPointId, m.status]));
 
-    return points.map(p => ({
-        ...p,
-        status: masteryMap.get(p.id) || 'NONE'
-    }));
+        return points.map(p => ({
+            ...p,
+            status: masteryMap.get(p.id) || 'NONE'
+        }));
+    } catch (e) {
+        console.error('Error fetching grammar mastery:', e);
+        return [];
+    }
 }
 
 export async function updateGrammarMastery(studentId: string, pointId: string, status: string) {

@@ -20,6 +20,7 @@ import { useEffect, useState } from 'react';
 import { getStudentSchedule } from '@/lib/actions/student';
 import { getStudentGrammarMastery } from '@/lib/actions/grammar';
 import GrammarMasteryGrid from '@/components/GrammarMasteryGrid';
+import StudentTrainingProgress from '@/components/StudentTrainingProgress';
 import { motion, AnimatePresence } from 'framer-motion';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -67,6 +68,7 @@ export default function StudentKartePage() {
     const [settings, setSettings] = useState<SchoolSettings | null>(null);
     const [grammarMastery, setGrammarMastery] = useState<any[]>([]);
     const [isGrammarOpen, setIsGrammarOpen] = useState(false);
+    const [isTrainingOpen, setIsTrainingOpen] = useState(false);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -118,13 +120,13 @@ export default function StudentKartePage() {
 
                     <div className="grid grid-cols-3 divide-x divide-slate-100 text-center">
                         <StatLarge label="受講回数" value={records.length} unit="回" />
-                        <StatLarge 
-                            label="学習時間" 
+                        <StatLarge
+                            label="学習時間"
                             value={(() => {
                                 const duration = settings?.defaultCourseDuration || 80;
                                 return records.length * duration;
-                            })()} 
-                            unit="分" 
+                            })()}
+                            unit="分"
                         />
                         <StatLarge label="指導講師" value={Array.from(new Set(records.map(r => r.teacher))).length} unit="名" />
                     </div>
@@ -181,7 +183,7 @@ export default function StudentKartePage() {
                                             const goodCount = catPoints.filter(p => p.status === 'CIRCLE').length;
                                             const total = catPoints.length;
                                             const percent = total > 0 ? Math.round(((masteryCount + goodCount * 0.5) / total) * 100) : 0;
-                                            
+
                                             return (
                                                 <div key={cat} className="bg-white/80 backdrop-blur-sm rounded-3xl p-5 border border-slate-100 shadow-sm space-y-3">
                                                     <div className="flex justify-between items-center">
@@ -192,8 +194,8 @@ export default function StudentKartePage() {
                                                         <span className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg">{percent}%</span>
                                                     </div>
                                                     <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                                        <div 
-                                                            className="h-full bg-indigo-500 transition-all duration-1000" 
+                                                        <div
+                                                            className="h-full bg-indigo-500 transition-all duration-1000"
                                                             style={{ width: `${percent}%` }}
                                                         />
                                                     </div>
@@ -209,11 +211,64 @@ export default function StudentKartePage() {
                                     </div>
 
                                     <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 border border-slate-100 shadow-xl shadow-indigo-100/20 ring-1 ring-slate-200/50">
-                                        <GrammarMasteryGrid 
-                                            studentId={localStorage.getItem('user_id') || ''} 
-                                            initialPoints={grammarMastery} 
-                                            isAdmin={false} 
+                                        <GrammarMasteryGrid
+                                            studentId={localStorage.getItem('user_id') || ''}
+                                            initialPoints={grammarMastery}
+                                            isAdmin={false}
                                         />
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+
+                {/* Training Progress Toggle */}
+                <div className="space-y-4">
+                    <button
+                        onClick={() => setIsTrainingOpen(!isTrainingOpen)}
+                        className={cn(
+                            "w-full bg-white rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-8 border border-slate-100 shadow-sm hover:shadow-md transition-all group flex items-center justify-between",
+                            isTrainingOpen && "border-amber-100 bg-amber-50/20 shadow-amber-100/20"
+                        )}
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className={cn(
+                                "w-12 h-12 rounded-2xl flex items-center justify-center transition-colors shadow-sm",
+                                isTrainingOpen ? "bg-amber-500 text-white" : "bg-amber-50 text-amber-600"
+                            )}>
+                                <Zap size={24} />
+                            </div>
+                            <div className="text-left">
+                                <h2 className="text-base md:text-xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+                                    トレーニング記録を確認する
+                                    {!isTrainingOpen && (
+                                        <span className="text-[10px] font-black bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full uppercase tracking-widest hidden sm:inline-block">Training Records</span>
+                                    )}
+                                </h2>
+                                <p className="text-xs text-slate-500 font-medium mt-0.5">Flash DashやSkill Drillsの進捗状況を表示します</p>
+                            </div>
+                        </div>
+                        <div className={cn(
+                            "w-10 h-10 rounded-xl flex items-center justify-center transition-all bg-slate-50 text-slate-400 group-hover:bg-amber-100 group-hover:text-amber-600",
+                            isTrainingOpen && "rotate-180 bg-amber-100 text-amber-600"
+                        )}>
+                            <ChevronDown size={20} />
+                        </div>
+                    </button>
+
+                    <AnimatePresence>
+                        {isTrainingOpen && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0, y: -20 }}
+                                animate={{ opacity: 1, height: 'auto', y: 0 }}
+                                exit={{ opacity: 0, height: 0, y: -20 }}
+                                transition={{ duration: 0.4, ease: "easeOut" }}
+                                className="overflow-hidden"
+                            >
+                                <div className="pt-2 pb-6">
+                                    <div className="bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 border border-slate-100 shadow-xl shadow-amber-100/20 ring-1 ring-slate-200/50">
+                                        <StudentTrainingProgress studentId={localStorage.getItem('user_id') || ''} />
                                     </div>
                                 </div>
                             </motion.div>
@@ -271,7 +326,7 @@ export default function StudentKartePage() {
                                                 <h3 className="text-base md:text-xl font-black text-slate-900 flex items-start gap-2">
                                                     <span className="leading-tight">{item.title}</span>
                                                 </h3>
-                                                
+
                                                 <div className="space-y-3 mt-2">
                                                     <div className="flex items-center gap-2 text-emerald-700">
                                                         <div className="p-1.5 bg-emerald-100 rounded-lg shadow-sm shadow-emerald-200/50">

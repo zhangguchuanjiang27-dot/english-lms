@@ -48,9 +48,9 @@ export default function FlashDashPage() {
     const [preGameStats, setPreGameStats] = useState<any>(null);
     const [postGameStats, setPostGameStats] = useState<any>(null);
 
-    const [isListeningMode, setIsListeningMode] = useState(false);
+    const [gameMode, setGameMode] = useState<'flash' | 'listen' | 'reverse'>('flash');
 
-    type Question = { word: string; options: string[]; answer: number; };
+    type Question = { word: string; options: string[]; answer: number; originalWord?: string; };
     const [gameQuestions, setGameQuestions] = useState<Question[]>([]);
     const [wrongAnswers, setWrongAnswers] = useState<Question[]>([]);
 
@@ -58,10 +58,10 @@ export default function FlashDashPage() {
 
     // Audio on start for listening mode
     useEffect(() => {
-        if (isPlaying && isListeningMode && !showResult && question) {
-            playWord(question.word);
+        if (isPlaying && gameMode === 'listen' && !showResult && question) {
+            playWord(question.originalWord || question.word);
         }
-    }, [currentIndex, isPlaying, isListeningMode, showResult, question]);
+    }, [currentIndex, isPlaying, gameMode, showResult, question]);
 
     // Load completions from DB on mount
     useEffect(() => {
@@ -148,7 +148,7 @@ export default function FlashDashPage() {
         }
 
         // Play the correct word audio
-        playWord(question.word);
+        playWord(question.originalWord || question.word);
 
         setTimeout(() => {
             nextQuestion();
@@ -180,7 +180,7 @@ export default function FlashDashPage() {
                             score: score,
                             completed: isFullClear,
                             isPerfectClear: isFullClear && wrongAnswers.length === 0,
-                            mode: isListeningMode ? 'listen' : 'flash'
+                            mode: gameMode
                         })
                     }).then(async res => {
                         if (res.ok) {
@@ -201,17 +201,39 @@ export default function FlashDashPage() {
         }
     };
 
-    const startStage = (level: Level, stageIndex: number, listening: boolean = false) => {
+    const startStage = (level: Level, stageIndex: number, mode: 'flash' | 'listen' | 'reverse' = 'flash') => {
         const allQuestions = VOCAB_QUESTIONS[level] || [];
         const stageQuestions = allQuestions.slice(stageIndex * 50, (stageIndex + 1) * 50);
         // Shuffle and select up to 50 questions
         const shuffled = [...stageQuestions].sort(() => 0.5 - Math.random());
-        const selected = shuffled.slice(0, 50);
+        let selected = shuffled.slice(0, 50);
+
+        if (mode === 'reverse') {
+            selected = selected.map(q => {
+                const correctAnswerEng = q.word;
+                const promptJp = q.options[q.answer];
+
+                const otherWords = stageQuestions.filter(sq => sq.word !== correctAnswerEng).map(sq => sq.word);
+                const uniqueOtherWords = Array.from(new Set(otherWords));
+                const shuffledOther = uniqueOtherWords.sort(() => 0.5 - Math.random());
+                const wrongOptions = shuffledOther.slice(0, 3);
+                
+                const newOptions = [correctAnswerEng, ...wrongOptions].sort(() => 0.5 - Math.random());
+                const newAnswerIdx = newOptions.indexOf(correctAnswerEng);
+
+                return {
+                    word: promptJp,
+                    options: newOptions,
+                    answer: newAnswerIdx,
+                    originalWord: correctAnswerEng
+                };
+            });
+        }
 
         setSelectedLevel(level);
         setSelectedStageIndex(stageIndex);
         setGameQuestions(selected);
-        setIsListeningMode(listening);
+        setGameMode(mode);
         setCurrentIndex(0);
         setScore(0);
         setCombo(0);
@@ -344,9 +366,9 @@ export default function FlashDashPage() {
                                         </div>
                                         <h3 className="text-2xl font-black text-white mb-4">No. {startNum} - {endNum}</h3>
 
-                                        <div className="grid grid-cols-2 gap-4 mb-6">
+                                        <div className="grid grid-cols-3 gap-2 mb-6">
                                             {/* Flash Stats */}
-                                            <div className="bg-indigo-950/40 rounded-xl p-2 border border-indigo-500/10">
+                                            <div className="bg-indigo-950/40 rounded-xl p-2 border border-indigo-500/10 flex flex-col justify-between">
                                                 <div className="text-[10px] font-black text-indigo-400 uppercase tracking-tighter mb-1">表 (Flash)</div>
                                                 <div className="flex flex-col gap-1">
                                                     <div className="flex items-center gap-1">
@@ -358,14 +380,14 @@ export default function FlashDashPage() {
                                                     <div className="flex items-center gap-1">
                                                         <Zap size={10} className={stagePerfectClears[`${selectedLevel}_${i}_flash`] ? "text-emerald-400" : "text-slate-600"} />
                                                         <span className="text-[10px] font-bold text-slate-400">
-                                                            {stagePerfectClears[`${selectedLevel}_${i}_flash`] || 0} Perfect
+                                                            {stagePerfectClears[`${selectedLevel}_${i}_flash`] || 0}
                                                         </span>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             {/* Listen Stats */}
-                                            <div className="bg-purple-950/40 rounded-xl p-2 border border-purple-500/10">
+                                            <div className="bg-purple-950/40 rounded-xl p-2 border border-purple-500/10 flex flex-col justify-between">
                                                 <div className="text-[10px] font-black text-purple-400 uppercase tracking-tighter mb-1">裏 (Listen)</div>
                                                 <div className="flex flex-col gap-1">
                                                     <div className="flex items-center gap-1">
@@ -377,25 +399,52 @@ export default function FlashDashPage() {
                                                     <div className="flex items-center gap-1">
                                                         <Zap size={10} className={stagePerfectClears[`${selectedLevel}_${i}_listen`] ? "text-emerald-400" : "text-slate-600"} />
                                                         <span className="text-[10px] font-bold text-slate-400">
-                                                            {stagePerfectClears[`${selectedLevel}_${i}_listen`] || 0} Perfect
+                                                            {stagePerfectClears[`${selectedLevel}_${i}_listen`] || 0}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Reverse Stats */}
+                                            <div className="bg-emerald-950/40 rounded-xl p-2 border border-emerald-500/10 flex flex-col justify-between">
+                                                <div className="text-[10px] font-black text-emerald-400 uppercase tracking-tighter mb-1">英訳 (Rev)</div>
+                                                <div className="flex flex-col gap-1">
+                                                    <div className="flex items-center gap-1">
+                                                        <Trophy size={10} className={stageHighScores[`${selectedLevel}_${i}_reverse`] ? "text-amber-400" : "text-slate-600"} />
+                                                        <span className="text-[11px] font-bold text-slate-300">
+                                                            {stageHighScores[`${selectedLevel}_${i}_reverse`] || '-'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+                                                        <Zap size={10} className={stagePerfectClears[`${selectedLevel}_${i}_reverse`] ? "text-emerald-400" : "text-slate-600"} />
+                                                        <span className="text-[10px] font-bold text-slate-400">
+                                                            {stagePerfectClears[`${selectedLevel}_${i}_reverse`] || 0}
                                                         </span>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="mt-auto grid grid-cols-2 gap-3">
+                                        <div className="mt-auto flex flex-col gap-2">
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <button
+                                                    onClick={() => startStage(selectedLevel, i, 'flash')}
+                                                    className="bg-indigo-600 hover:bg-indigo-500 text-white text-[13px] font-black py-2 rounded-xl transition-colors shadow-lg shadow-indigo-900/20"
+                                                >
+                                                    表 (Flash)
+                                                </button>
+                                                <button
+                                                    onClick={() => startStage(selectedLevel, i, 'listen')}
+                                                    className="bg-purple-600 hover:bg-purple-500 text-white text-[13px] font-black py-2 rounded-xl transition-colors shadow-lg shadow-purple-900/20"
+                                                >
+                                                    裏 (Listen)
+                                                </button>
+                                            </div>
                                             <button
-                                                onClick={() => startStage(selectedLevel, i, false)}
-                                                className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-black py-2.5 rounded-xl transition-colors shadow-lg shadow-indigo-900/20"
+                                                onClick={() => startStage(selectedLevel, i, 'reverse')}
+                                                className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-black py-2.5 rounded-xl transition-colors shadow-lg shadow-emerald-900/20 w-full"
                                             >
-                                                表 (Flash)
-                                            </button>
-                                            <button
-                                                onClick={() => startStage(selectedLevel, i, true)}
-                                                className="bg-purple-600 hover:bg-purple-500 text-white text-sm font-black py-2.5 rounded-xl transition-colors shadow-lg shadow-purple-900/20"
-                                            >
-                                                裏 (Listen)
+                                                英訳 (Reverse)
                                             </button>
                                         </div>
                                     </div>
@@ -418,10 +467,10 @@ export default function FlashDashPage() {
                         score={score}
                         oldLevelInfo={postGameStats.oldLevelInfo}
                         newLevelInfo={postGameStats.newLevelInfo}
-                        onRetry={wrongAnswers.length > 0 ? startWrongAnswersMode : () => startStage(selectedLevel!, selectedStageIndex!, isListeningMode)}
+                        onRetry={wrongAnswers.length > 0 ? startWrongAnswersMode : () => startStage(selectedLevel!, selectedStageIndex!, gameMode)}
                         onBack={() => { setIsGameOver(false); setIsPlaying(false); }}
                         wrongAnswersCount={wrongAnswers.length}
-                        levelName={`Flash Dash ${isListeningMode ? '(裏)' : '(表)'} - ${LEVELS.find(l => l.id === selectedLevel)?.name}`}
+                        levelName={`Flash Dash ${gameMode === 'listen' ? '(裏)' : gameMode === 'reverse' ? '(英訳)' : '(表)'} - ${LEVELS.find(l => l.id === selectedLevel)?.name}`}
                     />
                 ) : (
                     <div className="relative z-10 bg-indigo-900/80 backdrop-blur-xl border border-indigo-500/30 p-8 md:p-12 rounded-[3rem] text-center max-w-2xl w-full shadow-2xl mt-12 mb-12">
@@ -474,9 +523,9 @@ export default function FlashDashPage() {
                 {/* Question Area */}
                 <div className="text-center mb-8 md:mb-12 min-h-[120px] md:min-h-[160px] flex items-center justify-center">
                     <div className="flex flex-col items-center gap-4">
-                        {isListeningMode && !showResult ? (
+                        {gameMode === 'listen' && !showResult ? (
                             <button
-                                onClick={() => playWord(question.word)}
+                                onClick={() => playWord(question.originalWord || question.word)}
                                 className="w-24 h-24 md:w-32 md:h-32 bg-indigo-600/30 hover:bg-indigo-600/50 rounded-full flex items-center justify-center border-4 border-indigo-500/30 transition-all active:scale-95"
                             >
                                 <Zap size={48} className="text-indigo-400 animate-pulse" />
@@ -484,12 +533,12 @@ export default function FlashDashPage() {
                         ) : (
                             <h2 className={cn(
                                 "text-5xl md:text-8xl font-black drop-shadow-xl tracking-tight break-all transition-all duration-500",
-                                isListeningMode && showResult ? "text-amber-400" : "text-white"
+                                gameMode === 'listen' && showResult ? "text-amber-400" : "text-white"
                             )}>
                                 {question?.word}
                             </h2>
                         )}
-                        {isListeningMode && !showResult && (
+                        {gameMode === 'listen' && !showResult && (
                             <p className="text-indigo-300 font-bold tracking-widest animate-pulse">LISTENING...</p>
                         )}
                     </div>
