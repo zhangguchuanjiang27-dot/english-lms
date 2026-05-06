@@ -208,10 +208,28 @@ export async function getRecordByLessonId(lessonId: string) {
     }
 }
 
-export async function getRecentRecordsByStudent(studentId: string) {
+export async function getRecentRecordsByStudent(studentId: string, course?: string) {
     try {
+        let whereClause: any = { studentId };
+
+        if (course) {
+            const schedules = await prisma.lessonSchedule.findMany({
+                where: { studentId, course },
+                select: { id: true }
+            });
+            const scheduleIds = schedules.map(s => s.id);
+
+            whereClause = {
+                studentId,
+                OR: [
+                    { lessonId: { in: scheduleIds } },
+                    { title: { contains: course } }
+                ]
+            };
+        }
+
         const records = await prisma.lessonRecord.findMany({
-            where: { studentId },
+            where: whereClause,
             orderBy: { date: 'desc' },
             take: 1
         });

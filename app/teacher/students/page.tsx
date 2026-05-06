@@ -166,7 +166,7 @@ export default function TeacherStudentsPage() {
             }
 
             // Also fetch the most recent of ALL records for the student for the history sidebar
-            const record = await getRecentRecordsByStudent(lesson.studentId);
+            const record = await getRecentRecordsByStudent(lesson.studentId, lesson.course);
             setLastRecord(record as any);
         } catch (error) {
             console.error('Error fetching record data:', error);
