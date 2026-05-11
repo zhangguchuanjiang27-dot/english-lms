@@ -216,7 +216,7 @@ export default function FlashDashPage() {
         setPostGameStats(null);
         
         const allQuestions = VOCAB_QUESTIONS[level] || [];
-        const stageQuestions = allQuestions.slice(stageIndex * 50, (stageIndex + 1) * 50);
+        const stageQuestions = allQuestions.slice(stageIndex * 20, (stageIndex + 1) * 20);
         
         // Safety check for empty questions
         if (stageQuestions.length === 0) {
@@ -224,9 +224,9 @@ export default function FlashDashPage() {
             return;
         }
 
-        // Shuffle and select up to 50 questions
+        // Shuffle and select up to 20 questions
         const shuffled = [...stageQuestions].sort(() => 0.5 - Math.random());
-        let selected = shuffled.slice(0, 50);
+        let selected = shuffled.slice(0, 20);
 
         if (mode === 'reverse') {
             selected = selected.map(q => {
@@ -276,6 +276,7 @@ export default function FlashDashPage() {
         setGameQuestions(shuffled);
         setCurrentIndex(0);
         setScore(0);
+        currentScoreRef.current = 0; // Reset ref score
         setCombo(0);
         setWrongAnswers([]); // Reset wrong answers for this retry run
         setTimeLeft(10);
@@ -284,6 +285,7 @@ export default function FlashDashPage() {
         setIsPlaying(true);
         setSelectedOption(null);
         setShowResult(false);
+        setStartTime(Date.now()); // Reset start time for duration tracking
     };
 
     if (!selectedLevel) {
@@ -343,7 +345,7 @@ export default function FlashDashPage() {
 
     if (selectedLevel && !isPlaying && !isGameOver) {
         const allQuestions = VOCAB_QUESTIONS[selectedLevel] || [];
-        const totalStages = Math.ceil(allQuestions.length / 50) || 1;
+        const totalStages = Math.ceil(allQuestions.length / 20) || 1;
 
         return (
             <main className="flex-1 flex flex-col items-center justify-center bg-indigo-950 font-sans min-h-screen text-slate-50 relative overflow-hidden p-6">
@@ -367,13 +369,13 @@ export default function FlashDashPage() {
                         <h1 className="text-4xl md:text-5xl font-black text-white drop-shadow-xl tracking-tight mb-4">
                             ステージ選択
                         </h1>
-                        <p className="text-indigo-200 font-medium text-lg">50問ごとに区切られたステージに挑戦しよう</p>
+                        <p className="text-indigo-200 font-medium text-lg">20問ごとに区切られたステージに挑戦しよう</p>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {Array.from({ length: totalStages }).map((_, i) => {
-                            const startNum = i * 50 + 1;
-                            const endNum = Math.min((i + 1) * 50, Math.max(allQuestions.length, 1));
+                            const startNum = i * 20 + 1;
+                            const endNum = Math.min((i + 1) * 20, Math.max(allQuestions.length, 1));
                             const completionKey = `${selectedLevel}_${i}`;
                             const perfectClears = stagePerfectClears[completionKey] || 0;
                             const highScore = stageHighScores[completionKey] || null;

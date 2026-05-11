@@ -141,6 +141,7 @@ export default function DrillMasterPage() {
         setIsPlaying(true);
         resetGameState();
         setPostGameStats(null);
+        setStartTime(Date.now()); // Reset start time for duration tracking
     };
 
     const resetGameState = () => {

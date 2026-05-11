@@ -186,7 +186,7 @@ export default function TrainingDashboardPage() {
                 </div>
 
                 {/* Quests Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                     {/* Vocab Quest */}
                     <Link href="/training/vocab" className="group relative block overflow-hidden rounded-[2.5rem] bg-indigo-600 p-8 shadow-2xl transition-transform hover:-translate-y-2">
                         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-500/20 to-indigo-900/80 mix-blend-overlay"></div>
@@ -241,6 +241,36 @@ export default function TrainingDashboardPage() {
                                     <span className="px-2 py-1 bg-white/20 rounded text-[10px] font-black text-amber-50">中3</span>
                                 </div>
                                 <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center group-hover:bg-white group-hover:text-amber-600 transition-colors">
+                                    <ArrowRight size={24} />
+                                </div>
+                            </div>
+                        </div>
+                    </Link>
+
+                    {/* Blank Quest */}
+                    <Link href="/training/fill-in" className="group relative block overflow-hidden rounded-[2.5rem] bg-emerald-500 p-8 shadow-2xl transition-transform hover:-translate-y-2">
+                        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-emerald-400/20 to-emerald-700/80 mix-blend-overlay"></div>
+                        <div className="absolute -bottom-24 -left-10 w-56 h-56 bg-emerald-300/40 rounded-full blur-[60px] group-hover:bg-emerald-200/50 transition-all duration-500"></div>
+
+                        <div className="relative z-10 flex flex-col h-full justify-between min-h-[250px]">
+                            <div className="space-y-4">
+                                <div className="inline-flex items-center gap-2 bg-emerald-900/40 border border-emerald-300/30 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest text-emerald-100 backdrop-blur-md">
+                                    <Keyboard size={14} className="text-emerald-200" />
+                                    Blank Quest
+                                </div>
+                                <h2 className="text-3xl font-black text-white">Word Filler</h2>
+                                <p className="text-emerald-100 text-sm font-medium max-w-[80%]">
+                                    文脈を読み取り、空欄に適切な単語をタイピングして文法をマスターしよう！
+                                </p>
+                            </div>
+
+                            <div className="mt-8 flex items-center justify-between">
+                                <div className="flex gap-2">
+                                    <span className="px-2 py-1 bg-white/20 rounded text-[10px] font-black text-emerald-50">中1</span>
+                                    <span className="px-2 py-1 bg-white/20 rounded text-[10px] font-black text-emerald-50">中2</span>
+                                    <span className="px-2 py-1 bg-white/20 rounded text-[10px] font-black text-emerald-50">中3</span>
+                                </div>
+                                <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center group-hover:bg-white group-hover:text-emerald-600 transition-colors">
                                     <ArrowRight size={24} />
                                 </div>
                             </div>
