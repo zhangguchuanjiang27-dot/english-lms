@@ -114,7 +114,6 @@ export const VOCAB_QUESTIONS = {
         { word: 'bad', options: ['良い', '悪い', '悲しい', '怖い'], answer: 1 },
         { word: 'hot', options: ['寒い', '涼しい', '暑い', '暖かい'], answer: 2 },
         { word: 'red', options: ['青', '赤', '緑', '黄'], answer: 1 },
-
         { word: 'blue', options: ['白', '黒', '青', '赤'], answer: 2 },
         { word: 'green', options: ['緑', '紫', '茶', '黄'], answer: 0 },
         { word: 'yellow', options: ['黄', '赤', '青', '白'], answer: 0 },

@@ -31,3 +31,30 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: 'Failed to fetch student profile' }, { status: 500 });
     }
 }
+
+export async function PATCH(request: Request) {
+    try {
+        const body = await request.json();
+        const { id, nickname } = body;
+
+        if (!id) {
+            return NextResponse.json({ error: 'Student ID is required' }, { status: 400 });
+        }
+
+        const updatedStudent = await prisma.student.update({
+            where: { id },
+            data: {
+                nickname: nickname
+            },
+            select: {
+                id: true,
+                nickname: true
+            }
+        });
+
+        return NextResponse.json(updatedStudent);
+    } catch (error) {
+        console.error('Failed to update student profile:', error);
+        return NextResponse.json({ error: 'Failed to update student profile' }, { status: 500 });
+    }
+}

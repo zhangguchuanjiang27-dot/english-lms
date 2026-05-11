@@ -36,6 +36,7 @@ model Student {
   occupation        String?
   avatarUrl         String?
   coverUrl          String?
+  nickname          String?
   questLevel        Int               @default(1)
   questXP           Int               @default(0)
   questStreak       Int               @default(0)
@@ -49,6 +50,17 @@ model Student {
   testScores        TestScore[]
   vocabProgresses   VocabProgress[]
   drillProgresses   DrillProgress[]
+  studyLogs         StudyLog[]
+}
+
+model StudyLog {
+  id        String   @id @default(cuid())
+  studentId String
+  type      String   // "VOCAB", "GRAMMAR", "DRILL"
+  duration  Int      @default(0) // Duration in seconds
+  score     Int?
+  createdAt DateTime @default(now())
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
 
 model Teacher {

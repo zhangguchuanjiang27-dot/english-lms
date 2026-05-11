@@ -39,6 +39,7 @@ export default function DrillMasterPage() {
     const [stagePerfects, setStagePerfects] = useState<Record<string, number>>({});
     const [stageHighScores, setStageHighScores] = useState<Record<string, number>>({});
     const [postGameStats, setPostGameStats] = useState<any>(null);
+    const [startTime, setStartTime] = useState<number | null>(null);
 
     const [gameQuestions, setGameQuestions] = useState<DrillQuestion[]>([]);
     const [wrongAnswers, setWrongAnswers] = useState<DrillQuestion[]>([]);
@@ -121,6 +122,7 @@ export default function DrillMasterPage() {
         setIsPlaying(true);
         resetGameState();
         setPostGameStats(null);
+        setStartTime(Date.now());
     };
 
     const startWrongAnswersMode = () => {
@@ -208,7 +210,8 @@ export default function DrillMasterPage() {
                         categoryId: `stage_${selectedStageIndex + 1}`,
                         score: score,
                         completed: isFullClear,
-                        isPerfectClear: isPerfectClear
+                        isPerfectClear: isPerfectClear,
+                        duration: startTime ? Math.floor((Date.now() - startTime) / 1000) : 0
                     })
                 }).then(async res => {
                     if (res.ok) {

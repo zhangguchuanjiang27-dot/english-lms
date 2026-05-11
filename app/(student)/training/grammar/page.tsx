@@ -54,6 +54,7 @@ export default function SentenceBuilderPage() {
     const [stageHighScores, setStageHighScores] = useState<Record<string, number>>({});
     const [preGameStats, setPreGameStats] = useState<any>(null);
     const [postGameStats, setPostGameStats] = useState<any>(null);
+    const [startTime, setStartTime] = useState<number | null>(null);
 
     const [gameQuestions, setGameQuestions] = useState<GrammarQuestion[]>([]);
     const [wrongAnswers, setWrongAnswers] = useState<GrammarQuestion[]>([]);
@@ -140,6 +141,7 @@ export default function SentenceBuilderPage() {
         setIsPlaying(true);
         resetGameState(selected[0]);
         setPostGameStats(null); // Reset post stats for new game
+        setStartTime(Date.now());
     };
 
     const startWrongAnswersMode = () => {
@@ -169,7 +171,7 @@ export default function SentenceBuilderPage() {
 
     const resetGameState = (q: GrammarQuestion) => {
         setSelectedWords([]);
-        setAvailableWords(q?.words || []);
+        setAvailableWords(q.words);
         setShowResult(false);
         setIsOk(false);
     };
@@ -198,7 +200,7 @@ export default function SentenceBuilderPage() {
         setShowResult(true);
 
         if (isCorrect) {
-            setScore(s => s + 100 + (combo * 10)); // Combo bonus
+            setScore(s => s + 500 + (combo * 50)); // Increased base and combo bonus
             setCombo(c => c + 1);
         } else {
             setCombo(0);
@@ -239,7 +241,8 @@ export default function SentenceBuilderPage() {
                         stageIndex: selectedSubStageIndex,
                         score: score,
                         completed: isFullClear,
-                        isPerfectClear: isPerfectClear
+                        isPerfectClear: isPerfectClear,
+                        duration: startTime ? Math.floor((Date.now() - startTime) / 1000) : 0
                     })
                 }).then(async res => {
                     if (res.ok) {

@@ -24,7 +24,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { studentId, level, stageIndex, score, completed, isPerfectClear } = body;
+        const { studentId, level, stageIndex, score, completed, isPerfectClear, duration } = body;
 
         if (!studentId || !level || stageIndex === undefined) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -73,6 +73,16 @@ export async function POST(request: Request) {
                 completions: newCompletions,
                 perfectClears: newPerfectClears,
                 highestScore: newHighScore
+            }
+        });
+
+        // Create Study Log
+        await prisma.studyLog.create({
+            data: {
+                studentId,
+                type: 'GRAMMAR',
+                duration: duration || 0,
+                score: score || 0,
             }
         });
 

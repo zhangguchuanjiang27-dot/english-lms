@@ -12,12 +12,19 @@ import {
     ArrowRight,
     Star,
     Wrench,
-    Keyboard
+    Keyboard,
+    Calendar,
+    X,
+    Users
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import Link from 'next/link';
 import { getLevelInfo } from '@/lib/quest-utils';
+import StudyActivityHeatmap from '@/components/StudyActivityHeatmap';
+import StudyCalendar from '@/components/StudyCalendar';
+import RankingView from '@/components/RankingView';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -43,6 +50,8 @@ export default function TrainingDashboardPage() {
     const [streak, setStreak] = useState(0);
     const [levelInfo, setLevelInfo] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [showStudyLog, setShowStudyLog] = useState(false);
+    const [showRankings, setShowRankings] = useState(false);
 
     useEffect(() => {
         const fetchStudentInfo = async () => {
@@ -51,9 +60,16 @@ export default function TrainingDashboardPage() {
                 try {
                     const res = await fetch(`/api/student/profile?id=${studentId}`);
                     if (res.ok) {
-                        const data = await res.json();
-                        setStreak(data.questStreak || 0);
-                        setLevelInfo(getLevelInfo(data.questXP || 0));
+                        const text = await res.text();
+                        if (text) {
+                            const data = JSON.parse(text);
+                            setStreak(data.questStreak || 0);
+                            setLevelInfo(getLevelInfo(data.questXP || 0));
+                        } else {
+                            console.warn("Profile API returned empty response");
+                        }
+                    } else {
+                        console.error("Profile API failed:", res.status, res.statusText);
                     }
                 } catch (error) {
                     console.error('Failed to load player stats', error);
@@ -87,14 +103,45 @@ export default function TrainingDashboardPage() {
                     </div>
 
                     <div className="flex flex-col sm:flex-row items-stretch gap-4 w-full md:w-auto">
-                        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-4 flex items-center gap-4 shadow-lg shrink-0">
-                            <div className="p-3 bg-rose-500/20 text-rose-400 rounded-xl">
-                                <Flame size={24} className="animate-pulse" />
+                        <div className="flex gap-3 shrink-0">
+                            {/* Streak Display */}
+                            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-3 flex items-center gap-3 shadow-lg flex-1 sm:flex-initial min-w-[100px]">
+                                <div className="p-2 bg-rose-500/20 text-rose-400 rounded-lg">
+                                    <Flame size={20} className="animate-pulse" />
+                                </div>
+                                <div className="overflow-hidden">
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-0 whitespace-nowrap">連続学習</p>
+                                    <p className="text-lg font-black text-rose-100 leading-none">{streak}d</p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-0.5">連続学習</p>
-                                <p className="text-xl font-black text-rose-100">{streak} Days</p>
-                            </div>
+                            
+                            {/* Compact Study Record Button */}
+                            <button 
+                                onClick={() => setShowStudyLog(true)}
+                                className="bg-slate-800/50 backdrop-blur-sm border border-amber-500/30 rounded-2xl p-2.5 md:p-3 flex items-center gap-2 md:gap-3 shadow-lg hover:bg-amber-600/20 transition-all flex-1 min-w-[110px] active:scale-95"
+                            >
+                                <div className="p-2 bg-amber-500/20 text-amber-400 rounded-lg shrink-0">
+                                    <Trophy size={20} />
+                                </div>
+                                <div className="text-left">
+                                    <p className="text-[8px] md:text-[9px] font-black uppercase tracking-tight text-slate-500 mb-0 whitespace-nowrap">学習記録</p>
+                                    <p className="text-base md:text-lg font-black text-amber-100 leading-none flex items-center gap-1 whitespace-nowrap">確認 <ArrowRight size={10}/></p>
+                                </div>
+                            </button>
+
+                            {/* Rankings Button */}
+                            <button 
+                                onClick={() => setShowRankings(true)}
+                                className="bg-slate-800/50 backdrop-blur-sm border border-emerald-500/30 rounded-2xl p-2.5 md:p-3 flex items-center gap-2 md:gap-3 shadow-lg hover:bg-emerald-600/20 transition-all flex-1 min-w-[110px] active:scale-95"
+                            >
+                                <div className="p-2 bg-emerald-500/20 text-emerald-400 rounded-lg shrink-0">
+                                    <Users size={20} />
+                                </div>
+                                <div className="text-left">
+                                    <p className="text-[8px] md:text-[9px] font-black uppercase tracking-tight text-slate-500 mb-0 whitespace-nowrap">ランキング</p>
+                                    <p className="text-base md:text-lg font-black text-emerald-100 leading-none flex items-center gap-1 whitespace-nowrap">参加 <ArrowRight size={10}/></p>
+                                </div>
+                            </button>
                         </div>
                         <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-4 flex items-center gap-5 shadow-lg flex-1 md:min-w-[340px]">
                             <div className="relative flex-shrink-0">
@@ -138,7 +185,7 @@ export default function TrainingDashboardPage() {
                     </div>
                 </div>
 
-                {/* Quests */}
+                {/* Quests Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
                     {/* Vocab Quest */}
                     <Link href="/training/vocab" className="group relative block overflow-hidden rounded-[2.5rem] bg-indigo-600 p-8 shadow-2xl transition-transform hover:-translate-y-2">
@@ -199,8 +246,9 @@ export default function TrainingDashboardPage() {
                             </div>
                         </div>
                     </Link>
+                </div>
 
-                {/* Skill Drills Section (Minimalist & Sequential) */}
+                {/* Skill Drills Section */}
                 <div className="bg-slate-800/30 rounded-[2.5rem] border border-slate-700/50 p-8">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div className="flex items-center gap-4">
@@ -223,24 +271,79 @@ export default function TrainingDashboardPage() {
                     </div>
                 </div>
 
-                    {/* Reading Quest (Coming Soon) */}
-                    <div className="group relative block overflow-hidden rounded-[2.5rem] bg-slate-800 p-8 shadow-inner border border-slate-700 opacity-60">
-                        <div className="relative z-10 flex flex-col h-full justify-between min-h-[150px]">
-                            <div className="space-y-4">
-                                <div className="inline-flex items-center gap-2 bg-slate-700/50 border border-slate-600 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest text-slate-400">
-                                    <BookOpen size={14} />
-                                    Reading Quest
-                                </div>
-                                <h2 className="text-2xl font-black text-slate-500">Context Detective</h2>
-                                <p className="text-slate-500 text-sm font-medium">
-                                    長文の謎を解き明かす探偵モード。アップデートで追加予定！
-                                </p>
+                {/* Reading Quest (Coming Soon) */}
+                <div className="group relative block overflow-hidden rounded-[2.5rem] bg-slate-800 p-8 shadow-inner border border-slate-700 opacity-60">
+                    <div className="relative z-10 flex flex-col h-full justify-between min-h-[150px]">
+                        <div className="space-y-4">
+                            <div className="inline-flex items-center gap-2 bg-slate-700/50 border border-slate-600 px-3 py-1.5 rounded-full text-xs font-black uppercase tracking-widest text-slate-400">
+                                <BookOpen size={14} />
+                                Reading Quest
                             </div>
+                            <h2 className="text-2xl font-black text-slate-500">Context Detective</h2>
+                            <p className="text-slate-500 text-sm font-medium">
+                                長文の謎を解き明かす探偵モード。アップデートで追加予定！
+                            </p>
                         </div>
                     </div>
                 </div>
-
             </div>
+
+            <AnimatePresence>
+                {showStudyLog && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10">
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowStudyLog(false)}
+                            className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+                        />
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="relative z-10 w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-[3rem] shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+                        >
+                            <div className="p-8 border-b border-slate-800 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <Trophy className="text-amber-400" size={24} />
+                                    <h2 className="text-2xl font-black text-white uppercase tracking-tight">学習記録</h2>
+                                </div>
+                                <button 
+                                    onClick={() => setShowStudyLog(false)}
+                                    className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-slate-700 transition-colors"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
+                            <div className="p-8 overflow-y-auto">
+                                <StudyCalendar 
+                                    studentId={localStorage.getItem('user_id') || ''} 
+                                />
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {showRankings && (
+                    <div className="fixed inset-0 z-[110] bg-slate-950 overflow-hidden">
+                        <motion.div 
+                            initial={{ x: '100%' }}
+                            animate={{ x: 0 }}
+                            exit={{ x: '100%' }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                            className="w-full h-full"
+                        >
+                            <RankingView 
+                                onClose={() => setShowRankings(false)} 
+                                currentStudentId={localStorage.getItem('user_id') || ''}
+                            />
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </main>
     );
 }

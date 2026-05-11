@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import {
     Zap,
@@ -47,12 +47,16 @@ export default function FlashDashPage() {
     const [stageHighScores, setStageHighScores] = useState<Record<string, number>>({});
     const [preGameStats, setPreGameStats] = useState<any>(null);
     const [postGameStats, setPostGameStats] = useState<any>(null);
+    const [startTime, setStartTime] = useState<number | null>(null);
 
     const [gameMode, setGameMode] = useState<'flash' | 'listen' | 'reverse'>('flash');
 
     type Question = { word: string; options: string[]; answer: number; originalWord?: string; };
     const [gameQuestions, setGameQuestions] = useState<Question[]>([]);
     const [wrongAnswers, setWrongAnswers] = useState<Question[]>([]);
+    
+    // Use a ref for score to ensure we always have the latest value for saving
+    const currentScoreRef = useRef(0);
 
     const question = gameQuestions[currentIndex];
 
@@ -140,7 +144,9 @@ export default function FlashDashPage() {
         const isCorrect = optionIndex === question.answer;
 
         if (isCorrect) {
-            setScore(s => s + 100 + (combo * 10)); // Combo bonus
+            const pointsToAdd = 100 + (combo * 10); // Reverted to 100 + 10 combo bonus
+            currentScoreRef.current += pointsToAdd;
+            setScore(currentScoreRef.current);
             setCombo(c => c + 1);
         } else {
             setCombo(0);
@@ -177,10 +183,11 @@ export default function FlashDashPage() {
                             studentId: userId,
                             level: selectedLevel,
                             stageIndex: selectedStageIndex,
-                            score: score,
+                            score: currentScoreRef.current,
                             completed: isFullClear,
-                            isPerfectClear: isFullClear && wrongAnswers.length === 0,
-                            mode: gameMode
+                            perfectClears: isFullClear && wrongAnswers.length === 0 ? 1 : 0,
+                            mode: gameMode,
+                            duration: startTime ? Math.floor((Date.now() - startTime) / 1000) : 0
                         })
                     }).then(async res => {
                         if (res.ok) {
@@ -202,8 +209,21 @@ export default function FlashDashPage() {
     };
 
     const startStage = (level: Level, stageIndex: number, mode: 'flash' | 'listen' | 'reverse' = 'flash') => {
+        // 1. Reset all game-ending states FIRST to prevent UI conflicts
+        setIsGameOver(false);
+        setIsPlaying(false); // Briefly turn off to force clean mount/reset if needed
+        setShowResult(false);
+        setPostGameStats(null);
+        
         const allQuestions = VOCAB_QUESTIONS[level] || [];
         const stageQuestions = allQuestions.slice(stageIndex * 50, (stageIndex + 1) * 50);
+        
+        // Safety check for empty questions
+        if (stageQuestions.length === 0) {
+            alert("このステージには問題が含まれていません。");
+            return;
+        }
+
         // Shuffle and select up to 50 questions
         const shuffled = [...stageQuestions].sort(() => 0.5 - Math.random());
         let selected = shuffled.slice(0, 50);
@@ -230,21 +250,24 @@ export default function FlashDashPage() {
             });
         }
 
+        // 2. Set new game data
         setSelectedLevel(level);
         setSelectedStageIndex(stageIndex);
         setGameQuestions(selected);
         setGameMode(mode);
         setCurrentIndex(0);
         setScore(0);
+        currentScoreRef.current = 0;
         setCombo(0);
         setWrongAnswers([]);
-        setTimeLeft(10);
-        setIsGameOver(false);
         setIsRetryMode(false);
-        setIsPlaying(true);
-        setSelectedOption(null);
-        setShowResult(false);
-        setPostGameStats(null); // Reset post stats for new game
+        setTimeLeft(10);
+        setStartTime(Date.now());
+        
+        // 3. Finally start playing
+        setTimeout(() => {
+            setIsPlaying(true);
+        }, 10);
     };
 
     const startWrongAnswersMode = () => {

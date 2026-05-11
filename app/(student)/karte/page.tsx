@@ -21,6 +21,8 @@ import { getStudentSchedule } from '@/lib/actions/student';
 import { getStudentGrammarMastery } from '@/lib/actions/grammar';
 import GrammarMasteryGrid from '@/components/GrammarMasteryGrid';
 import StudentTrainingProgress from '@/components/StudentTrainingProgress';
+import StudyActivityHeatmap from '@/components/StudyActivityHeatmap';
+import StudyCalendar from '@/components/StudyCalendar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -131,6 +133,7 @@ export default function StudentKartePage() {
                         <StatLarge label="指導講師" value={Array.from(new Set(records.map(r => r.teacher))).length} unit="名" />
                     </div>
                 </div>
+
 
                 {/* Grammar Mastery Toggle */}
                 <div className="space-y-4">

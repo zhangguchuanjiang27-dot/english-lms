@@ -126,40 +126,61 @@ export default function StudentTrainingProgress({ studentId }: Props) {
                             <h5 className="text-xs font-black text-indigo-700 uppercase tracking-widest leading-none mb-3">
                                 {expandedVocabLevel === 'jhs1' ? '【中1】' : expandedVocabLevel === 'jhs2' ? '【中2】' : '【中3】'} の詳細な進捗
                             </h5>
-                            <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                                 {(() => {
                                     const QUESTIONS_PER_STAGE = 50;
                                     const list = (VOCAB_QUESTIONS as any)[expandedVocabLevel] || [];
                                     const totalStages = Math.ceil(list.length / QUESTIONS_PER_STAGE);
                                     
                                     return Array.from({ length: totalStages }).map((_, stageIndex) => {
-                                        const playedData = stats.vocab.find((v: any) => v.level === expandedVocabLevel && v.stageIndex === stageIndex);
-                                        const isPlayed = !!playedData;
+                                        const getModeData = (m: string) => stats.vocab.find((v: any) => v.level === expandedVocabLevel && v.stageIndex === stageIndex && (v.mode === m || (!v.mode && m === 'flash')));
                                         
+                                        const flashData = getModeData('flash');
+                                        const listenData = getModeData('listen');
+                                        const reverseData = getModeData('reverse');
+                                        
+                                        const hasAnyData = flashData || listenData || reverseData;
+
                                         return (
-                                            <div key={stageIndex} className={cn("flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-4 py-2.5 rounded-lg border shadow-sm transition-all", isPlayed ? "bg-white border-indigo-100/50" : "bg-slate-50 border-dashed border-slate-200 opacity-70")}>
-                                                <p className={cn("text-sm font-bold flex items-center gap-2", isPlayed ? "text-slate-700" : "text-slate-400")}>
-                                                    STAGE {stageIndex + 1}
-                                                    {!isPlayed && <span className="text-[10px] font-black bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded">未挑戦</span>}
-                                                </p>
-                                                {isPlayed ? (
-                                                    <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
-                                                        <p className="text-xs font-medium text-slate-500">クリア {playedData.completions}回</p>
-                                                        {playedData.perfectClears > 0 ? (
-                                                            <div className="flex items-center gap-1 bg-amber-50 text-amber-600 px-2.5 py-1 rounded-md text-xs font-bold border border-amber-100">
-                                                                <Star size={12} className="fill-amber-500" />
-                                                                Perfect {playedData.perfectClears}回
-                                                            </div>
-                                                        ) : (
-                                                            <div className="flex items-center gap-1 bg-slate-100 text-slate-500 px-2.5 py-1 rounded-md text-xs font-bold border border-slate-200">
-                                                                <Star size={12} />
-                                                                Perfect 0回
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                ) : (
-                                                    <div className="text-xs font-medium text-slate-400 text-left sm:text-right">未プレイ</div>
-                                                )}
+                                            <div key={stageIndex} className={cn("p-4 rounded-2xl border shadow-sm transition-all bg-white", !hasAnyData && "opacity-60 bg-slate-50 border-dashed border-slate-200")}>
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <p className={cn("text-sm font-black flex items-center gap-2", hasAnyData ? "text-slate-800" : "text-slate-400")}>
+                                                        STAGE {stageIndex + 1}
+                                                        {!hasAnyData && <span className="text-[10px] font-black bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded">未挑戦</span>}
+                                                    </p>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                                    {[
+                                                        { label: '表 (Flash)', data: flashData, color: 'indigo' },
+                                                        { label: '裏 (Listen)', data: listenData, color: 'purple' },
+                                                        { label: '英訳 (Rev)', data: reverseData, color: 'emerald' }
+                                                    ].map((mode) => (
+                                                        <div key={mode.label} className={cn(
+                                                            "p-2.5 rounded-xl border flex flex-col justify-between min-h-[70px]",
+                                                            mode.data ? `bg-${mode.color}-50/50 border-${mode.color}-100` : "bg-slate-50 border-transparent opacity-60"
+                                                        )}>
+                                                            <p className={cn("text-[10px] font-black uppercase tracking-tight mb-1.5", mode.data ? `text-${mode.color}-600` : "text-slate-400")}>{mode.label}</p>
+                                                            {mode.data ? (
+                                                                <div className="space-y-1">
+                                                                    <div className="flex items-center justify-between">
+                                                                        <span className="text-[10px] text-slate-400 font-bold">Best</span>
+                                                                        <span className="text-xs font-black text-slate-700">{mode.data.highestScore}</span>
+                                                                    </div>
+                                                                    <div className="flex items-center justify-between">
+                                                                        <span className="text-[10px] text-slate-400 font-bold">Perfect</span>
+                                                                        <div className="flex items-center gap-1">
+                                                                            <Star size={10} className={mode.data.perfectClears > 0 ? "text-amber-500 fill-amber-500" : "text-slate-300"} />
+                                                                            <span className={cn("text-xs font-black", mode.data.perfectClears > 0 ? "text-amber-600" : "text-slate-400")}>{mode.data.perfectClears}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <p className="text-[10px] font-bold text-slate-400 italic">No record</p>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             </div>
                                         );
                                     });

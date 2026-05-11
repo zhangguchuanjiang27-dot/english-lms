@@ -25,7 +25,9 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-        const { studentId, level, stageIndex, score, completed, isPerfectClear, mode } = body;
+        const { studentId, level, stageIndex, score, completed, perfectClears, mode, duration } = body;
+
+        const isPerfectClear = !!perfectClears;
 
         const currentMode = mode || 'flash';
 
@@ -80,6 +82,16 @@ export async function POST(request: Request) {
                 completions: newCompletions,
                 perfectClears: newPerfectClears,
                 highestScore: newHighScore
+            }
+        });
+
+        // Create Study Log
+        await prisma.studyLog.create({
+            data: {
+                studentId,
+                type: 'VOCAB',
+                duration: duration || 0,
+                score: score || 0,
             }
         });
 
