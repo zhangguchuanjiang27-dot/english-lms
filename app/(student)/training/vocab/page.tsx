@@ -276,6 +276,7 @@ export default function FlashDashPage() {
         setGameQuestions(shuffled);
         setCurrentIndex(0);
         setScore(0);
+        currentScoreRef.current = 0; // Reset ref score
         setCombo(0);
         setWrongAnswers([]); // Reset wrong answers for this retry run
         setTimeLeft(10);
@@ -284,6 +285,7 @@ export default function FlashDashPage() {
         setIsPlaying(true);
         setSelectedOption(null);
         setShowResult(false);
+        setStartTime(Date.now()); // Reset start time for duration tracking
     };
 
     if (!selectedLevel) {

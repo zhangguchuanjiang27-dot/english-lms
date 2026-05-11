@@ -167,6 +167,7 @@ export default function SentenceBuilderPage() {
         setIsPlaying(true);
         resetGameState(shuffled[0]);
         setPostGameStats(null); // Reset post stats for new game
+        setStartTime(Date.now()); // Reset start time for duration tracking
     };
 
     const resetGameState = (q: GrammarQuestion) => {
