@@ -2,6 +2,7 @@
 
 import {
     Calendar,
+    CalendarDays,
     Users,
     MessageSquare,
     Settings,
@@ -74,6 +75,12 @@ export default function TeacherLayout({
                             label="生徒カルテ検索"
                             href="/teacher/records"
                             active={pathname.includes('/teacher/records')}
+                        />
+                        <TeacherNavItem
+                            icon={CalendarDays}
+                            label="シフトカレンダー"
+                            href="/teacher/shifts"
+                            active={pathname.includes('/teacher/shifts')}
                         />
                     </nav>
 

@@ -1818,16 +1818,16 @@ for (const level in RAW_GRAMMAR_DATA) {
             // If no blanks were marked manually with [], fallback to randomly selecting 1 word
             if (blanks.length === 0 && answer.length > 0) {
                 // Try to find a word that is > 2 letters, otherwise any word (excluding punctuation)
-                const candidates = answer.map((w, i) => ({w, i})).filter(item => item.w.length > 2);
+                const candidates = answer.map((w, i) => ({ w, i })).filter(item => item.w.length > 2);
                 if (candidates.length > 0) {
                     blanks.push(candidates[Math.floor(Math.random() * candidates.length)].i);
                 } else {
                     // Fallback to finding any alphanumeric string
-                    const alphaCandidates = answer.map((w, i) => ({w, i})).filter(item => /[a-zA-Z]/.test(item.w));
+                    const alphaCandidates = answer.map((w, i) => ({ w, i })).filter(item => /[a-zA-Z]/.test(item.w));
                     if (alphaCandidates.length > 0) {
                         blanks.push(alphaCandidates[Math.floor(Math.random() * alphaCandidates.length)].i);
                     } else {
-                         // Worst case, just blank the first token
+                        // Worst case, just blank the first token
                         blanks.push(0);
                     }
                 }
