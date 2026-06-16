@@ -13,7 +13,7 @@ import {
 import Link from 'next/link';
 import { LessonRecord } from '@/lib/data-store';
 import { getStudentDetail, addLessonRecord, getTeachers } from '@/lib/actions/admin';
-import { Teacher as DBTeacher } from "@prisma/client";
+import { Teacher as DBTeacher } from "@/prisma/generated-client";
 import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 

@@ -27,7 +27,7 @@ import { useState, use, useEffect } from "react";
 import { DataStore, Student, LessonSchedule } from "@/lib/data-store";
 import { getStudentDetail, addLessonSchedule, deleteLessonSchedule, updateStudent, getTeachers } from "@/lib/actions/admin";
 import { getStudentGrammarMastery } from "@/lib/actions/grammar";
-import { Teacher as DBTeacher } from "@prisma/client";
+import { Teacher as DBTeacher } from "@/prisma/generated-client";
 import GrammarMasteryGrid from "@/components/GrammarMasteryGrid";
 
 const getTodayStr = () => {
