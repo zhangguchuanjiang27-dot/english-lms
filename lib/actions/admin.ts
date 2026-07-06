@@ -331,6 +331,7 @@ export async function addLessonRecord(data: {
     todayTestName?: string;
     todayTestScore?: number;
     todayTestTotal?: number;
+    nextTest?: string;
     homework?: string;
     grammar?: number;
     vocab?: number;
@@ -363,6 +364,7 @@ export async function addLessonRecord(data: {
                 todayTestName: data.todayTestName?.trim() || null,
                 todayTestScore: data.todayTestScore ?? null,
                 todayTestTotal: data.todayTestTotal ?? null,
+                nextTest: data.nextTest?.trim() || null,
                 homework: data.homework || '',
                 grammar: data.grammar || 50,
                 vocab: data.vocab || 50,

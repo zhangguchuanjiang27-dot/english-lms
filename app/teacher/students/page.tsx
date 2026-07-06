@@ -80,6 +80,7 @@ export default function TeacherStudentsPage() {
         todayTestName: '',
         todayTestScore: '',
         todayTestTotal: '',
+        nextTest: '',
         nextScope: '',
         importantExpressions: [{ expression: '', meaning: '' }] as { expression: string, meaning: string }[],
         homework: '',
@@ -145,6 +146,7 @@ export default function TeacherStudentsPage() {
                         todayTestName: currentRecord.todayTestName || currentRecord.todayTest || '',
                         todayTestScore: String(currentRecord.todayTestScore ?? ''),
                         todayTestTotal: String(currentRecord.todayTestTotal ?? ''),
+                        nextTest: currentRecord.nextTest || '',
                         nextScope: (currentRecord as any).nextScope || '',
                         importantExpressions: parseExpressions((currentRecord as any).importantExpressions),
                         homework: currentRecord.homework || '',
@@ -157,6 +159,7 @@ export default function TeacherStudentsPage() {
                         todayTestName: '',
                         todayTestScore: '',
                         todayTestTotal: '',
+                        nextTest: '',
                         nextScope: '',
                         importantExpressions: [{ expression: '', meaning: '' }],
                         homework: '',
@@ -170,6 +173,7 @@ export default function TeacherStudentsPage() {
                     todayTestName: '',
                     todayTestScore: '',
                     todayTestTotal: '',
+                    nextTest: '',
                     nextScope: '',
                     importantExpressions: [{ expression: '', meaning: '' }],
                     homework: '',
@@ -188,6 +192,7 @@ export default function TeacherStudentsPage() {
                 todayTestName: '',
                 todayTestScore: '',
                 todayTestTotal: '',
+                nextTest: '',
                 nextScope: '',
                 importantExpressions: [{ expression: '', meaning: '' }],
                 homework: '',
@@ -216,6 +221,7 @@ export default function TeacherStudentsPage() {
                 todayTestName: assessmentData.todayTestName,
                 todayTestScore: assessmentData.todayTestScore === '' ? undefined : Number(assessmentData.todayTestScore),
                 todayTestTotal: assessmentData.todayTestTotal === '' ? undefined : Number(assessmentData.todayTestTotal),
+                nextTest: assessmentData.nextTest,
                 nextScope: assessmentData.nextScope,
                 importantExpressions: expressionsString,
                 homework: assessmentData.homework,
@@ -571,6 +577,15 @@ export default function TeacherStudentsPage() {
                                         onChange={(e) => setAssessmentData({ ...assessmentData, feedback: e.target.value })}
                                         required
                                     />
+                                </div>
+
+                                <div className="space-y-3">
+                                    <h4 className="text-sm font-black text-slate-800 tracking-tight flex items-center gap-2">
+                                        <CheckCircle2 className="text-rose-500" size={16} />
+                                        次回のテスト
+                                    </h4>
+                                    <p className="text-[11px] text-slate-500 font-medium">次回予定しているテスト名・範囲・日付などを記入してください。（任意・生徒に公開されます）</p>
+                                    <textarea className="w-full h-20 p-4 bg-rose-50/30 border border-rose-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 font-medium resize-none leading-relaxed" placeholder="例: 次回、Unit 4 の単語テスト（20問）" value={assessmentData.nextTest} onChange={(e) => setAssessmentData({ ...assessmentData, nextTest: e.target.value })} />
                                 </div>
 
                                 <div className="space-y-3">

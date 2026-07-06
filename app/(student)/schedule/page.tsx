@@ -513,6 +513,16 @@ export default function StudentSchedulePage() {
                                                     </div>
                                                 </div>
                                             )}
+                                            {karte.nextTest && (
+                                                <div className="space-y-4 pb-4">
+                                                    <h3 className="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
+                                                        <CheckCircle2 size={16} className="text-rose-500" /> 次回のテスト
+                                                    </h3>
+                                                    <div className="bg-rose-50/60 border-2 border-rose-100 p-6 rounded-[2rem]">
+                                                        <p className="text-slate-800 font-bold leading-relaxed whitespace-pre-wrap">{karte.nextTest}</p>
+                                                    </div>
+                                                </div>
+                                            )}
                                             <div className="flex items-center justify-between">
                                                 <h3 className="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
                                                     <Star size={16} className="text-amber-500 fill-amber-500" />

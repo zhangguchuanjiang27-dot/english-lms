@@ -434,6 +434,18 @@ export default function StudentKartePage() {
                                                 </div>
                                             </div>
 
+                                            {item.nextTest && (
+                                                <div className="p-5 md:p-8 space-y-4 relative z-10 w-full text-left bg-rose-50/70 border-b border-rose-100/60">
+                                                    <div className="flex items-center gap-2 text-rose-700">
+                                                        <ClipboardCheck size={14} className="text-rose-600" />
+                                                        <h4 className="text-[10px] md:text-xs font-black uppercase tracking-widest">次回のテスト</h4>
+                                                    </div>
+                                                    <div className="p-5 rounded-2xl bg-white border border-rose-100 shadow-sm">
+                                                        <p className="text-sm font-bold text-slate-700 leading-relaxed whitespace-pre-wrap break-words">{item.nextTest}</p>
+                                                    </div>
+                                                </div>
+                                            )}
+
                                             <div className="p-5 md:p-8 space-y-4 relative z-10 w-full text-left bg-amber-50/80">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-2 text-amber-700">

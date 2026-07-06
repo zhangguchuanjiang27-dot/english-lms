@@ -384,6 +384,12 @@ export default function StudentDetail({
                                 )}
                               </div>
                             )}
+                            {record.nextTest && (
+                              <div className="bg-rose-50 p-4 rounded-xl border border-rose-100 text-sm text-rose-900">
+                                <p className="font-bold text-xs text-rose-500 mb-1">次回のテスト:</p>
+                                <p className="whitespace-pre-wrap">{record.nextTest}</p>
+                              </div>
+                            )}
                           </div>
                         ))
                       ) : (

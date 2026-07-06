@@ -280,6 +280,15 @@ export default function StudentRecordsSearchPage() {
                                                             </div>
                                                         )}
 
+                                                        {(record as any).nextTest && (
+                                                            <div className="bg-rose-50 p-6 rounded-2xl border border-rose-100 relative pt-7">
+                                                                <div className="absolute -top-3 left-6 bg-rose-100 text-rose-700 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 shadow-sm">
+                                                                    <FileText size={12} /> 次回のテスト
+                                                                </div>
+                                                                <p className="text-sm text-rose-900 leading-relaxed font-bold whitespace-pre-wrap">{(record as any).nextTest}</p>
+                                                            </div>
+                                                        )}
+
                                                         {(record as any).nextScope && (
                                                             <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100 relative pt-7">
                                                                 <div className="absolute -top-3 left-6 bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 shadow-sm">

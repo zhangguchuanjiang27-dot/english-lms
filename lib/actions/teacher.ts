@@ -162,6 +162,7 @@ export async function submitLessonKarte(data: {
     todayTestName?: string;
     todayTestScore?: number;
     todayTestTotal?: number;
+    nextTest?: string;
     nextScope?: string;
     importantExpressions?: string;
     homework: string;
@@ -201,6 +202,7 @@ export async function submitLessonKarte(data: {
             todayTestName: data.todayTestName?.trim() || null,
             todayTestScore: data.todayTestScore ?? null,
             todayTestTotal: data.todayTestTotal ?? null,
+            nextTest: data.nextTest?.trim() || null,
             nextScope: data.nextScope || null,
             importantExpressions: data.importantExpressions || null,
             homework: data.homework,

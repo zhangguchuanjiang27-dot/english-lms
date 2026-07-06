@@ -60,6 +60,7 @@ export type LessonRecord = {
     todayTestName?: string;
     todayTestScore?: number;
     todayTestTotal?: number;
+    nextTest?: string;
     homework?: string;
     internalNote: string;
     grammar?: number;

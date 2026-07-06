@@ -46,6 +46,7 @@ export default function SchedulePage() {
         todayTestName: '',
         todayTestScore: '',
         todayTestTotal: '',
+        nextTest: '',
         internalNote: ''
     });
 
@@ -127,6 +128,7 @@ export default function SchedulePage() {
             todayTestName: completionData.todayTestName,
             todayTestScore: completionData.todayTestScore === '' ? undefined : Number(completionData.todayTestScore),
             todayTestTotal: completionData.todayTestTotal === '' ? undefined : Number(completionData.todayTestTotal),
+            nextTest: completionData.nextTest,
             internalNote: completionData.internalNote
         }).then(res => {
             if (res.success) {
@@ -143,6 +145,7 @@ export default function SchedulePage() {
                         todayTestName: '',
                         todayTestScore: '',
                         todayTestTotal: '',
+                        nextTest: '',
                         internalNote: ''
                     });
                     refreshData();
@@ -478,6 +481,11 @@ export default function SchedulePage() {
                                             <input type="number" min="1" inputMode="numeric" aria-label="満点" placeholder="20" className="w-28 px-4 py-3 rounded-xl bg-violet-50/30 border-2 border-violet-100 text-center text-lg font-black outline-none focus:border-violet-500" value={completionData.todayTestTotal} onChange={(e) => setCompletionData({ ...completionData, todayTestTotal: e.target.value })} />
                                             <span className="text-sm font-black text-slate-600">点</span>
                                         </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">次回のテスト（任意）</label>
+                                        <textarea rows={2} placeholder="例: 次回、Unit 4 の単語テスト（20問）" className="w-full px-5 py-3.5 rounded-2xl bg-rose-50/30 border-2 border-rose-100 focus:bg-white focus:border-rose-500 focus:ring-4 focus:ring-rose-100 outline-none text-sm font-bold text-slate-900 transition-all resize-none" value={completionData.nextTest} onChange={(e) => setCompletionData({ ...completionData, nextTest: e.target.value })} />
                                     </div>
 
                                     <div className="space-y-2">
