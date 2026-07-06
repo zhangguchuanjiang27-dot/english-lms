@@ -56,6 +56,7 @@ export type LessonRecord = {
     teacher: string;
     title: string;
     feedback: string;
+    todayTest?: string;
     homework?: string;
     internalNote: string;
     grammar?: number;

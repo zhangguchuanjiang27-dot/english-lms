@@ -43,6 +43,7 @@ export default function SchedulePage() {
         pronunciation: 80,
         fluency: 80,
         feedback: '',
+        todayTest: '',
         internalNote: ''
     });
 
@@ -121,6 +122,7 @@ export default function SchedulePage() {
             pronunciation: completionData.pronunciation,
             fluency: completionData.fluency,
             feedback: completionData.feedback,
+            todayTest: completionData.todayTest,
             internalNote: completionData.internalNote
         }).then(res => {
             if (res.success) {
@@ -134,6 +136,7 @@ export default function SchedulePage() {
                         pronunciation: 80,
                         fluency: 80,
                         feedback: '',
+                        todayTest: '',
                         internalNote: ''
                     });
                     refreshData();
@@ -451,6 +454,17 @@ export default function SchedulePage() {
                                             className="w-full px-5 py-3.5 rounded-2xl bg-slate-50 border-2 border-slate-200 focus:bg-white focus:border-indigo-600 focus:ring-4 focus:ring-indigo-100 outline-none text-sm font-black text-slate-900 transition-all resize-none"
                                             value={completionData.feedback || ''}
                                             onChange={(e) => setCompletionData({ ...completionData, feedback: e.target.value })}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">本日のテスト（任意）</label>
+                                        <textarea
+                                            rows={2}
+                                            placeholder="例: Unit 3 単語テスト：18/20点"
+                                            className="w-full px-5 py-3.5 rounded-2xl bg-violet-50/30 border-2 border-violet-100 focus:bg-white focus:border-violet-500 focus:ring-4 focus:ring-violet-100 outline-none text-sm font-bold text-slate-900 transition-all resize-none"
+                                            value={completionData.todayTest || ''}
+                                            onChange={(e) => setCompletionData({ ...completionData, todayTest: e.target.value })}
                                         />
                                     </div>
 

@@ -159,6 +159,7 @@ export async function submitLessonKarte(data: {
     teacherName: string;
     title: string;
     feedback: string;
+    todayTest?: string;
     nextScope?: string;
     importantExpressions?: string;
     homework: string;
@@ -181,6 +182,7 @@ export async function submitLessonKarte(data: {
             teacher: data.teacherName,
             title: data.title,
             feedback: data.feedback,
+            todayTest: data.todayTest || null,
             nextScope: data.nextScope || null,
             importantExpressions: data.importantExpressions || null,
             homework: data.homework,

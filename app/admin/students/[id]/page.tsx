@@ -371,6 +371,14 @@ export default function StudentDetail({
                               </p>
                               {record.feedback}
                             </div>
+                            {record.todayTest && (
+                              <div className="bg-violet-50 p-4 rounded-xl border border-violet-100 text-sm text-violet-900">
+                                <p className="font-bold text-xs text-violet-500 mb-1">
+                                  本日のテスト:
+                                </p>
+                                <p className="whitespace-pre-wrap">{record.todayTest}</p>
+                              </div>
+                            )}
                           </div>
                         ))
                       ) : (

@@ -1,0 +1,1 @@
+ALTER TABLE "LessonRecord" ADD COLUMN IF NOT EXISTS "todayTest" TEXT;

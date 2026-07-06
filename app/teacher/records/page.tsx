@@ -266,6 +266,15 @@ export default function StudentRecordsSearchPage() {
                                                             <p className="text-sm text-slate-700 leading-relaxed font-medium whitespace-pre-wrap">{record.feedback}</p>
                                                         </div>
 
+                                                        {(record as any).todayTest && (
+                                                            <div className="bg-violet-50 p-6 rounded-2xl border border-violet-100 relative pt-7">
+                                                                <div className="absolute -top-3 left-6 bg-violet-100 text-violet-700 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 shadow-sm">
+                                                                    <FileText size={12} /> 本日のテスト
+                                                                </div>
+                                                                <p className="text-sm text-violet-900 leading-relaxed font-bold whitespace-pre-wrap">{(record as any).todayTest}</p>
+                                                            </div>
+                                                        )}
+
                                                         {(record as any).nextScope && (
                                                             <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100 relative pt-7">
                                                                 <div className="absolute -top-3 left-6 bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 shadow-sm">

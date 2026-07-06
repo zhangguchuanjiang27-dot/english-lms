@@ -32,6 +32,7 @@ export default function NewLessonRecord({ params }: { params: Promise<{ id: stri
         pronunciation: 50,
         fluency: 50,
         feedback: '',
+        todayTest: '',
         internalNote: ''
     });
 
@@ -55,6 +56,7 @@ export default function NewLessonRecord({ params }: { params: Promise<{ id: stri
             teacher: formData.teacher,
             title: formData.title,
             feedback: formData.feedback,
+            todayTest: formData.todayTest,
             grammar: formData.grammar,
             vocab: formData.vocab,
             pronunciation: formData.pronunciation,
@@ -183,6 +185,23 @@ export default function NewLessonRecord({ params }: { params: Promise<{ id: stri
                                         このフィールドの内容は、保存後に生徒のダッシュボードに自動的に反映されます。
                                     </p>
                                 </div>
+                            </section>
+
+                            <hr className="border-slate-100" />
+
+                            <section>
+                                <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                    <CheckCircle2 size={16} />
+                                    本日のテスト
+                                </h2>
+                                <textarea
+                                    rows={3}
+                                    placeholder="例: Unit 3 単語テスト：18/20点"
+                                    className="w-full px-4 py-3 rounded-xl bg-violet-50/30 border border-violet-100 focus:ring-2 focus:ring-violet-500/20 outline-none text-sm resize-none"
+                                    value={formData.todayTest}
+                                    onChange={(e) => setFormData({ ...formData, todayTest: e.target.value })}
+                                />
+                                <p className="mt-2 text-[11px] text-slate-500">任意入力です。入力した内容は生徒のカルテに公開されます。</p>
                             </section>
                         </div>
                     </div>

@@ -85,6 +85,7 @@ export default function TeacherShiftsPage() {
     const [assessmentData, setAssessmentData] = useState({
         title: '',
         feedback: '',
+        todayTest: '',
         nextScope: '',
         importantExpressions: [{ expression: '', meaning: '' }] as { expression: string, meaning: string }[],
         homework: '',
@@ -136,6 +137,7 @@ export default function TeacherShiftsPage() {
                     setAssessmentData({
                         title: currentRecord.title || lesson.course || '',
                         feedback: currentRecord.feedback || '',
+                        todayTest: currentRecord.todayTest || '',
                         nextScope: (currentRecord as any).nextScope || '',
                         importantExpressions: parseExpressions((currentRecord as any).importantExpressions),
                         homework: currentRecord.homework || '',
@@ -149,6 +151,7 @@ export default function TeacherShiftsPage() {
                     setAssessmentData({
                         title: lesson.course || '',
                         feedback: '',
+                        todayTest: '',
                         nextScope: '',
                         importantExpressions: [{ expression: '', meaning: '' }],
                         homework: '',
@@ -163,6 +166,7 @@ export default function TeacherShiftsPage() {
                 setAssessmentData({
                     title: lesson.course || '',
                     feedback: '',
+                    todayTest: '',
                     nextScope: '',
                     importantExpressions: [{ expression: '', meaning: '' }],
                     homework: '',
@@ -181,6 +185,7 @@ export default function TeacherShiftsPage() {
             setAssessmentData({
                 title: lesson.course || '',
                 feedback: '',
+                todayTest: '',
                 nextScope: '',
                 importantExpressions: [{ expression: '', meaning: '' }],
                 homework: '',
@@ -219,6 +224,7 @@ export default function TeacherShiftsPage() {
                 teacherName: teacher.name,
                 title: assessmentData.title || selectedLesson.course,
                 feedback: assessmentData.feedback,
+                todayTest: assessmentData.todayTest,
                 nextScope: assessmentData.nextScope,
                 importantExpressions: expressionsString,
                 homework: assessmentData.homework,
@@ -778,6 +784,20 @@ export default function TeacherShiftsPage() {
                                         value={assessmentData.feedback}
                                         onChange={(e) => setAssessmentData({ ...assessmentData, feedback: e.target.value })}
                                         required
+                                    />
+                                </div>
+
+                                <div className="space-y-3">
+                                    <h4 className="text-sm font-black text-slate-800 tracking-tight flex items-center gap-2">
+                                        <ClipboardCheck className="text-violet-500" size={16} />
+                                        本日のテスト
+                                    </h4>
+                                    <p className="text-[11px] text-slate-500 font-medium">テスト名や結果を記入してください。（任意・生徒に公開されます）</p>
+                                    <textarea
+                                        className="w-full h-20 p-4 bg-violet-50/30 border border-violet-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 font-medium resize-none leading-relaxed"
+                                        placeholder="例: Unit 3 単語テスト：18/20点"
+                                        value={assessmentData.todayTest}
+                                        onChange={(e) => setAssessmentData({ ...assessmentData, todayTest: e.target.value })}
                                     />
                                 </div>
 

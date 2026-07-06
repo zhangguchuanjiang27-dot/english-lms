@@ -57,7 +57,7 @@ model Student {
 model StudyLog {
   id        String   @id @default(cuid())
   studentId String
-  type      String   // "VOCAB", "GRAMMAR", "DRILL"
+  type      String // "VOCAB", "GRAMMAR", "DRILL"
   duration  Int      @default(0) // Duration in seconds
   score     Int?
   createdAt DateTime @default(now())
@@ -96,22 +96,23 @@ model LessonSchedule {
 }
 
 model LessonRecord {
-  id            String  @id @default(cuid())
-  lessonId      String? @unique
-  studentId     String
-  date          String
-  teacher       String
-  title         String
+  id                   String  @id @default(cuid())
+  lessonId             String? @unique
+  studentId            String
+  date                 String
+  teacher              String
+  title                String
   feedback             String
+  todayTest            String?
   nextScope            String?
   importantExpressions String?
   homework             String?
-  internalNote  String?
-  grammar       Int     @default(50)
-  vocab         Int     @default(50)
-  pronunciation Int     @default(50)
-  fluency       Int     @default(50)
-  student       Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  internalNote         String?
+  grammar              Int     @default(50)
+  vocab                Int     @default(50)
+  pronunciation        Int     @default(50)
+  fluency              Int     @default(50)
+  student              Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
 
 model TestScore {
@@ -216,20 +217,20 @@ model DrillProgress {
 model GrammarPoint {
   id        String           @id @default(cuid())
   label     String
-  category  String           // "jhs1", "jhs2", "jhs3"
+  category  String // "jhs1", "jhs2", "jhs3"
   order     Int              @default(0)
   masteries GrammarMastery[]
 }
 
 model GrammarMastery {
-  id              String       @id @default(cuid())
-  studentId       String
-  grammarPointId  String
-  status          String       @default("NONE") // "NONE", "TRIANGLE", "CIRCLE", "DOUBLE_CIRCLE"
-  updatedAt       DateTime     @updatedAt
-  
-  student         Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  grammarPoint    GrammarPoint @relation(fields: [grammarPointId], references: [id], onDelete: Cascade)
+  id             String   @id @default(cuid())
+  studentId      String
+  grammarPointId String
+  status         String   @default("NONE") // "NONE", "TRIANGLE", "CIRCLE", "DOUBLE_CIRCLE"
+  updatedAt      DateTime @updatedAt
+
+  student      Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  grammarPoint GrammarPoint @relation(fields: [grammarPointId], references: [id], onDelete: Cascade)
 
   @@unique([studentId, grammarPointId])
 }

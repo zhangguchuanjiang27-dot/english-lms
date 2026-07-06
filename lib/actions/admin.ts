@@ -328,6 +328,7 @@ export async function addLessonRecord(data: {
     teacher: string;
     title: string;
     feedback: string;
+    todayTest?: string;
     homework?: string;
     grammar?: number;
     vocab?: number;
@@ -343,6 +344,7 @@ export async function addLessonRecord(data: {
                 teacher: data.teacher,
                 title: data.title,
                 feedback: data.feedback,
+                todayTest: data.todayTest || null,
                 homework: data.homework || '',
                 grammar: data.grammar || 50,
                 vocab: data.vocab || 50,
