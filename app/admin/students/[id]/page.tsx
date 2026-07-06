@@ -371,12 +371,17 @@ export default function StudentDetail({
                               </p>
                               {record.feedback}
                             </div>
-                            {record.todayTest && (
+                            {(record.todayTestName || record.todayTest) && (
                               <div className="bg-violet-50 p-4 rounded-xl border border-violet-100 text-sm text-violet-900">
                                 <p className="font-bold text-xs text-violet-500 mb-1">
                                   本日のテスト:
                                 </p>
-                                <p className="whitespace-pre-wrap">{record.todayTest}</p>
+                                <p className="whitespace-pre-wrap">{record.todayTestName || record.todayTest}</p>
+                                {record.todayTestScore != null && record.todayTestTotal != null && (
+                                  <p className="mt-1 text-xl font-black text-violet-700">
+                                    {record.todayTestScore} <span className="text-violet-300">/</span> {record.todayTestTotal}<span className="ml-1 text-xs">点</span>
+                                  </p>
+                                )}
                               </div>
                             )}
                           </div>

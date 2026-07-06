@@ -104,6 +104,9 @@ model LessonRecord {
   title                String
   feedback             String
   todayTest            String?
+  todayTestName        String?
+  todayTestScore       Int?
+  todayTestTotal       Int?
   nextScope            String?
   importantExpressions String?
   homework             String?

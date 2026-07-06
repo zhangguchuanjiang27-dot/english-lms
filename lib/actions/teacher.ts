@@ -159,7 +159,9 @@ export async function submitLessonKarte(data: {
     teacherName: string;
     title: string;
     feedback: string;
-    todayTest?: string;
+    todayTestName?: string;
+    todayTestScore?: number;
+    todayTestTotal?: number;
     nextScope?: string;
     importantExpressions?: string;
     homework: string;
@@ -170,6 +172,19 @@ export async function submitLessonKarte(data: {
     fluency?: number;
 }) {
     try {
+        const hasScore = data.todayTestScore !== undefined;
+        const hasTotal = data.todayTestTotal !== undefined;
+        if (hasScore !== hasTotal) {
+            return { success: false, error: '本日のテストは得点と満点を両方入力してください' };
+        }
+        if (hasScore && hasTotal && (
+            data.todayTestScore! < 0 ||
+            data.todayTestTotal! <= 0 ||
+            data.todayTestScore! > data.todayTestTotal!
+        )) {
+            return { success: false, error: '本日のテストの得点は0以上、満点以下で入力してください' };
+        }
+
         // 1. Find if a record already exists
         let existingRecord = await prisma.lessonRecord.findUnique({
             where: { lessonId: data.lessonId }
@@ -182,7 +197,10 @@ export async function submitLessonKarte(data: {
             teacher: data.teacherName,
             title: data.title,
             feedback: data.feedback,
-            todayTest: data.todayTest || null,
+            todayTest: null,
+            todayTestName: data.todayTestName?.trim() || null,
+            todayTestScore: data.todayTestScore ?? null,
+            todayTestTotal: data.todayTestTotal ?? null,
             nextScope: data.nextScope || null,
             importantExpressions: data.importantExpressions || null,
             homework: data.homework,

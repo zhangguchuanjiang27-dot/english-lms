@@ -77,7 +77,9 @@ export default function TeacherStudentsPage() {
     const [assessmentData, setAssessmentData] = useState({
         title: '',
         feedback: '',
-        todayTest: '',
+        todayTestName: '',
+        todayTestScore: '',
+        todayTestTotal: '',
         nextScope: '',
         importantExpressions: [{ expression: '', meaning: '' }] as { expression: string, meaning: string }[],
         homework: '',
@@ -140,7 +142,9 @@ export default function TeacherStudentsPage() {
                     setAssessmentData({
                         title: currentRecord.title || lesson.course || '',
                         feedback: currentRecord.feedback || '',
-                        todayTest: currentRecord.todayTest || '',
+                        todayTestName: currentRecord.todayTestName || currentRecord.todayTest || '',
+                        todayTestScore: String(currentRecord.todayTestScore ?? ''),
+                        todayTestTotal: String(currentRecord.todayTestTotal ?? ''),
                         nextScope: (currentRecord as any).nextScope || '',
                         importantExpressions: parseExpressions((currentRecord as any).importantExpressions),
                         homework: currentRecord.homework || '',
@@ -150,7 +154,9 @@ export default function TeacherStudentsPage() {
                     setAssessmentData({
                         title: lesson.course || '',
                         feedback: '',
-                        todayTest: '',
+                        todayTestName: '',
+                        todayTestScore: '',
+                        todayTestTotal: '',
                         nextScope: '',
                         importantExpressions: [{ expression: '', meaning: '' }],
                         homework: '',
@@ -161,7 +167,9 @@ export default function TeacherStudentsPage() {
                 setAssessmentData({
                     title: lesson.course || '',
                     feedback: '',
-                    todayTest: '',
+                    todayTestName: '',
+                    todayTestScore: '',
+                    todayTestTotal: '',
                     nextScope: '',
                     importantExpressions: [{ expression: '', meaning: '' }],
                     homework: '',
@@ -177,7 +185,9 @@ export default function TeacherStudentsPage() {
             setAssessmentData({
                 title: lesson.course || '',
                 feedback: '',
-                todayTest: '',
+                todayTestName: '',
+                todayTestScore: '',
+                todayTestTotal: '',
                 nextScope: '',
                 importantExpressions: [{ expression: '', meaning: '' }],
                 homework: '',
@@ -203,7 +213,9 @@ export default function TeacherStudentsPage() {
                 teacherName: teacher.name,
                 title: assessmentData.title || selectedLesson.course,
                 feedback: assessmentData.feedback,
-                todayTest: assessmentData.todayTest,
+                todayTestName: assessmentData.todayTestName,
+                todayTestScore: assessmentData.todayTestScore === '' ? undefined : Number(assessmentData.todayTestScore),
+                todayTestTotal: assessmentData.todayTestTotal === '' ? undefined : Number(assessmentData.todayTestTotal),
                 nextScope: assessmentData.nextScope,
                 importantExpressions: expressionsString,
                 homework: assessmentData.homework,
@@ -566,13 +578,20 @@ export default function TeacherStudentsPage() {
                                         <CheckCircle2 className="text-violet-500" size={16} />
                                         本日のテスト
                                     </h4>
-                                    <p className="text-[11px] text-slate-500 font-medium">テスト名や結果を記入してください。（任意・生徒に公開されます）</p>
-                                    <textarea
-                                        className="w-full h-20 p-4 bg-violet-50/30 border border-violet-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 font-medium resize-none leading-relaxed"
-                                        placeholder="例: Unit 3 単語テスト：18/20点"
-                                        value={assessmentData.todayTest}
-                                        onChange={(e) => setAssessmentData({ ...assessmentData, todayTest: e.target.value })}
+                                    <p className="text-[11px] text-slate-500 font-medium">テスト名と得点を入力してください。（任意・生徒に公開されます）</p>
+                                    <input
+                                        type="text"
+                                        className="w-full p-4 bg-violet-50/30 border border-violet-100 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 font-medium"
+                                        placeholder="例: Unit 3 単語テスト"
+                                        value={assessmentData.todayTestName}
+                                        onChange={(e) => setAssessmentData({ ...assessmentData, todayTestName: e.target.value })}
                                     />
+                                    <div className="flex items-center gap-3">
+                                        <input type="number" min="0" inputMode="numeric" aria-label="得点" placeholder="18" className="w-28 p-4 bg-violet-50/30 border border-violet-100 rounded-2xl text-center text-lg font-black outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500" value={assessmentData.todayTestScore} onChange={(e) => setAssessmentData({ ...assessmentData, todayTestScore: e.target.value })} />
+                                        <span className="text-xl font-black text-violet-400">/</span>
+                                        <input type="number" min="1" inputMode="numeric" aria-label="満点" placeholder="20" className="w-28 p-4 bg-violet-50/30 border border-violet-100 rounded-2xl text-center text-lg font-black outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500" value={assessmentData.todayTestTotal} onChange={(e) => setAssessmentData({ ...assessmentData, todayTestTotal: e.target.value })} />
+                                        <span className="text-sm font-black text-slate-600">点</span>
+                                    </div>
                                 </div>
 
                                 <div className="space-y-3">

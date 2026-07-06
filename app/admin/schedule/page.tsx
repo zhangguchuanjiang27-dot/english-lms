@@ -43,7 +43,9 @@ export default function SchedulePage() {
         pronunciation: 80,
         fluency: 80,
         feedback: '',
-        todayTest: '',
+        todayTestName: '',
+        todayTestScore: '',
+        todayTestTotal: '',
         internalNote: ''
     });
 
@@ -122,7 +124,9 @@ export default function SchedulePage() {
             pronunciation: completionData.pronunciation,
             fluency: completionData.fluency,
             feedback: completionData.feedback,
-            todayTest: completionData.todayTest,
+            todayTestName: completionData.todayTestName,
+            todayTestScore: completionData.todayTestScore === '' ? undefined : Number(completionData.todayTestScore),
+            todayTestTotal: completionData.todayTestTotal === '' ? undefined : Number(completionData.todayTestTotal),
             internalNote: completionData.internalNote
         }).then(res => {
             if (res.success) {
@@ -136,7 +140,9 @@ export default function SchedulePage() {
                         pronunciation: 80,
                         fluency: 80,
                         feedback: '',
-                        todayTest: '',
+                        todayTestName: '',
+                        todayTestScore: '',
+                        todayTestTotal: '',
                         internalNote: ''
                     });
                     refreshData();
@@ -459,13 +465,19 @@ export default function SchedulePage() {
 
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">本日のテスト（任意）</label>
-                                        <textarea
-                                            rows={2}
-                                            placeholder="例: Unit 3 単語テスト：18/20点"
-                                            className="w-full px-5 py-3.5 rounded-2xl bg-violet-50/30 border-2 border-violet-100 focus:bg-white focus:border-violet-500 focus:ring-4 focus:ring-violet-100 outline-none text-sm font-bold text-slate-900 transition-all resize-none"
-                                            value={completionData.todayTest || ''}
-                                            onChange={(e) => setCompletionData({ ...completionData, todayTest: e.target.value })}
+                                        <input
+                                            type="text"
+                                            placeholder="例: Unit 3 単語テスト"
+                                            className="w-full px-5 py-3.5 rounded-2xl bg-violet-50/30 border-2 border-violet-100 focus:bg-white focus:border-violet-500 focus:ring-4 focus:ring-violet-100 outline-none text-sm font-bold text-slate-900 transition-all"
+                                            value={completionData.todayTestName}
+                                            onChange={(e) => setCompletionData({ ...completionData, todayTestName: e.target.value })}
                                         />
+                                        <div className="flex items-center gap-3">
+                                            <input type="number" min="0" inputMode="numeric" aria-label="得点" placeholder="18" className="w-28 px-4 py-3 rounded-xl bg-violet-50/30 border-2 border-violet-100 text-center text-lg font-black outline-none focus:border-violet-500" value={completionData.todayTestScore} onChange={(e) => setCompletionData({ ...completionData, todayTestScore: e.target.value })} />
+                                            <span className="text-xl font-black text-violet-400">/</span>
+                                            <input type="number" min="1" inputMode="numeric" aria-label="満点" placeholder="20" className="w-28 px-4 py-3 rounded-xl bg-violet-50/30 border-2 border-violet-100 text-center text-lg font-black outline-none focus:border-violet-500" value={completionData.todayTestTotal} onChange={(e) => setCompletionData({ ...completionData, todayTestTotal: e.target.value })} />
+                                            <span className="text-sm font-black text-slate-600">点</span>
+                                        </div>
                                     </div>
 
                                     <div className="space-y-2">

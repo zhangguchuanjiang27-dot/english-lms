@@ -32,7 +32,9 @@ export default function NewLessonRecord({ params }: { params: Promise<{ id: stri
         pronunciation: 50,
         fluency: 50,
         feedback: '',
-        todayTest: '',
+        todayTestName: '',
+        todayTestScore: '',
+        todayTestTotal: '',
         internalNote: ''
     });
 
@@ -56,7 +58,9 @@ export default function NewLessonRecord({ params }: { params: Promise<{ id: stri
             teacher: formData.teacher,
             title: formData.title,
             feedback: formData.feedback,
-            todayTest: formData.todayTest,
+            todayTestName: formData.todayTestName,
+            todayTestScore: formData.todayTestScore === '' ? undefined : Number(formData.todayTestScore),
+            todayTestTotal: formData.todayTestTotal === '' ? undefined : Number(formData.todayTestTotal),
             grammar: formData.grammar,
             vocab: formData.vocab,
             pronunciation: formData.pronunciation,
@@ -194,13 +198,19 @@ export default function NewLessonRecord({ params }: { params: Promise<{ id: stri
                                     <CheckCircle2 size={16} />
                                     本日のテスト
                                 </h2>
-                                <textarea
-                                    rows={3}
-                                    placeholder="例: Unit 3 単語テスト：18/20点"
-                                    className="w-full px-4 py-3 rounded-xl bg-violet-50/30 border border-violet-100 focus:ring-2 focus:ring-violet-500/20 outline-none text-sm resize-none"
-                                    value={formData.todayTest}
-                                    onChange={(e) => setFormData({ ...formData, todayTest: e.target.value })}
+                                <input
+                                    type="text"
+                                    placeholder="例: Unit 3 単語テスト"
+                                    className="w-full px-4 py-3 rounded-xl bg-violet-50/30 border border-violet-100 focus:ring-2 focus:ring-violet-500/20 outline-none text-sm"
+                                    value={formData.todayTestName}
+                                    onChange={(e) => setFormData({ ...formData, todayTestName: e.target.value })}
                                 />
+                                <div className="mt-3 flex items-center gap-3">
+                                    <input type="number" min="0" inputMode="numeric" aria-label="得点" placeholder="18" className="w-28 px-4 py-3 rounded-xl bg-violet-50/30 border border-violet-100 text-center text-lg font-black outline-none focus:ring-2 focus:ring-violet-500/20" value={formData.todayTestScore} onChange={(e) => setFormData({ ...formData, todayTestScore: e.target.value })} />
+                                    <span className="text-xl font-black text-violet-400">/</span>
+                                    <input type="number" min="1" inputMode="numeric" aria-label="満点" placeholder="20" className="w-28 px-4 py-3 rounded-xl bg-violet-50/30 border border-violet-100 text-center text-lg font-black outline-none focus:ring-2 focus:ring-violet-500/20" value={formData.todayTestTotal} onChange={(e) => setFormData({ ...formData, todayTestTotal: e.target.value })} />
+                                    <span className="text-sm font-black text-slate-600">点</span>
+                                </div>
                                 <p className="mt-2 text-[11px] text-slate-500">任意入力です。入力した内容は生徒のカルテに公開されます。</p>
                             </section>
                         </div>

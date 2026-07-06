@@ -1,0 +1,4 @@
+ALTER TABLE "LessonRecord"
+    ADD COLUMN IF NOT EXISTS "todayTestName" TEXT,
+    ADD COLUMN IF NOT EXISTS "todayTestScore" INTEGER,
+    ADD COLUMN IF NOT EXISTS "todayTestTotal" INTEGER;

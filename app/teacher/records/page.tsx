@@ -266,12 +266,17 @@ export default function StudentRecordsSearchPage() {
                                                             <p className="text-sm text-slate-700 leading-relaxed font-medium whitespace-pre-wrap">{record.feedback}</p>
                                                         </div>
 
-                                                        {(record as any).todayTest && (
+                                                        {((record as any).todayTestName || (record as any).todayTest) && (
                                                             <div className="bg-violet-50 p-6 rounded-2xl border border-violet-100 relative pt-7">
                                                                 <div className="absolute -top-3 left-6 bg-violet-100 text-violet-700 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 shadow-sm">
                                                                     <FileText size={12} /> 本日のテスト
                                                                 </div>
-                                                                <p className="text-sm text-violet-900 leading-relaxed font-bold whitespace-pre-wrap">{(record as any).todayTest}</p>
+                                                                <p className="text-sm text-violet-900 leading-relaxed font-bold whitespace-pre-wrap">{(record as any).todayTestName || (record as any).todayTest}</p>
+                                                                {(record as any).todayTestScore != null && (record as any).todayTestTotal != null && (
+                                                                    <p className="mt-2 text-2xl font-black text-violet-700">
+                                                                        {(record as any).todayTestScore} <span className="text-violet-300">/</span> {(record as any).todayTestTotal}<span className="ml-1 text-sm">点</span>
+                                                                    </p>
+                                                                )}
                                                             </div>
                                                         )}
 

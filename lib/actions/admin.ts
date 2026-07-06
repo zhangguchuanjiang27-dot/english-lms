@@ -328,7 +328,9 @@ export async function addLessonRecord(data: {
     teacher: string;
     title: string;
     feedback: string;
-    todayTest?: string;
+    todayTestName?: string;
+    todayTestScore?: number;
+    todayTestTotal?: number;
     homework?: string;
     grammar?: number;
     vocab?: number;
@@ -337,6 +339,19 @@ export async function addLessonRecord(data: {
     internalNote?: string;
 }) {
     try {
+        const hasScore = data.todayTestScore !== undefined;
+        const hasTotal = data.todayTestTotal !== undefined;
+        if (hasScore !== hasTotal) {
+            return { success: false, error: '本日のテストは得点と満点を両方入力してください' };
+        }
+        if (hasScore && hasTotal && (
+            data.todayTestScore! < 0 ||
+            data.todayTestTotal! <= 0 ||
+            data.todayTestScore! > data.todayTestTotal!
+        )) {
+            return { success: false, error: '本日のテストの得点は0以上、満点以下で入力してください' };
+        }
+
         const record = await prisma.lessonRecord.create({
             data: {
                 studentId: data.studentId,
@@ -344,7 +359,10 @@ export async function addLessonRecord(data: {
                 teacher: data.teacher,
                 title: data.title,
                 feedback: data.feedback,
-                todayTest: data.todayTest || null,
+                todayTest: null,
+                todayTestName: data.todayTestName?.trim() || null,
+                todayTestScore: data.todayTestScore ?? null,
+                todayTestTotal: data.todayTestTotal ?? null,
                 homework: data.homework || '',
                 grammar: data.grammar || 50,
                 vocab: data.vocab || 50,

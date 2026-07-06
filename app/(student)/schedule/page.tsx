@@ -495,7 +495,7 @@ export default function StudentSchedulePage() {
                                             animate={{ opacity: 1, y: 0 }}
                                             className="space-y-4"
                                         >
-                                            {karte.todayTest && (
+                                            {(karte.todayTestName || karte.todayTest) && (
                                                 <div className="space-y-4 pb-4">
                                                     <h3 className="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
                                                         <CheckCircle2 size={16} className="text-violet-500" />
@@ -503,8 +503,13 @@ export default function StudentSchedulePage() {
                                                     </h3>
                                                     <div className="bg-violet-50/60 border-2 border-violet-100 p-6 rounded-[2rem]">
                                                         <p className="text-slate-800 font-bold leading-relaxed whitespace-pre-wrap">
-                                                            {karte.todayTest}
+                                                            {karte.todayTestName || karte.todayTest}
                                                         </p>
+                                                        {karte.todayTestScore != null && karte.todayTestTotal != null && (
+                                                            <p className="mt-2 text-2xl font-black text-violet-700">
+                                                                {karte.todayTestScore} <span className="text-violet-300">/</span> {karte.todayTestTotal}<span className="ml-1 text-sm">点</span>
+                                                            </p>
+                                                        )}
                                                     </div>
                                                 </div>
                                             )}

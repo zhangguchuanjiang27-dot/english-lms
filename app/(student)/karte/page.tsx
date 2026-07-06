@@ -101,6 +101,7 @@ export default function StudentKartePage() {
     const filteredRecords = records.filter(record =>
         record.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         record.feedback.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        record.todayTestName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         record.todayTest?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -347,7 +348,7 @@ export default function StudentKartePage() {
                                                     </div>
                                                 </div>
 
-                                                {item.todayTest && (
+                                                {(item.todayTestName || item.todayTest) && (
                                                     <div className="space-y-3 mt-4">
                                                         <div className="flex items-center gap-2 text-violet-700">
                                                             <div className="p-1.5 bg-violet-100 rounded-lg shadow-sm shadow-violet-200/50">
@@ -357,8 +358,13 @@ export default function StudentKartePage() {
                                                         </div>
                                                         <div className="p-5 rounded-2xl bg-violet-50/60 border border-violet-100 shadow-sm">
                                                             <p className="text-sm text-slate-700 leading-relaxed font-bold whitespace-pre-wrap break-words">
-                                                                {item.todayTest}
+                                                                {item.todayTestName || item.todayTest}
                                                             </p>
+                                                            {item.todayTestScore != null && item.todayTestTotal != null && (
+                                                                <p className="mt-2 text-2xl font-black text-violet-700">
+                                                                    {item.todayTestScore} <span className="text-violet-300">/</span> {item.todayTestTotal}<span className="ml-1 text-sm">点</span>
+                                                                </p>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 )}
