@@ -33,7 +33,7 @@ export async function getStudentDashboardData(studentId: string) {
         });
 
         const records = await prisma.lessonRecord.findMany({
-            where: { studentId },
+            where: { studentId, isDraft: false },
             orderBy: {
                 date: 'desc'
             },
@@ -46,7 +46,7 @@ export async function getStudentDashboardData(studentId: string) {
         });
 
         const testScores = await (prisma as any).testScore.findMany({
-            where: { studentId },
+            where: { studentId, isDraft: false },
             orderBy: { date: 'desc' },
             take: 3
         });

@@ -171,14 +171,15 @@ export async function submitLessonKarte(data: {
     vocab?: number;
     pronunciation?: number;
     fluency?: number;
+    isDraft?: boolean;
 }) {
     try {
         const hasScore = data.todayTestScore !== undefined;
         const hasTotal = data.todayTestTotal !== undefined;
-        if (hasScore !== hasTotal) {
+        if (!data.isDraft && hasScore !== hasTotal) {
             return { success: false, error: '本日のテストは得点と満点を両方入力してください' };
         }
-        if (hasScore && hasTotal && (
+        if (!data.isDraft && hasScore && hasTotal && (
             data.todayTestScore! < 0 ||
             data.todayTestTotal! <= 0 ||
             data.todayTestScore! > data.todayTestTotal!
@@ -187,9 +188,14 @@ export async function submitLessonKarte(data: {
         }
 
         // 1. Find if a record already exists
-        let existingRecord = await prisma.lessonRecord.findUnique({
+        const existingRecord = await prisma.lessonRecord.findUnique({
             where: { lessonId: data.lessonId }
         });
+        const isDraft = data.isDraft ?? false;
+
+        if (isDraft && existingRecord && !existingRecord.isDraft) {
+            return { success: false, error: '公開済みのカルテは一時保存に戻せません' };
+        }
 
         const recordValues = {
             lessonId: data.lessonId,
@@ -211,6 +217,7 @@ export async function submitLessonKarte(data: {
             vocab: data.vocab ?? 50,
             pronunciation: data.pronunciation ?? 50,
             fluency: data.fluency ?? 50,
+            isDraft,
         };
 
         if (existingRecord) {
@@ -222,8 +229,10 @@ export async function submitLessonKarte(data: {
             await prisma.lessonRecord.create({
                 data: recordValues
             });
+        }
 
-            // If it's a new record, update student stats
+        // Count the lesson only when a new draft is published or a record is published directly.
+        if (!isDraft && (!existingRecord || existingRecord.isDraft)) {
             await prisma.student.update({
                 where: { id: data.studentId },
                 data: {
@@ -233,20 +242,20 @@ export async function submitLessonKarte(data: {
             });
         }
 
-        // 3. CLEANUP: Delete legacy orphans
-        await prisma.lessonRecord.deleteMany({
-            where: {
-                studentId: data.studentId,
-                date: data.date,
-                lessonId: null
-            }
-        });
+        if (!isDraft) {
+            await prisma.lessonRecord.deleteMany({
+                where: {
+                    studentId: data.studentId,
+                    date: data.date,
+                    lessonId: null
+                }
+            });
 
-        // 4. Mark the lesson as completed
-        await prisma.lessonSchedule.update({
-            where: { id: data.lessonId },
-            data: { status: 'Completed' }
-        });
+            await prisma.lessonSchedule.update({
+                where: { id: data.lessonId },
+                data: { status: 'Completed' }
+            });
+        }
 
         revalidatePath('/teacher');
         revalidatePath('/teacher/students');
@@ -254,7 +263,7 @@ export async function submitLessonKarte(data: {
         revalidatePath('/(student)/schedule', 'page');
         revalidatePath('/(student)/karte', 'page');
 
-        return { success: true };
+        return { success: true, isDraft };
     } catch (error) {
         console.error('Error submitting lesson karte:', error);
         return { success: false, error: 'カルテの送信に失敗しました' };

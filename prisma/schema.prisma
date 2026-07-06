@@ -108,6 +108,7 @@ model LessonRecord {
   todayTestScore       Int?
   todayTestTotal       Int?
   nextTest             String?
+  isDraft              Boolean @default(false)
   nextScope            String?
   importantExpressions String?
   homework             String?

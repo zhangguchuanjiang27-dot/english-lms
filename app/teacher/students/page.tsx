@@ -137,7 +137,7 @@ export default function TeacherStudentsPage() {
             });
 
             // Fetch the specific record for this lesson if it's completed
-            if (lesson.status === 'Completed') {
+            if (lesson.status === 'Completed' || lesson.status === 'Scheduled') {
                 const currentRecord = await getRecordByLessonId(lesson.id);
                 if (currentRecord) {
                     setAssessmentData({
@@ -203,7 +203,7 @@ export default function TeacherStudentsPage() {
         setIsAssessModalOpen(true);
     };
 
-    const handleAssessSubmit = async (e: React.FormEvent) => {
+    const handleAssessSubmit = async (e: React.SyntheticEvent, isDraft = false) => {
         e.preventDefault();
         if (!selectedLesson || !teacher) return;
 
@@ -226,26 +226,22 @@ export default function TeacherStudentsPage() {
                 importantExpressions: expressionsString,
                 homework: assessmentData.homework,
                 internalNote: assessmentData.internalNote
+                ,isDraft
             });
 
             if (result.success) {
-                // Update the lesson status in myLessons
-                setMyLessons(prev => prev.map(item => {
-                    if (item.lesson.id === selectedLesson.id) {
-                        return {
-                            ...item,
-                            lesson: {
-                                ...item.lesson,
-                                status: 'Completed'
-                            }
-                        };
-                    }
-                    return item;
-                }));
+                if (!isDraft) {
+                    setMyLessons(prev => prev.map(item => {
+                        if (item.lesson.id === selectedLesson.id) {
+                            return { ...item, lesson: { ...item.lesson, status: 'Completed' } };
+                        }
+                        return item;
+                    }));
+                }
 
                 setIsAssessModalOpen(false);
                 setSelectedLesson(null);
-                alert('カルテを保存・送信しました。');
+                alert(isDraft ? 'カルテを一時保存しました。' : 'カルテを保存・送信しました。');
             } else {
                 alert(result.error || 'カルテの送信に失敗しました');
             }
@@ -759,6 +755,11 @@ export default function TeacherStudentsPage() {
                                     >
                                         {selectedLesson?.status === 'Completed' ? '閉じる' : 'キャンセル'}
                                     </button>
+                                    {selectedLesson?.status !== 'Completed' && (
+                                        <button type="button" onClick={(e) => handleAssessSubmit(e, true)} className="px-6 py-2.5 text-sm font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-colors flex items-center gap-2">
+                                            <FileText size={17} /> 一時保存
+                                        </button>
+                                    )}
                                     <button
                                         type="submit"
                                         className="px-8 py-2.5 text-sm font-bold text-white bg-emerald-500 hover:bg-emerald-600 rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95 flex items-center gap-2"

@@ -134,7 +134,7 @@ export default function TeacherShiftsPage() {
         setLastRecord(null);
 
         try {
-            if (lesson.status === 'Completed') {
+            if (lesson.status === 'Completed' || lesson.status === 'Scheduled') {
                 const currentRecord = await getRecordByLessonId(lesson.id);
                 if (currentRecord) {
                     setAssessmentData({
@@ -224,7 +224,7 @@ export default function TeacherShiftsPage() {
         }
     };
 
-    const handleAssessSubmit = async (e: React.FormEvent) => {
+    const handleAssessSubmit = async (e: React.SyntheticEvent, isDraft = false) => {
         e.preventDefault();
         if (!selectedLesson || !teacher) return;
 
@@ -251,16 +251,18 @@ export default function TeacherShiftsPage() {
                 vocab: assessmentData.vocab,
                 pronunciation: assessmentData.pronunciation,
                 fluency: assessmentData.fluency
+                ,isDraft
             });
 
             if (result.success) {
-                // Update local state and refresh
-                setSchedules(prev => prev.map(s =>
-                    s.id === selectedLesson.id ? { ...s, status: 'Completed' } : s
-                ));
+                if (!isDraft) {
+                    setSchedules(prev => prev.map(s =>
+                        s.id === selectedLesson.id ? { ...s, status: 'Completed' } : s
+                    ));
+                }
                 setIsAssessModalOpen(false);
                 setSelectedLesson(null);
-                alert('カルテを保存・送信しました。');
+                alert(isDraft ? 'カルテを一時保存しました。' : 'カルテを保存・送信しました。');
                 refreshData();
             } else {
                 alert(result.error || 'カルテの送信に失敗しました');
@@ -985,6 +987,11 @@ export default function TeacherShiftsPage() {
                                     >
                                         キャンセル
                                     </button>
+                                    {selectedLesson?.status !== 'Completed' && (
+                                        <button type="button" onClick={(e) => handleAssessSubmit(e, true)} className="px-6 py-2.5 text-sm font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-colors flex items-center gap-2">
+                                            <FileText size={17} /> 一時保存
+                                        </button>
+                                    )}
                                     <button
                                         type="submit"
                                         className="px-8 py-2.5 text-sm font-bold text-white bg-emerald-500 hover:bg-emerald-600 rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95 flex items-center gap-2"
