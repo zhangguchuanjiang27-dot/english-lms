@@ -1031,6 +1031,31 @@ export default function TeacherShiftsPage() {
                                             </p>
                                         </div>
 
+                                        {((lastRecord as any)?.todayTestName || (lastRecord as any)?.todayTestScore != null || (lastRecord as any)?.todayTestTotal != null) && (
+                                            <div className="bg-violet-50 p-4 rounded-xl border border-violet-200 relative mt-4">
+                                                <div className="absolute -top-3 left-4 bg-violet-200 text-violet-800 px-2 py-0.5 rounded text-[10px] font-black uppercase flex items-center gap-1">
+                                                    <FileText size={10} /> 本日のテスト
+                                                </div>
+                                                <div className="mt-2 space-y-1 text-xs text-violet-900 leading-relaxed font-bold">
+                                                    {(lastRecord as any)?.todayTestName && <p className="whitespace-pre-wrap">{(lastRecord as any).todayTestName}</p>}
+                                                    {(lastRecord as any)?.todayTestScore != null && (lastRecord as any)?.todayTestTotal != null && (
+                                                        <p>{(lastRecord as any).todayTestScore} / {(lastRecord as any).todayTestTotal} 点</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {(lastRecord as any)?.nextTest && (
+                                            <div className="bg-rose-50 p-4 rounded-xl border border-rose-200 relative mt-4">
+                                                <div className="absolute -top-3 left-4 bg-rose-200 text-rose-800 px-2 py-0.5 rounded text-[10px] font-black uppercase flex items-center gap-1">
+                                                    <FileText size={10} /> 次回のテスト
+                                                </div>
+                                                <p className="text-xs text-rose-900 leading-relaxed mt-2 whitespace-pre-wrap font-bold">
+                                                    {(lastRecord as any).nextTest}
+                                                </p>
+                                            </div>
+                                        )}
+
                                         {(lastRecord as any)?.importantExpressions && (
                                             <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200 relative mt-4">
                                                 <div className="absolute -top-3 left-4 bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded text-[10px] font-black uppercase flex items-center gap-1">
