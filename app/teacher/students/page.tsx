@@ -72,7 +72,7 @@ export default function TeacherStudentsPage() {
     const [selectedLesson, setSelectedLesson] = useState<any>(null);
     const [meetingUrlInput, setMeetingUrlInput] = useState('');
     const [lastRecord, setLastRecord] = useState<LessonRecord | null>(null);
-    const [absenceData, setAbsenceData] = useState({ reason: '', makeupDate: '', makeupTime: '' });
+    const [absenceData, setAbsenceData] = useState({ reason: '' });
     const [grammarMastery, setGrammarMastery] = useState<any[]>([]);
     const [isLoadingMastery, setIsLoadingMastery] = useState(false);
     const [assessmentData, setAssessmentData] = useState({
@@ -128,7 +128,7 @@ export default function TeacherStudentsPage() {
     const openAssessModal = async (lesson: any) => {
         setSelectedLesson(lesson);
         setLastRecord(null);
-        setAbsenceData({ reason: '', makeupDate: '', makeupTime: '' });
+        setAbsenceData({ reason: '' });
         setIsLoadingMastery(true);
 
         try {
@@ -324,18 +324,11 @@ export default function TeacherStudentsPage() {
 
     const handleMarkAbsent = async () => {
         if (!selectedLesson) return;
-        const hasPartialMakeup = Boolean(absenceData.makeupDate) !== Boolean(absenceData.makeupTime);
-        if (hasPartialMakeup) {
-            alert('振替日と時間は両方入力してください');
-            return;
-        }
         if (!confirm('このコマを欠席として記録しますか？')) return;
 
         const result = await markLessonAbsent({
             lessonId: selectedLesson.id,
-            reason: absenceData.reason,
-            makeupDate: absenceData.makeupDate || undefined,
-            makeupTime: absenceData.makeupTime || undefined
+            reason: absenceData.reason
         });
 
         if (result.success) {
@@ -347,7 +340,7 @@ export default function TeacherStudentsPage() {
             }));
             setIsAssessModalOpen(false);
             setSelectedLesson(null);
-            alert(absenceData.makeupDate ? '欠席と振替日を登録しました' : '欠席として記録し、振替コマに追加しました');
+            alert('欠席として記録し、カルテも保存しました');
         } else {
             alert(result.error || '欠席の登録に失敗しました');
         }
@@ -774,10 +767,6 @@ export default function TeacherStudentsPage() {
                                             欠席・振替
                                         </h4>
                                         <textarea className="w-full h-16 p-3 bg-white border border-rose-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 resize-none" placeholder="欠席理由・メモ" value={absenceData.reason} onChange={(e) => setAbsenceData({ ...absenceData, reason: e.target.value })} />
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                            <input type="date" className="w-full p-3 bg-white border border-rose-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400" value={absenceData.makeupDate} onChange={(e) => setAbsenceData({ ...absenceData, makeupDate: e.target.value })} />
-                                            <input type="time" className="w-full p-3 bg-white border border-rose-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400" value={absenceData.makeupTime} onChange={(e) => setAbsenceData({ ...absenceData, makeupTime: e.target.value })} />
-                                        </div>
                                         <button type="button" onClick={handleMarkAbsent} className="w-full px-4 py-3 text-sm font-black text-white bg-rose-500 hover:bg-rose-600 rounded-xl transition-colors flex items-center justify-center gap-2">
                                             <Calendar size={16} />
                                             欠席として記録する

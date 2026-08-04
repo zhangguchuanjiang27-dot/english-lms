@@ -35,7 +35,8 @@ import {
     getRecentRecordsByStudent, 
     getRecordByLessonId, 
     revokeLessonKarte,
-    markLessonAbsent
+    markLessonAbsent,
+    scheduleMakeupLesson
 } from '@/lib/actions/teacher';
 import { getStudentGrammarMastery } from '@/lib/actions/grammar';
 import GrammarMasteryGrid from '@/components/GrammarMasteryGrid';
@@ -82,7 +83,9 @@ export default function TeacherShiftsPage() {
     const [selectedLesson, setSelectedLesson] = useState<any>(null);
     const [meetingUrlInput, setMeetingUrlInput] = useState('');
     const [lastRecord, setLastRecord] = useState<LessonRecord | null>(null);
-    const [absenceData, setAbsenceData] = useState({ reason: '', makeupDate: '', makeupTime: '' });
+    const [absenceData, setAbsenceData] = useState({ reason: '' });
+    const [selectedAbsentLesson, setSelectedAbsentLesson] = useState<any>(null);
+    const [makeupData, setMakeupData] = useState({ date: '', time: '' });
     
     const [assessmentData, setAssessmentData] = useState({
         title: '',
@@ -134,7 +137,7 @@ export default function TeacherShiftsPage() {
     const openAssessModal = async (lesson: any) => {
         setSelectedLesson(lesson);
         setLastRecord(null);
-        setAbsenceData({ reason: '', makeupDate: '', makeupTime: '' });
+        setAbsenceData({ reason: '' });
 
         try {
             if (lesson.status === 'Completed' || lesson.status === 'Scheduled') {
@@ -326,18 +329,11 @@ export default function TeacherShiftsPage() {
 
     const handleMarkAbsent = async () => {
         if (!selectedLesson) return;
-        const hasPartialMakeup = Boolean(absenceData.makeupDate) !== Boolean(absenceData.makeupTime);
-        if (hasPartialMakeup) {
-            alert('振替日と時間は両方入力してください');
-            return;
-        }
         if (!confirm('このコマを欠席として記録しますか？')) return;
 
         const result = await markLessonAbsent({
             lessonId: selectedLesson.id,
-            reason: absenceData.reason,
-            makeupDate: absenceData.makeupDate || undefined,
-            makeupTime: absenceData.makeupTime || undefined
+            reason: absenceData.reason
         });
 
         if (result.success) {
@@ -346,10 +342,39 @@ export default function TeacherShiftsPage() {
             ));
             setIsAssessModalOpen(false);
             setSelectedLesson(null);
-            alert(absenceData.makeupDate ? '欠席と振替日を登録しました' : '欠席として記録し、振替コマに追加しました');
+            alert('欠席として記録し、カルテも保存しました');
             refreshData();
         } else {
             alert(result.error || '欠席の登録に失敗しました');
+        }
+    };
+
+    const openMakeupModal = (lesson: any) => {
+        setSelectedAbsentLesson(lesson);
+        setMakeupData({ date: '', time: lesson.time || '' });
+    };
+
+    const handleScheduleMakeup = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedAbsentLesson) return;
+
+        const result = await scheduleMakeupLesson({
+            absentLessonId: selectedAbsentLesson.id,
+            makeupDate: makeupData.date,
+            makeupTime: makeupData.time
+        });
+
+        if (result.success) {
+            setSchedules(prev => [
+                ...prev.map(s => s.id === selectedAbsentLesson.id ? { ...s, status: 'Cancelled' } : s),
+                result.makeupLesson as any
+            ]);
+            setSelectedAbsentLesson(null);
+            setMakeupData({ date: '', time: '' });
+            alert('振替日を設定しました');
+            refreshData();
+        } else {
+            alert(result.error || '振替日の設定に失敗しました');
         }
     };
 
@@ -428,6 +453,10 @@ export default function TeacherShiftsPage() {
         return normalizedDate === selectedDateStr;
     }).sort((a, b) => a.time.localeCompare(b.time));
 
+    const absentStockLessons = schedules
+        .filter(s => s.status === 'Absent')
+        .sort((a, b) => `${b.date} ${b.time}`.localeCompare(`${a.date} ${a.time}`));
+
     if (loading) return null;
 
     return (
@@ -485,6 +514,44 @@ export default function TeacherShiftsPage() {
                         </div>
                     </div>
                 </section>
+
+                {absentStockLessons.length > 0 && (
+                    <section className="bg-white border border-rose-100 rounded-3xl p-5 shadow-sm">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+                            <div>
+                                <h2 className="text-lg font-black text-slate-800 flex items-center gap-2">
+                                    <CalendarIcon className="text-rose-500" size={20} />
+                                    振替ストック
+                                </h2>
+                                <p className="text-xs font-bold text-slate-500 mt-1">欠席として記録済みで、後日振替できるコマです。</p>
+                            </div>
+                            <span className="text-xs font-black text-rose-600 bg-rose-50 px-3 py-1.5 rounded-full">
+                                {absentStockLessons.length} コマ
+                            </span>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                            {absentStockLessons.map(lesson => (
+                                <div key={lesson.id} className="border border-rose-100 bg-rose-50/30 rounded-2xl p-4 flex flex-col gap-3">
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div>
+                                            <p className="text-sm font-black text-slate-800">{lesson.studentName}</p>
+                                            <p className="text-xs font-bold text-slate-500 mt-1">{lesson.date} {lesson.time} / {lesson.course}</p>
+                                        </div>
+                                        <span className="text-[10px] font-black text-rose-600 bg-white border border-rose-100 px-2 py-1 rounded-lg shrink-0">欠席</span>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => openMakeupModal(lesson)}
+                                        className="w-full px-4 py-2.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-sm font-black transition-colors flex items-center justify-center gap-2"
+                                    >
+                                        <CalendarIcon size={16} />
+                                        振替日を設定
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Left: Interactive Calendar */}
@@ -738,6 +805,57 @@ export default function TeacherShiftsPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Makeup Modal */}
+            {selectedAbsentLesson && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setSelectedAbsentLesson(null)}></div>
+                    <form onSubmit={handleScheduleMakeup} className="relative bg-white rounded-3xl w-full max-w-md shadow-2xl p-6 overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
+                            <h3 className="text-lg font-black text-slate-800">振替日を設定</h3>
+                            <button type="button" onClick={() => setSelectedAbsentLesson(null)} className="p-1.5 text-slate-400 hover:bg-slate-100 rounded-full">
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <div className="space-y-4">
+                            <div className="rounded-2xl bg-rose-50 border border-rose-100 p-4">
+                                <p className="text-sm font-black text-slate-800">{selectedAbsentLesson.studentName}</p>
+                                <p className="text-xs font-bold text-slate-500 mt-1">欠席: {selectedAbsentLesson.date} {selectedAbsentLesson.time} / {selectedAbsentLesson.course}</p>
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-black text-slate-700 block">振替日</label>
+                                    <input
+                                        type="date"
+                                        required
+                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 font-bold"
+                                        value={makeupData.date}
+                                        onChange={(e) => setMakeupData({ ...makeupData, date: e.target.value })}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-black text-slate-700 block">時間</label>
+                                    <input
+                                        type="time"
+                                        required
+                                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 font-bold"
+                                        value={makeupData.time}
+                                        onChange={(e) => setMakeupData({ ...makeupData, time: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex justify-end gap-3 mt-6 border-t border-slate-100 pt-4">
+                            <button type="button" onClick={() => setSelectedAbsentLesson(null)} className="px-5 py-2 text-sm font-bold text-slate-500 hover:bg-slate-100 rounded-xl">
+                                キャンセル
+                            </button>
+                            <button type="submit" className="px-6 py-2 text-sm font-bold text-white bg-rose-500 hover:bg-rose-600 rounded-xl shadow-lg shadow-rose-500/20 active:scale-95 transition-all">
+                                保存
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
 
             {/* URL Modal */}
             {isUrlModalOpen && selectedLesson && (
@@ -1005,10 +1123,6 @@ export default function TeacherShiftsPage() {
                                             欠席・振替
                                         </h4>
                                         <textarea className="w-full h-16 p-3 bg-white border border-rose-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 resize-none" placeholder="欠席理由・メモ" value={absenceData.reason} onChange={(e) => setAbsenceData({ ...absenceData, reason: e.target.value })} />
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                            <input type="date" className="w-full p-3 bg-white border border-rose-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400" value={absenceData.makeupDate} onChange={(e) => setAbsenceData({ ...absenceData, makeupDate: e.target.value })} />
-                                            <input type="time" className="w-full p-3 bg-white border border-rose-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400" value={absenceData.makeupTime} onChange={(e) => setAbsenceData({ ...absenceData, makeupTime: e.target.value })} />
-                                        </div>
                                         <button type="button" onClick={handleMarkAbsent} className="w-full px-4 py-3 text-sm font-black text-white bg-rose-500 hover:bg-rose-600 rounded-xl transition-colors flex items-center justify-center gap-2">
                                             <CalendarIcon size={16} />
                                             欠席として記録する

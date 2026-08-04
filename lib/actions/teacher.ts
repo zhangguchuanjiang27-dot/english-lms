@@ -361,9 +361,6 @@ export async function revokeLessonKarte(lessonId: string) {
 export async function markLessonAbsent(data: {
     lessonId: string;
     reason?: string;
-    makeupDate?: string;
-    makeupTime?: string;
-    meetingUrl?: string;
 }) {
     try {
         const lesson = await prisma.lessonSchedule.findUnique({
@@ -379,22 +376,42 @@ export async function markLessonAbsent(data: {
             return { success: false, error: '完了済みの授業は欠席にできません' };
         }
 
-        let makeupLesson = null;
-        if (data.makeupDate && data.makeupTime) {
-            makeupLesson = await prisma.lessonSchedule.create({
-                data: {
-                    studentId: lesson.studentId,
-                    studentName: lesson.studentName,
-                    teacherName: lesson.teacherName,
-                    date: data.makeupDate,
-                    time: data.makeupTime,
-                    duration: lesson.duration,
-                    course: lesson.course,
-                    type: lesson.type,
-                    status: 'Scheduled',
-                    tags: lesson.tags,
-                    meetingUrl: data.meetingUrl || lesson.meetingUrl
-                }
+        const reason = data.reason?.trim();
+        const existingRecord = await prisma.lessonRecord.findUnique({
+            where: { lessonId: lesson.id }
+        });
+
+        const recordValues = {
+            lessonId: lesson.id,
+            studentId: lesson.studentId,
+            date: lesson.date,
+            teacher: lesson.teacherName,
+            title: `${lesson.course} 欠席`,
+            feedback: reason || '欠席として記録しました。',
+            todayTest: null,
+            todayTestName: null,
+            todayTestScore: null,
+            todayTestTotal: null,
+            nextTest: null,
+            nextScope: null,
+            importantExpressions: null,
+            homework: '',
+            internalNote: reason ? `欠席理由: ${reason}` : '欠席',
+            grammar: 50,
+            vocab: 50,
+            pronunciation: 50,
+            fluency: 50,
+            isDraft: false
+        };
+
+        if (existingRecord) {
+            await prisma.lessonRecord.update({
+                where: { id: existingRecord.id },
+                data: recordValues
+            });
+        } else {
+            await prisma.lessonRecord.create({
+                data: recordValues
             });
         }
 
@@ -409,10 +426,81 @@ export async function markLessonAbsent(data: {
         revalidatePath('/(student)/schedule', 'page');
         revalidatePath('/(student)/dashboard', 'page');
 
-        return { success: true, makeupLesson };
+        return { success: true };
     } catch (error) {
         console.error('Error marking lesson absent:', error);
         return { success: false, error: '欠席・振替の登録に失敗しました' };
+    }
+}
+
+export async function scheduleMakeupLesson(data: {
+    absentLessonId: string;
+    makeupDate: string;
+    makeupTime: string;
+}) {
+    try {
+        const absentLesson = await prisma.lessonSchedule.findUnique({
+            where: { id: data.absentLessonId },
+            include: { student: true }
+        });
+
+        if (!absentLesson) {
+            return { success: false, error: '欠席コマが見つかりませんでした' };
+        }
+
+        if (absentLesson.status !== 'Absent') {
+            return { success: false, error: '欠席コマだけ振替設定できます' };
+        }
+
+        const existingRecord = await prisma.lessonRecord.findUnique({
+            where: { lessonId: absentLesson.id }
+        });
+
+        if (existingRecord?.internalNote?.includes('[振替済み:')) {
+            return { success: false, error: 'この欠席コマはすでに振替設定済みです' };
+        }
+
+        const makeupLesson = await prisma.lessonSchedule.create({
+            data: {
+                studentId: absentLesson.studentId,
+                studentName: absentLesson.studentName,
+                teacherName: absentLesson.teacherName,
+                date: data.makeupDate,
+                time: data.makeupTime,
+                duration: absentLesson.duration,
+                course: absentLesson.course,
+                type: absentLesson.type,
+                status: 'Scheduled',
+                tags: absentLesson.tags,
+                meetingUrl: absentLesson.meetingUrl
+            }
+        });
+
+        const marker = `[振替済み: ${data.makeupDate} ${data.makeupTime} / ${makeupLesson.id}]`;
+        if (existingRecord) {
+            await prisma.lessonRecord.update({
+                where: { id: existingRecord.id },
+                data: {
+                    internalNote: [existingRecord.internalNote, marker].filter(Boolean).join('\n')
+                }
+            });
+        }
+
+        await prisma.lessonSchedule.update({
+            where: { id: absentLesson.id },
+            data: { status: 'Cancelled' }
+        });
+
+        revalidatePath('/teacher');
+        revalidatePath('/teacher/students');
+        revalidatePath('/teacher/shifts');
+        revalidatePath('/(student)/schedule', 'page');
+        revalidatePath('/(student)/dashboard', 'page');
+
+        return { success: true, makeupLesson };
+    } catch (error) {
+        console.error('Error scheduling makeup lesson:', error);
+        return { success: false, error: '振替日の設定に失敗しました' };
     }
 }
 
