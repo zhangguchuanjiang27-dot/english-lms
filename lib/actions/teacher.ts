@@ -379,30 +379,8 @@ export async function markLessonAbsent(data: {
             return { success: false, error: '完了済みの授業は欠席にできません' };
         }
 
-        const existingCredit = await (prisma as any).makeupLessonCredit.findUnique({
-            where: { originalLessonId: lesson.id }
-        });
-
-        const credit = existingCredit ?? await (prisma as any).makeupLessonCredit.create({
-            data: {
-                studentId: lesson.studentId,
-                originalLessonId: lesson.id,
-                date: lesson.date,
-                time: lesson.time,
-                duration: lesson.duration,
-                course: lesson.course,
-                teacherName: lesson.teacherName,
-                reason: data.reason?.trim() || null,
-                status: 'Available'
-            }
-        });
-
         let makeupLesson = null;
         if (data.makeupDate && data.makeupTime) {
-            if (credit.status === 'Used') {
-                return { success: false, error: 'この欠席コマはすでに振替済みです' };
-            }
-
             makeupLesson = await prisma.lessonSchedule.create({
                 data: {
                     studentId: lesson.studentId,
@@ -415,17 +393,7 @@ export async function markLessonAbsent(data: {
                     type: lesson.type,
                     status: 'Scheduled',
                     tags: lesson.tags,
-                    meetingUrl: data.meetingUrl || lesson.meetingUrl,
-                    makeupCreditId: credit.id
-                } as any
-            });
-
-            await (prisma as any).makeupLessonCredit.update({
-                where: { id: credit.id },
-                data: {
-                    usedLessonId: makeupLesson.id,
-                    status: 'Used',
-                    usedAt: new Date()
+                    meetingUrl: data.meetingUrl || lesson.meetingUrl
                 }
             });
         }
@@ -441,7 +409,7 @@ export async function markLessonAbsent(data: {
         revalidatePath('/(student)/schedule', 'page');
         revalidatePath('/(student)/dashboard', 'page');
 
-        return { success: true, credit, makeupLesson };
+        return { success: true, makeupLesson };
     } catch (error) {
         console.error('Error marking lesson absent:', error);
         return { success: false, error: '欠席・振替の登録に失敗しました' };

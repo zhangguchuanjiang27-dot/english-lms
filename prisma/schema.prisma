@@ -46,7 +46,6 @@ model Student {
   invoices          Invoice[]
   records           LessonRecord[]
   schedules         LessonSchedule[]
-  makeupCredits     MakeupLessonCredit[]
   messages          Message[]
   testScores        TestScore[]
   vocabProgresses   VocabProgress[]
@@ -93,25 +92,7 @@ model LessonSchedule {
   tags            String?
   meetingPassword String?
   meetingUrl      String?
-  makeupCreditId  String?
   student         Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
-}
-
-model MakeupLessonCredit {
-  id               String   @id @default(cuid())
-  studentId        String
-  originalLessonId String?  @unique
-  usedLessonId     String?  @unique
-  date             String
-  time             String
-  duration         String
-  course           String
-  teacherName      String
-  reason           String?
-  status           String   @default("Available")
-  createdAt        DateTime @default(now())
-  usedAt           DateTime?
-  student          Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
 
 model LessonRecord {
