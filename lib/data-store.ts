@@ -44,7 +44,7 @@ export type LessonSchedule = {
     duration: string;
     course: string;
     type: 'General' | 'Premium' | 'Exam' | 'Casual';
-    status: 'Scheduled' | 'Completed' | 'Cancelled';
+    status: 'Scheduled' | 'Completed' | 'Cancelled' | 'Absent';
     tags?: string[];
     meetingUrl?: string; // Google Meet URL等
 };

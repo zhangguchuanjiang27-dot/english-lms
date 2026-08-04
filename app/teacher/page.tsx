@@ -24,7 +24,7 @@ import {
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { Teacher, LessonSchedule, Student, LessonRecord } from '@/lib/data-store';
-import { getTeacherDashboardData, updateLessonMeetingUrl, submitLessonKarte, getRecentRecordsByStudent, getRecordByLessonId, revokeLessonKarte } from '@/lib/actions/teacher';
+import { getTeacherDashboardData, updateLessonMeetingUrl, submitLessonKarte, getRecentRecordsByStudent, getRecordByLessonId, revokeLessonKarte, markLessonAbsent } from '@/lib/actions/teacher';
 import { getStudentGrammarMastery } from '@/lib/actions/grammar';
 import GrammarMasteryGrid from '@/components/GrammarMasteryGrid';
 
@@ -57,6 +57,7 @@ export default function TeacherDashboard() {
     const [selectedLesson, setSelectedLesson] = useState<any>(null);
     const [meetingUrlInput, setMeetingUrlInput] = useState('');
     const [lastRecord, setLastRecord] = useState<LessonRecord | null>(null);
+    const [absenceData, setAbsenceData] = useState({ reason: '', makeupDate: '', makeupTime: '' });
     const [assessmentData, setAssessmentData] = useState({
         title: '',
         feedback: '',
@@ -96,6 +97,7 @@ export default function TeacherDashboard() {
     const openAssessModal = async (lesson: any) => {
         setSelectedLesson(lesson);
         setLastRecord(null);
+        setAbsenceData({ reason: '', makeupDate: '', makeupTime: '' });
 
         try {
             // Fetch the specific record for this lesson if it's completed
@@ -298,6 +300,34 @@ export default function TeacherDashboard() {
         } catch (error) {
             console.error('Submit error:', error);
             alert('通信エラーが発生しました');
+        }
+    };
+
+    const handleMarkAbsent = async () => {
+        if (!selectedLesson) return;
+        const hasPartialMakeup = Boolean(absenceData.makeupDate) !== Boolean(absenceData.makeupTime);
+        if (hasPartialMakeup) {
+            alert('振替日と時間は両方入力してください');
+            return;
+        }
+        if (!confirm('このコマを欠席として記録しますか？')) return;
+
+        const result = await markLessonAbsent({
+            lessonId: selectedLesson.id,
+            reason: absenceData.reason,
+            makeupDate: absenceData.makeupDate || undefined,
+            makeupTime: absenceData.makeupTime || undefined
+        });
+
+        if (result.success) {
+            setTodaySchedule(prev => prev.map(s =>
+                s.id === selectedLesson.id ? { ...s, status: 'Absent' } : s
+            ));
+            setIsAssessModalOpen(false);
+            setSelectedLesson(null);
+            alert(absenceData.makeupDate ? '欠席と振替日を登録しました' : '欠席として記録し、振替コマに追加しました');
+        } else {
+            alert(result.error || '欠席の登録に失敗しました');
         }
     };
 
@@ -692,6 +722,42 @@ export default function TeacherDashboard() {
                                 </div>
                             </div>
 
+                                {selectedLesson?.status !== 'Completed' && (
+                                    <div className="space-y-4 p-5 rounded-2xl border border-rose-100 bg-rose-50/40">
+                                        <h4 className="text-sm font-black text-rose-700 tracking-tight flex items-center gap-2">
+                                            <Calendar size={16} />
+                                            欠席・振替
+                                        </h4>
+                                        <textarea
+                                            className="w-full h-16 p-3 bg-white border border-rose-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400 resize-none"
+                                            placeholder="欠席理由・メモ"
+                                            value={absenceData.reason}
+                                            onChange={(e) => setAbsenceData({ ...absenceData, reason: e.target.value })}
+                                        />
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            <input
+                                                type="date"
+                                                className="w-full p-3 bg-white border border-rose-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400"
+                                                value={absenceData.makeupDate}
+                                                onChange={(e) => setAbsenceData({ ...absenceData, makeupDate: e.target.value })}
+                                            />
+                                            <input
+                                                type="time"
+                                                className="w-full p-3 bg-white border border-rose-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-400"
+                                                value={absenceData.makeupTime}
+                                                onChange={(e) => setAbsenceData({ ...absenceData, makeupTime: e.target.value })}
+                                            />
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={handleMarkAbsent}
+                                            className="w-full px-4 py-3 text-sm font-black text-white bg-rose-500 hover:bg-rose-600 rounded-xl transition-colors flex items-center justify-center gap-2"
+                                        >
+                                            <Calendar size={16} />
+                                            欠席として記録する
+                                        </button>
+                                    </div>
+                                )}
                             <div className="px-6 py-5 border-t border-slate-100 bg-white flex justify-between gap-3 shrink-0 mt-auto">
                                 <div className="flex gap-3">
                                     {selectedLesson?.status === 'Completed' && (
