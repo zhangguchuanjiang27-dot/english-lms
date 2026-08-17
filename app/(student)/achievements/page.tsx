@@ -44,6 +44,9 @@ export default function StudentAchievementsPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [editingScoreId, setEditingScoreId] = useState<string | null>(null);
+    const [loggedInName] = useState(() =>
+        typeof window === 'undefined' ? '' : localStorage.getItem('user_name') || ''
+    );
 
     // Form states
     const [formData, setFormData] = useState({
@@ -65,6 +68,7 @@ export default function StudentAchievementsPage() {
 
     useEffect(() => {
         const userId = localStorage.getItem('user_id');
+
         if (!userId) {
             window.location.href = '/login';
             return;
@@ -155,7 +159,7 @@ export default function StudentAchievementsPage() {
         setIsModalOpen(true);
     };
 
-    const displayName = student?.name || 'ゲスト';
+    const displayName = student?.name || loggedInName || 'ゲスト';
 
     const schoolTests = testScores.filter(s => s.type === 'school');
     const proficiencyTests = testScores.filter(s => s.type === 'proficiency');

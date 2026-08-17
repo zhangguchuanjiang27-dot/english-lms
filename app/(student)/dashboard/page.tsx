@@ -25,10 +25,14 @@ export default function StudentDashboard() {
     const [student, setStudent] = useState<Student | null>(null);
     const [records, setRecords] = useState<LessonRecord[]>([]);
     const [upcomingLesson, setUpcomingLesson] = useState<LessonSchedule | null>(null);
+    const [loggedInName] = useState(() =>
+        typeof window === 'undefined' ? '' : localStorage.getItem('user_name') || ''
+    );
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const userId = localStorage.getItem('user_id');
+
         if (!userId) return;
 
         getStudentDashboardData(userId).then(data => {
@@ -88,7 +92,7 @@ export default function StudentDashboard() {
 
     if (loading) return <div className="p-10 text-center">Loading...</div>;
 
-    const displayName = student?.name || 'ゲスト';
+    const displayName = student?.name || loggedInName || 'ゲスト';
     const displayTarget = student?.target || '目標未設定';
 
     return (
