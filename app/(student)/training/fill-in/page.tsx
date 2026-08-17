@@ -13,7 +13,13 @@ import {
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { FILL_IN_CATEGORIES, FillInQuestion } from '@/lib/data/fill-in';
+import {
+    FILL_IN_CATEGORIES,
+    FILL_IN_CATEGORIES_BY_LEVEL,
+    FILL_IN_LEVELS,
+    FillInLevel,
+    FillInQuestion
+} from '@/lib/data/fill-in';
 import TrainingHUD from '@/components/training/TrainingHUD';
 import XPResultsView from '@/components/training/XPResultsView';
 
@@ -47,6 +53,7 @@ type FillInProgressItem = {
 
 export default function FillInPage() {
     const router = useRouter();
+    const [selectedLevel, setSelectedLevel] = useState<FillInLevel | null>(null);
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
     const [selectedSubStageIndex, setSelectedSubStageIndex] = useState<number | null>(null);
 
@@ -301,11 +308,9 @@ export default function FillInPage() {
         );
     };
 
-    if (!selectedCategoryId) {
-        const categories = FILL_IN_CATEGORIES;
-
+    if (!selectedLevel) {
         return (
-            <main className="flex-1 flex flex-col items-center justify-center bg-slate-900 font-sans min-h-screen text-slate-50 relative overflow-hidden p-6 py-20">
+            <main className="flex-1 flex flex-col items-center justify-center bg-slate-900 font-sans min-h-screen text-slate-50 relative overflow-hidden p-6">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-700/20 via-slate-900 to-slate-950"></div>
 
                 <div className="absolute top-6 left-6 z-20">
@@ -323,8 +328,74 @@ export default function FillInPage() {
                             <Keyboard size={16} className="text-emerald-400" />
                             Blank Quest
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-black text-white drop-shadow-xl tracking-tight mb-4">
+                        <h1 className="text-5xl md:text-7xl font-black text-white drop-shadow-xl tracking-tight mb-4">
                             Word Filler
+                        </h1>
+                        <p className="text-emerald-100/70 font-medium text-lg">挑戦するレベルを選択してください</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {FILL_IN_LEVELS.map((level) => {
+                            const categoryCount = FILL_IN_CATEGORIES_BY_LEVEL[level.id].length;
+                            const questionCount = FILL_IN_CATEGORIES_BY_LEVEL[level.id].reduce((total, category) => total + category.questions.length, 0);
+
+                            return (
+                                <button
+                                    key={level.id}
+                                    onClick={() => setSelectedLevel(level.id)}
+                                    className="group relative block overflow-hidden rounded-[2rem] bg-slate-800/40 border border-slate-700/50 p-8 text-left transition-all hover:-translate-y-2 hover:bg-slate-800/80"
+                                >
+                                    <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full blur-[40px] opacity-20 group-hover:opacity-40 transition-opacity bg-gradient-to-br from-emerald-400 to-emerald-600"></div>
+
+                                    <div className="relative z-10 flex flex-col h-full justify-between min-h-[160px]">
+                                        <div>
+                                            <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-6 shadow-lg bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-emerald-500/30">
+                                                <Keyboard size={24} className="text-white" />
+                                            </div>
+                                            <h3 className="text-3xl font-black text-white mb-2">{level.name}</h3>
+                                            <p className="text-emerald-300 font-bold">{level.sub}</p>
+                                            <p className="text-slate-400 text-xs font-bold mt-3">{categoryCount}カテゴリ / {questionCount}問</p>
+                                        </div>
+                                        <div className="mt-6 flex justify-end">
+                                            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-emerald-700 transition-colors">
+                                                <ArrowRight size={20} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+            </main>
+        );
+    }
+
+    if (selectedLevel && !selectedCategoryId) {
+        const categories = FILL_IN_CATEGORIES_BY_LEVEL[selectedLevel];
+        const levelName = FILL_IN_LEVELS.find(level => level.id === selectedLevel)?.name;
+
+        return (
+            <main className="flex-1 flex flex-col items-center justify-center bg-slate-900 font-sans min-h-screen text-slate-50 relative overflow-hidden p-6 py-20">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-emerald-700/20 via-slate-900 to-slate-950"></div>
+
+                <div className="absolute top-6 left-6 z-20">
+                    <button
+                        onClick={() => setSelectedLevel(null)}
+                        className="w-12 h-12 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 rounded-full flex items-center justify-center transition-colors"
+                    >
+                        <ChevronLeft size={24} />
+                    </button>
+                </div>
+
+                <div className="relative z-10 w-full max-w-5xl">
+                    <div className="text-center mb-12">
+                        <div className="inline-flex items-center gap-2 bg-emerald-900/40 border border-emerald-500/30 px-4 py-2 rounded-full text-sm font-black uppercase tracking-widest text-emerald-200 backdrop-blur-md mb-4">
+                            <Keyboard size={16} className="text-emerald-400" />
+                            {levelName}
+                        </div>
+                        <h1 className="text-4xl md:text-5xl font-black text-white drop-shadow-xl tracking-tight mb-4">
+                            カテゴリー選択
                         </h1>
                         <p className="text-emerald-100/70 font-medium text-lg">空欄に入る英単語をタイピングして文を完成させよう</p>
                     </div>

@@ -5,11 +5,49 @@ export type FillInQuestion = {
     blanks: { word: string; index: number }[]; // Extracted blanks
 };
 
+export type FillInLevel = 'jhs1' | 'jhs2' | 'jhs3';
+
 export type FillInCategory = {
     id: string; // e.g. verb-base
+    level: FillInLevel;
     title: string; // e.g. 動詞の原形
     description: string; // e.g. 主語に合わせて動詞の形を変えよう
     questions: FillInQuestion[];
+};
+
+export const FILL_IN_LEVELS: { id: FillInLevel; name: string; sub: string }[] = [
+    { id: 'jhs1', name: '中学1年生', sub: 'Level 1' },
+    { id: 'jhs2', name: '中学2年生', sub: 'Level 2' },
+    { id: 'jhs3', name: '中学3年生', sub: 'Level 3' },
+];
+
+const CATEGORY_LEVELS: Record<string, FillInLevel> = {
+    'verb-present': 'jhs1',
+    'be-basic': 'jhs1',
+    'negative-basic': 'jhs1',
+    'question-basic': 'jhs1',
+    'modal-basic': 'jhs1',
+    'progressive-basic': 'jhs1',
+    'there-basic': 'jhs1',
+    'pronoun-basic': 'jhs1',
+    'preposition-basic': 'jhs1',
+    'interrogative-basic': 'jhs1',
+    'imperative-basic': 'jhs1',
+    'past-basic': 'jhs2',
+    'future-basic': 'jhs2',
+    'comparison-basic': 'jhs2',
+    'infinitive-gerund-basic': 'jhs2',
+    'conjunction-basic': 'jhs2',
+    'past-progressive-basic': 'jhs2',
+    'auxiliary-advanced-basic': 'jhs2',
+    'svoo-basic': 'jhs2',
+    'passive-basic': 'jhs3',
+    'present-perfect-basic': 'jhs3',
+    'present-perfect-progressive-basic': 'jhs3',
+    'indirect-question-basic': 'jhs3',
+    'participle-basic': 'jhs3',
+    'relative-pronoun-basic': 'jhs3',
+    'subjunctive-basic': 'jhs3',
 };
 
 const RAW_FILL_IN_DATA: { id: string, title: string, description: string, rawQuestions: string[] }[] = [
@@ -290,42 +328,286 @@ const RAW_FILL_IN_DATA: { id: string, title: string, description: string, rawQue
             "もし時間があれば、手伝ってください。 | [If] you have time , please help me .",
             "彼が帰宅したとき、私はテレビを見ていました。 | I was watching TV [when] he came home ."
         ]
+    },
+    {
+        id: 'interrogative-basic',
+        title: '疑問詞',
+        description: 'what / who / where / when / how で質問を作ろう',
+        rawQuestions: [
+            "これは何ですか。 | [What] is this ?",
+            "あなたの名前は何ですか。 | [What] is your name ?",
+            "あなたはどこに住んでいますか。 | [Where] do you live ?",
+            "彼女はいつテニスをしますか。 | [When] does she play tennis ?",
+            "あの少年は誰ですか。 | [Who] is that boy ?",
+            "あなたはどうやって学校へ行きますか。 | [How] do you go to school ?",
+            "あなたはなぜ英語を勉強するのですか。 | [Why] do you study English ?",
+            "あなたは何色が好きですか。 | [What] color do you like ?",
+            "あなたの誕生日はいつですか。 | [When] is your birthday ?",
+            "これは誰の自転車ですか。 | [Whose] bike is this ?"
+        ]
+    },
+    {
+        id: 'imperative-basic',
+        title: '命令文',
+        description: '動詞で始める命令文と、Please / Don’t を使った表現',
+        rawQuestions: [
+            "窓を開けなさい。 | [Open] the window .",
+            "静かにしてください。 | Please [be] quiet .",
+            "ここで走ってはいけません。 | [Do] not run here .",
+            "この本を読んでください。 | Please [read] this book .",
+            "私を手伝ってください。 | Please [help] me .",
+            "そのドアを閉めなさい。 | [Close] the door .",
+            "心配しないで。 | [Do] not worry .",
+            "あなたの名前を書きなさい。 | [Write] your name .",
+            "一緒に昼食を食べましょう。 | [Let's] have lunch together .",
+            "写真を撮らないでください。 | Please [do] not take pictures ."
+        ]
+    },
+    {
+        id: 'past-progressive-basic',
+        title: '過去進行形',
+        description: 'was / were + 動詞ing で「その時〜していた」を表そう',
+        rawQuestions: [
+            "私はその時、宿題をしていました。 | I [was] doing my homework then .",
+            "彼女は7時に夕食を作っていました。 | She [was] cooking dinner at seven .",
+            "彼らは公園でサッカーをしていました。 | They [were] playing soccer in the park .",
+            "あなたはその時何をしていましたか。 | What [were] you doing then ?",
+            "トムはテレビを見ていました。 | Tom [was] watching TV .",
+            "私たちは英語を勉強していました。 | We [were] studying English .",
+            "その赤ちゃんは泣いていませんでした。 | The baby [was] not crying .",
+            "雨が降っていました。 | It [was] raining .",
+            "彼は駅で私を待っていました。 | He [was] waiting for me at the station .",
+            "彼女たちは歌を歌っていました。 | They [were] singing a song ."
+        ]
+    },
+    {
+        id: 'auxiliary-advanced-basic',
+        title: '助動詞 should / may / have to',
+        description: 'should / may / have to で助言・可能性・必要を表そう',
+        rawQuestions: [
+            "あなたは早く寝るべきです。 | You [should] go to bed early .",
+            "彼は今日学校に来るかもしれません。 | He [may] come to school today .",
+            "私は部屋を掃除しなければなりません。 | I [have] to clean my room .",
+            "彼女はその本を読まなければなりません。 | She [has] to read the book .",
+            "あなたはそんなに心配するべきではありません。 | You [should] not worry so much .",
+            "明日は雨が降るかもしれません。 | It [may] rain tomorrow .",
+            "私たちはここで待たなければなりません。 | We [have] to wait here .",
+            "彼は医者に行くべきです。 | He [should] see a doctor .",
+            "あなたはこの薬を飲まなければなりません。 | You [have] to take this medicine .",
+            "彼女はその答えを知っているかもしれません。 | She [may] know the answer ."
+        ]
+    },
+    {
+        id: 'svoo-basic',
+        title: 'SVOO・第4文型',
+        description: 'give / show / tell / buy で「人にものを〜する」を作ろう',
+        rawQuestions: [
+            "彼は私に本をくれました。 | He [gave] me a book .",
+            "母は私に新しいかばんを買ってくれました。 | My mother [bought] me a new bag .",
+            "彼女は私たちに写真を見せました。 | She [showed] us a picture .",
+            "トムは私に面白い話をしてくれました。 | Tom [told] me an interesting story .",
+            "私は彼にメールを送りました。 | I [sent] him an email .",
+            "先生は私たちに英語を教えます。 | Our teacher [teaches] us English .",
+            "彼女は私に質問をしました。 | She [asked] me a question .",
+            "父は私に時計をくれました。 | My father [gave] me a watch .",
+            "私は妹にケーキを作りました。 | I [made] my sister a cake .",
+            "彼は私に道を教えてくれました。 | He [showed] me the way ."
+        ]
+    },
+    {
+        id: 'passive-basic',
+        title: '受動態',
+        description: 'be動詞 + 過去分詞で「〜される」を表そう',
+        rawQuestions: [
+            "この本は多くの人に読まれています。 | This book [is] read by many people .",
+            "その窓はトムによって壊されました。 | The window [was] broken by Tom .",
+            "英語は世界中で話されています。 | English [is] spoken around the world .",
+            "この写真は私の父によって撮られました。 | This picture [was] taken by my father .",
+            "その部屋は毎日掃除されます。 | The room [is] cleaned every day .",
+            "この歌は若い人たちに愛されています。 | This song [is] loved by young people .",
+            "その手紙は昨日書かれました。 | The letter [was] written yesterday .",
+            "この車は日本で作られました。 | This car [was] made in Japan .",
+            "その試合は多くの生徒に見られました。 | The game [was] watched by many students .",
+            "これらの花は母によって育てられています。 | These flowers [are] grown by my mother ."
+        ]
+    },
+    {
+        id: 'present-perfect-basic',
+        title: '現在完了',
+        description: 'have / has + 過去分詞で経験・継続・完了を表そう',
+        rawQuestions: [
+            "私は京都へ行ったことがあります。 | I [have] been to Kyoto .",
+            "彼女はその本をもう読み終えました。 | She [has] already read the book .",
+            "私たちは3年間ここに住んでいます。 | We [have] lived here for three years .",
+            "彼はまだ宿題を終えていません。 | He [has] not finished his homework yet .",
+            "あなたは今までに寿司を食べたことがありますか。 | [Have] you ever eaten sushi ?",
+            "トムは財布をなくしてしまいました。 | Tom [has] lost his wallet .",
+            "私はちょうど昼食を食べたところです。 | I [have] just eaten lunch .",
+            "彼らは昨日から忙しいです。 | They [have] been busy since yesterday .",
+            "メアリーは一度も外国へ行ったことがありません。 | Mary [has] never been abroad .",
+            "あなたはどのくらい英語を勉強していますか。 | How long [have] you studied English ?"
+        ]
+    },
+    {
+        id: 'present-perfect-progressive-basic',
+        title: '現在完了進行形',
+        description: 'have / has been + 動詞ing で「ずっと〜し続けている」',
+        rawQuestions: [
+            "私は2時間英語を勉強し続けています。 | I [have] been studying English for two hours .",
+            "彼女は朝からピアノを練習し続けています。 | She [has] been practicing the piano since morning .",
+            "彼らは1時間サッカーをしています。 | They [have] been playing soccer for an hour .",
+            "雨が昨日から降り続いています。 | It [has] been raining since yesterday .",
+            "トムは長い間ここで待っています。 | Tom [has] been waiting here for a long time .",
+            "私たちは午後から部屋を掃除しています。 | We [have] been cleaning the room since afternoon .",
+            "彼は30分走り続けています。 | He [has] been running for thirty minutes .",
+            "あなたはどのくらいテレビを見ていますか。 | How long [have] you been watching TV ?",
+            "彼女は3年間英語を教えています。 | She [has] been teaching English for three years .",
+            "私は朝から本を読んでいます。 | I [have] been reading a book since morning ."
+        ]
+    },
+    {
+        id: 'indirect-question-basic',
+        title: '間接疑問文',
+        description: '疑問詞 + 主語 + 動詞 の語順に注意しよう',
+        rawQuestions: [
+            "私は彼がどこに住んでいるか知っています。 | I know where he [lives] .",
+            "あなたは彼女が何を好きか知っていますか。 | Do you know what she [likes] ?",
+            "私は彼がいつ来るか知りません。 | I do not know when he [will] come .",
+            "彼女はこれが誰の本か知っています。 | She knows whose book this [is] .",
+            "私に駅がどこにあるか教えてください。 | Please tell me where the station [is] .",
+            "私は彼がなぜ怒っているか分かりません。 | I do not understand why he [is] angry .",
+            "あなたは彼が何歳か知っていますか。 | Do you know how old he [is] ?",
+            "私は彼女がどうやって学校へ行くか知っています。 | I know how she [goes] to school .",
+            "先生は私たちに何をすべきか教えてくれました。 | The teacher told us what we [should] do .",
+            "私は彼が誰なのか知りたいです。 | I want to know who he [is] ."
+        ]
+    },
+    {
+        id: 'participle-basic',
+        title: '分詞',
+        description: '現在分詞・過去分詞で名詞を詳しく説明しよう',
+        rawQuestions: [
+            "あそこで走っている少年はケンです。 | The boy [running] over there is Ken .",
+            "英語で書かれた本は難しいです。 | The book [written] in English is difficult .",
+            "ピアノを弾いている少女は私の妹です。 | The girl [playing] the piano is my sister .",
+            "これは日本で作られた車です。 | This is a car [made] in Japan .",
+            "ベンチに座っている男性は私の父です。 | The man [sitting] on the bench is my father .",
+            "壊れた窓を見てください。 | Look at the [broken] window .",
+            "あそこで歌っている女性は有名です。 | The woman [singing] over there is famous .",
+            "トムによって撮られた写真は美しいです。 | The picture [taken] by Tom is beautiful .",
+            "川で泳いでいる犬はかわいいです。 | The dog [swimming] in the river is cute .",
+            "昨日買われたケーキはおいしかったです。 | The cake [bought] yesterday was delicious ."
+        ]
+    },
+    {
+        id: 'relative-pronoun-basic',
+        title: '関係代名詞',
+        description: 'who / which / that で名詞を後ろから説明しよう',
+        rawQuestions: [
+            "私は英語を話す友達がいます。 | I have a friend [who] speaks English .",
+            "これは京都へ行く電車です。 | This is a train [which] goes to Kyoto .",
+            "あそこで立っている女性は私の母です。 | The woman [who] is standing over there is my mother .",
+            "私が昨日買った本は面白いです。 | The book [that] I bought yesterday is interesting .",
+            "彼は大きな犬を飼っている少年です。 | He is a boy [who] has a big dog .",
+            "これは私が探していたペンです。 | This is the pen [that] I was looking for .",
+            "机の上にある時計は私のものです。 | The clock [which] is on the desk is mine .",
+            "私はケンが書いた手紙を読みました。 | I read the letter [that] Ken wrote .",
+            "公園で遊んでいる子どもたちは元気です。 | The children [who] are playing in the park are cheerful .",
+            "彼女が作ったケーキはおいしかったです。 | The cake [that] she made was delicious ."
+        ]
+    },
+    {
+        id: 'subjunctive-basic',
+        title: '仮定法',
+        description: 'I wish / If I were ... で現実と違う願いや仮定を表そう',
+        rawQuestions: [
+            "私は車を持っていたらいいのに。 | I wish I [had] a car .",
+            "私が鳥だったらいいのに。 | I wish I [were] a bird .",
+            "もっと上手に英語を話せたらいいのに。 | I wish I [could] speak English better .",
+            "彼女がここにいればいいのに。 | I wish she [were] here .",
+            "もし私があなたなら、一生懸命勉強するでしょう。 | If I [were] you , I would study hard .",
+            "もしお金があれば、その本を買えるのに。 | If I [had] money , I could buy the book .",
+            "もっと時間があればいいのに。 | I wish I [had] more time .",
+            "もし今日晴れていれば、公園へ行くのに。 | If it [were] sunny today , I would go to the park .",
+            "もし泳げたら、海へ行くのに。 | If I [could] swim , I would go to the sea .",
+            "宿題がなければいいのに。 | I wish I [did] not have homework ."
+        ]
     }
 ];
 
 export const FILL_IN_CATEGORIES: FillInCategory[] = RAW_FILL_IN_DATA.map(category => {
-    const questions = category.rawQuestions.map(line => {
+    const level = CATEGORY_LEVELS[category.id];
+    const shouldExpandToFiveStages = level === 'jhs1' && category.rawQuestions.length < 50;
+    const questions = category.rawQuestions.flatMap(line => {
         const [translation, answerStr] = line.split('|').map(s => s.trim());
         // Sanitize
         const sanitizedAnswer = answerStr.replace(/([.?\!,])/g, ' $1').replace(/\s+/g, ' ').trim();
 
         const rawTokens = sanitizedAnswer.split(' ').filter(w => w.length > 0);
+        const cleanBaseTokens = rawTokens.map(token => token.startsWith('[') && token.endsWith(']') ? token.slice(1, -1) : token);
+        const originalBlankIndex = rawTokens.findIndex(token => token.startsWith('[') && token.endsWith(']'));
+        const blankIndexes = shouldExpandToFiveStages
+            ? getBlankIndexesForVariants(cleanBaseTokens, originalBlankIndex, 5)
+            : [originalBlankIndex];
 
-        const cleanTokens: string[] = [];
-        const blanks: { word: string; index: number }[] = [];
+        return blankIndexes.map(blankIndex => {
+            const tokens = cleanBaseTokens.map((token, index) => index === blankIndex ? `[${token}]` : token);
+            const cleanTokens: string[] = [];
+            const blanks: { word: string; index: number }[] = [];
 
-        rawTokens.forEach((token, index) => {
-            if (token.startsWith('[') && token.endsWith(']')) {
-                const word = token.slice(1, -1);
-                cleanTokens.push(word);
-                blanks.push({ word, index });
-            } else {
-                cleanTokens.push(token);
-            }
+            tokens.forEach((token, index) => {
+                if (token.startsWith('[') && token.endsWith(']')) {
+                    const word = token.slice(1, -1);
+                    cleanTokens.push(word);
+                    blanks.push({ word, index });
+                } else {
+                    cleanTokens.push(token);
+                }
+            });
+
+            return {
+                translation,
+                sentence: tokens.join(' '),
+                cleanSentence: cleanTokens.join(' '),
+                blanks
+            };
         });
-
-        return {
-            translation,
-            sentence: sanitizedAnswer,
-            cleanSentence: cleanTokens.join(' '),
-            blanks
-        };
     });
 
     return {
         id: category.id,
+        level,
         title: category.title,
         description: category.description,
         questions
     };
 });
+
+function getBlankIndexesForVariants(tokens: string[], originalBlankIndex: number, targetCount: number) {
+    const punctuation = new Set(['.', '?', '!', ',', ':', ';']);
+    const weakWords = new Set(['a', 'an', 'the']);
+    const candidates = tokens
+        .map((token, index) => ({ token, index }))
+        .filter(({ token }) => !punctuation.has(token))
+        .sort((a, b) => {
+            if (a.index === originalBlankIndex) return -1;
+            if (b.index === originalBlankIndex) return 1;
+
+            const aWeak = weakWords.has(a.token.toLowerCase()) ? 1 : 0;
+            const bWeak = weakWords.has(b.token.toLowerCase()) ? 1 : 0;
+            if (aWeak !== bWeak) return aWeak - bWeak;
+
+            return b.token.length - a.token.length;
+        });
+
+    const indexes = candidates.map(candidate => candidate.index);
+    if (indexes.length === 0) return [0];
+
+    return Array.from({ length: targetCount }, (_, index) => indexes[index % indexes.length]);
+}
+
+export const FILL_IN_CATEGORIES_BY_LEVEL: Record<FillInLevel, FillInCategory[]> = {
+    jhs1: FILL_IN_CATEGORIES.filter(category => category.level === 'jhs1'),
+    jhs2: FILL_IN_CATEGORIES.filter(category => category.level === 'jhs2'),
+    jhs3: FILL_IN_CATEGORIES.filter(category => category.level === 'jhs3'),
+};
