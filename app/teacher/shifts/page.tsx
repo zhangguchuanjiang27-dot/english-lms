@@ -636,7 +636,7 @@ export default function TeacherShiftsPage() {
                                                                         item.status === 'Completed' || item.status === 'Absent'
                                                                             ? "bg-slate-100 text-slate-500 border-slate-200"
                                                                             : item.status === 'Cancelled'
-                                                                                ? "bg-rose-50 text-rose-600 border-rose-100"
+                                                                                ? "bg-slate-100 text-slate-500 border-slate-200"
                                                                                 : "bg-emerald-50 text-emerald-700 border-emerald-100"
                                                                     )}
                                                                     title={`${item.time} - ${item.studentName}`}
@@ -661,7 +661,7 @@ export default function TeacherShiftsPage() {
                                                                         item.status === 'Completed' || item.status === 'Absent'
                                                                             ? "bg-slate-400"
                                                                             : item.status === 'Cancelled'
-                                                                                ? "bg-rose-500"
+                                                                                ? "bg-slate-400"
                                                                                 : "bg-emerald-500"
                                                                     )}
                                                                 />
@@ -709,7 +709,7 @@ export default function TeacherShiftsPage() {
                                                 isCompleted 
                                                     ? "bg-slate-50 border-slate-200 opacity-80" 
                                                     : isCancelled
-                                                        ? "bg-rose-50/30 border-rose-100 opacity-70"
+                                                        ? "bg-slate-50 border-slate-200 opacity-80"
                                                         : "bg-white border-emerald-100 hover:border-emerald-300 hover:shadow-md"
                                             )}
                                         >
@@ -728,7 +728,7 @@ export default function TeacherShiftsPage() {
                                                     isCompleted 
                                                         ? "bg-slate-200 text-slate-600 border-slate-350"
                                                         : isCancelled
-                                                            ? "bg-rose-100 text-rose-700 border-rose-200"
+                                                            ? "bg-slate-200 text-slate-600 border-slate-300"
                                                             : "bg-emerald-50 text-emerald-700 border-emerald-100"
                                                 )}>
                                                     {isCompleted ? '完了' : isCancelled ? 'キャンセル' : '予約中'}
