@@ -633,7 +633,7 @@ export default function TeacherShiftsPage() {
                                                                     key={i} 
                                                                     className={cn(
                                                                         "text-[9px] font-bold px-1.5 py-0.5 rounded truncate border leading-tight",
-                                                                        item.status === 'Completed'
+                                                                        item.status === 'Completed' || item.status === 'Absent'
                                                                             ? "bg-slate-100 text-slate-500 border-slate-200"
                                                                             : item.status === 'Cancelled'
                                                                                 ? "bg-rose-50 text-rose-600 border-rose-100"
@@ -658,7 +658,7 @@ export default function TeacherShiftsPage() {
                                                                     key={i} 
                                                                     className={cn(
                                                                         "w-1.5 h-1.5 rounded-full",
-                                                                        item.status === 'Completed'
+                                                                        item.status === 'Completed' || item.status === 'Absent'
                                                                             ? "bg-slate-400"
                                                                             : item.status === 'Cancelled'
                                                                                 ? "bg-rose-500"
