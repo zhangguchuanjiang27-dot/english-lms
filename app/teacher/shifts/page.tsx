@@ -140,7 +140,7 @@ export default function TeacherShiftsPage() {
         setAbsenceData({ reason: '' });
 
         try {
-            if (lesson.status === 'Completed' || lesson.status === 'Scheduled') {
+            if (lesson.status === 'Completed' || lesson.status === 'Scheduled' || lesson.status === 'Absent') {
                 const currentRecord = await getRecordByLessonId(lesson.id);
                 if (currentRecord) {
                     setAssessmentData({
@@ -698,7 +698,7 @@ export default function TeacherShiftsPage() {
                             {/* Schedule Items List */}
                             <div className="flex-1 overflow-y-auto space-y-4 max-h-[500px] pr-1">
                                 {selectedDaySchedules.map((lesson) => {
-                                    const isCompleted = lesson.status === 'Completed';
+                                    const isCompleted = lesson.status === 'Completed' || lesson.status === 'Absent';
                                     const isCancelled = lesson.status === 'Cancelled';
                                     
                                     return (
@@ -1116,7 +1116,7 @@ export default function TeacherShiftsPage() {
                                 </div>
                             </div>
 
-                                {selectedLesson?.status !== 'Completed' && (
+                                {selectedLesson?.status !== 'Completed' && selectedLesson?.status !== 'Absent' && (
                                     <div className="space-y-4 p-5 rounded-2xl border border-rose-100 bg-rose-50/40">
                                         <h4 className="text-sm font-black text-rose-700 tracking-tight flex items-center gap-2">
                                             <CalendarIcon size={16} />
@@ -1131,7 +1131,7 @@ export default function TeacherShiftsPage() {
                                 )}
                             <div className="px-6 py-5 border-t border-slate-100 bg-white flex justify-between gap-3 shrink-0 mt-auto">
                                 <div className="flex gap-3">
-                                    {selectedLesson?.status === 'Completed' && (
+                                    {(selectedLesson?.status === 'Completed' || selectedLesson?.status === 'Absent') && (
                                         <button
                                             type="button"
                                             onClick={handleRevokeKarte}
@@ -1150,7 +1150,7 @@ export default function TeacherShiftsPage() {
                                     >
                                         キャンセル
                                     </button>
-                                    {selectedLesson?.status !== 'Completed' && (
+                                    {selectedLesson?.status !== 'Completed' && selectedLesson?.status !== 'Absent' && (
                                         <button type="button" onClick={(e) => handleAssessSubmit(e, true)} className="px-6 py-2.5 text-sm font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition-colors flex items-center gap-2">
                                             <FileText size={17} /> 一時保存
                                         </button>
@@ -1160,7 +1160,7 @@ export default function TeacherShiftsPage() {
                                         className="px-8 py-2.5 text-sm font-bold text-white bg-emerald-500 hover:bg-emerald-600 rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95 flex items-center gap-2"
                                     >
                                         <CheckCircle2 size={18} className="text-emerald-100" />
-                                        {selectedLesson?.status === 'Completed' ? 'カルテを更新する' : 'カルテを送信'}
+                                        {selectedLesson?.status === 'Completed' || selectedLesson?.status === 'Absent' ? 'カルテを更新する' : 'カルテを送信'}
                                     </button>
                                 </div>
                             </div>
