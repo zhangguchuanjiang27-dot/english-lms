@@ -16,7 +16,6 @@ import { twMerge } from 'tailwind-merge';
 import { FILL_IN_CATEGORIES, FillInQuestion } from '@/lib/data/fill-in';
 import TrainingHUD from '@/components/training/TrainingHUD';
 import XPResultsView from '@/components/training/XPResultsView';
-import { getLevelInfo } from '@/lib/quest-utils';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -25,6 +24,26 @@ function cn(...inputs: ClassValue[]) {
 
 
 const QUESTIONS_PER_STAGE = 10;
+
+type LevelInfo = {
+    level: number;
+    xpInLevel: number;
+    xpRequired: number;
+    progress: number;
+};
+
+type PostGameStats = {
+    oldLevelInfo: LevelInfo;
+    newLevelInfo: LevelInfo;
+};
+
+type FillInProgressItem = {
+    level: string;
+    stageIndex: number;
+    completions: number;
+    perfectClears?: number;
+    highestScore: number;
+};
 
 export default function FillInPage() {
     const router = useRouter();
@@ -39,11 +58,9 @@ export default function FillInPage() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [isRetryMode, setIsRetryMode] = useState(false);
 
-    const [stageCompletions, setStageCompletions] = useState<Record<string, number>>({});
     const [stagePerfectClears, setStagePerfectClears] = useState<Record<string, number>>({});
     const [stageHighScores, setStageHighScores] = useState<Record<string, number>>({});
-    const [preGameStats, setPreGameStats] = useState<any>(null);
-    const [postGameStats, setPostGameStats] = useState<any>(null);
+    const [postGameStats, setPostGameStats] = useState<PostGameStats | null>(null);
     const [startTime, setStartTime] = useState<number | null>(null);
 
     const [gameQuestions, setGameQuestions] = useState<FillInQuestion[]>([]);
@@ -64,27 +81,18 @@ export default function FillInPage() {
 
         const fetchProgress = async () => {
             try {
-                const profileRes = await fetch(`/api/student/profile?id=${userId}`);
-                if (profileRes.ok) {
-                    const profileData = await profileRes.json();
-                    setPreGameStats(getLevelInfo(profileData.questXP || 0));
-                }
-
                 const res = await fetch(`/api/training/fill-in?studentId=${userId}`);
                 if (res.ok) {
-                    const data = await res.json();
-                    const completions: Record<string, number> = {};
+                    const data = await res.json() as FillInProgressItem[];
                     const pClears: Record<string, number> = {};
                     const highScores: Record<string, number> = {};
 
-                    data.forEach((item: any) => {
+                    data.forEach((item) => {
                         const key = `${item.level}_${item.stageIndex}`;
-                        completions[key] = item.completions;
                         pClears[key] = item.perfectClears || 0;
                         highScores[key] = item.highestScore;
                     });
 
-                    setStageCompletions(completions);
                     setStagePerfectClears(pClears);
                     setStageHighScores(highScores);
                 }
@@ -219,7 +227,6 @@ export default function FillInPage() {
                         const data = await res.json();
                         const actualProgress = data.progress;
                         const key = `${actualProgress.level}_${actualProgress.stageIndex}`;
-                        setStageCompletions(prev => ({ ...prev, [key]: actualProgress.completions }));
                         setStagePerfectClears(prev => ({ ...prev, [key]: actualProgress.perfectClears || 0 }));
                         setStageHighScores(prev => ({ ...prev, [key]: actualProgress.highestScore }));
 
@@ -262,7 +269,7 @@ export default function FillInPage() {
                         const isCorrect = showResult && isOk;
 
                         return (
-                            <span key={idx} className="mx-1">
+                            <span key={idx} className="relative mx-1 inline-flex flex-col items-center">
                                 <input
                                     ref={el => { inputRefs.current[currentBlankIndex] = el; }}
                                     type="text"
@@ -277,10 +284,11 @@ export default function FillInPage() {
                                     )}
                                     autoComplete="off"
                                     autoCorrect="off"
+                                    autoCapitalize="none"
                                     spellCheck="false"
                                 />
                                 {showResult && isIncorrect && (
-                                    <span className="absolute text-sm text-rose-500 font-black mt-12 left-1/2 -translate-x-1/2">
+                                    <span className="absolute top-full mt-1 text-sm text-rose-500 font-black">
                                         {question.blanks[currentBlankIndex].word}
                                     </span>
                                 )}
@@ -316,9 +324,9 @@ export default function FillInPage() {
                             Blank Quest
                         </div>
                         <h1 className="text-4xl md:text-5xl font-black text-white drop-shadow-xl tracking-tight mb-4">
-                            カテゴリー選択
+                            Word Filler
                         </h1>
-                        <p className="text-emerald-100/70 font-medium text-lg">学習したい文法の単元を選択しよう</p>
+                        <p className="text-emerald-100/70 font-medium text-lg">空欄に入る英単語をタイピングして文を完成させよう</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -392,7 +400,7 @@ export default function FillInPage() {
                         <h1 className="text-4xl md:text-5xl font-black text-white drop-shadow-xl tracking-tight mb-4">
                             ステージ選択
                         </h1>
-                        <p className="text-emerald-100/70 font-medium text-lg">10問ごとに区切られたステージに挑戦しよう</p>
+                        <p className="text-emerald-100/70 font-medium text-lg">10問ごとに区切られたタイピングステージに挑戦しよう</p>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -400,7 +408,6 @@ export default function FillInPage() {
                             const startNum = i * QUESTIONS_PER_STAGE + 1;
                             const endNum = (i + 1) * QUESTIONS_PER_STAGE;
                             const completionKey = `${selectedCategoryId}_${i}`;
-                            const completions = stageCompletions[completionKey] || 0;
                             const perfectClears = stagePerfectClears[completionKey] || 0;
                             const highScore = stageHighScores[completionKey] || null;
                             const questionCountInChunk = category?.questions.slice(i * QUESTIONS_PER_STAGE, (i + 1) * QUESTIONS_PER_STAGE).length || 0;
@@ -508,7 +515,7 @@ export default function FillInPage() {
                 {/* Japanese translation question */}
                 <div className="bg-white p-6 md:p-8 rounded-[1.5rem] md:rounded-[2rem] shadow-sm border border-slate-100 w-full mb-8 md:mb-12 text-center relative">
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-md shadow-emerald-500/30">
-                        Translate
+                        Fill the Blank
                     </div>
                     <h2 className="text-xl md:text-3xl font-bold text-slate-700 leading-relaxed mt-1">
                         {question?.translation}
@@ -516,7 +523,10 @@ export default function FillInPage() {
                 </div>
 
                 {/* Answer Area (Typing Inputs) */}
-                <div className="w-full mb-8 flex flex-col items-center justify-center p-6 md:p-10 bg-white rounded-[2rem] shadow-sm border border-slate-100 relative">
+                <div className="w-full mb-8 flex flex-col items-center justify-center p-5 md:p-10 bg-white rounded-[2rem] shadow-sm border border-slate-100 relative">
+                    <p className="mb-5 text-[11px] md:text-xs font-black uppercase tracking-widest text-emerald-500">
+                        空欄を入力して Enter またはチェック
+                    </p>
                     {renderSentence()}
                 </div>
 
