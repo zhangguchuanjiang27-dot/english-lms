@@ -37,8 +37,6 @@ import {
     getRecordByLessonId, 
     revokeLessonKarte,
     markLessonAbsent,
-    unmarkLessonAbsent,
-    deleteAbsenceStock,
     scheduleMakeupLesson
 } from '@/lib/actions/teacher';
 import { getStudentGrammarMastery } from '@/lib/actions/grammar';
