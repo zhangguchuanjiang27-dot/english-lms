@@ -19,12 +19,13 @@ import {
     History,
     PencilLine,
     Clock,
-    Plus
+    Plus,
+    RotateCcw
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { Teacher, LessonSchedule, Student, LessonRecord } from '@/lib/data-store';
-import { getTeacherDashboardData, updateLessonMeetingUrl, submitLessonKarte, getRecentRecordsByStudent, getRecordByLessonId, revokeLessonKarte, markLessonAbsent } from '@/lib/actions/teacher';
+import { getTeacherDashboardData, updateLessonMeetingUrl, submitLessonKarte, getRecentRecordsByStudent, getRecordByLessonId, revokeLessonKarte, markLessonAbsent, unmarkLessonAbsent } from '@/lib/actions/teacher';
 import { getStudentGrammarMastery } from '@/lib/actions/grammar';
 import GrammarMasteryGrid from '@/components/GrammarMasteryGrid';
 
@@ -80,17 +81,36 @@ export default function TeacherDashboard() {
     const [grammarMastery, setGrammarMastery] = useState<any[]>([]);
     const [isLoadingMastery, setIsLoadingMastery] = useState(false);
 
-    useEffect(() => {
+    const refreshData = async () => {
         const userId = localStorage.getItem('user_id');
         if (!userId) return;
 
-        getTeacherDashboardData(userId).then(data => {
-            if (data && data.teacher) {
-                setTeacher(data.teacher as any);
-                setTodaySchedule(data.todaySchedule as any);
+        const data = await getTeacherDashboardData(userId);
+        if (data && data.teacher) {
+            setTeacher(data.teacher as any);
+            setTodaySchedule(data.todaySchedule as any);
+        }
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        refreshData();
+    }, []);
+
+    useEffect(() => {
+        const handleRefresh = () => {
+            if (document.visibilityState === 'visible') {
+                refreshData();
             }
-            setLoading(false);
-        });
+        };
+
+        window.addEventListener('focus', refreshData);
+        document.addEventListener('visibilitychange', handleRefresh);
+
+        return () => {
+            window.removeEventListener('focus', refreshData);
+            document.removeEventListener('visibilitychange', handleRefresh);
+        };
     }, []);
 
 
@@ -321,6 +341,25 @@ export default function TeacherDashboard() {
             alert('欠席として記録し、カルテも保存しました');
         } else {
             alert(result.error || '欠席の登録に失敗しました');
+        }
+    };
+
+    const handleUnmarkAbsent = async () => {
+        if (!selectedLesson) return;
+        if (!confirm('この欠席登録を解除して、未記入の予定に戻しますか？')) return;
+
+        const result = await unmarkLessonAbsent(selectedLesson.id);
+
+        if (result.success) {
+            setTodaySchedule(prev => prev.map(s =>
+                s.id === selectedLesson.id ? { ...s, status: 'Scheduled' } : s
+            ));
+            setIsAssessModalOpen(false);
+            setSelectedLesson(null);
+            alert('欠席登録を解除しました。');
+            refreshData();
+        } else {
+            alert(result.error || '欠席登録の解除に失敗しました');
         }
     };
 
@@ -739,6 +778,16 @@ export default function TeacherDashboard() {
                                 )}
                             <div className="px-6 py-5 border-t border-slate-100 bg-white flex justify-between gap-3 shrink-0 mt-auto">
                                 <div className="flex gap-3">
+                                    {selectedLesson?.status === 'Absent' && (
+                                        <button
+                                            type="button"
+                                            onClick={handleUnmarkAbsent}
+                                            className="px-4 py-2.5 text-sm font-bold text-amber-600 hover:bg-amber-50 rounded-xl transition-colors flex items-center gap-2"
+                                        >
+                                            <RotateCcw size={16} />
+                                            欠席登録を解除
+                                        </button>
+                                    )}
                                     {(selectedLesson?.status === 'Completed' || selectedLesson?.status === 'Absent') && (
                                         <button
                                             type="button"

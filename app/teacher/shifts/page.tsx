@@ -22,7 +22,8 @@ import {
     PencilLine,
     AlertCircle,
     User,
-    ClipboardCheck
+    ClipboardCheck,
+    RotateCcw
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -36,6 +37,7 @@ import {
     getRecordByLessonId, 
     revokeLessonKarte,
     markLessonAbsent,
+    unmarkLessonAbsent,
     scheduleMakeupLesson
 } from '@/lib/actions/teacher';
 import { getStudentGrammarMastery } from '@/lib/actions/grammar';
@@ -346,6 +348,25 @@ export default function TeacherShiftsPage() {
             refreshData();
         } else {
             alert(result.error || '欠席の登録に失敗しました');
+        }
+    };
+
+    const handleUnmarkAbsent = async () => {
+        if (!selectedLesson) return;
+        if (!confirm('この欠席登録を解除して、未記入の予定に戻しますか？')) return;
+
+        const result = await unmarkLessonAbsent(selectedLesson.id);
+
+        if (result.success) {
+            setSchedules(prev => prev.map(s =>
+                s.id === selectedLesson.id ? { ...s, status: 'Scheduled' } : s
+            ));
+            setIsAssessModalOpen(false);
+            setSelectedLesson(null);
+            alert('欠席登録を解除しました。');
+            refreshData();
+        } else {
+            alert(result.error || '欠席登録の解除に失敗しました');
         }
     };
 
@@ -1131,6 +1152,16 @@ export default function TeacherShiftsPage() {
                                 )}
                             <div className="px-6 py-5 border-t border-slate-100 bg-white flex justify-between gap-3 shrink-0 mt-auto">
                                 <div className="flex gap-3">
+                                    {selectedLesson?.status === 'Absent' && (
+                                        <button
+                                            type="button"
+                                            onClick={handleUnmarkAbsent}
+                                            className="px-4 py-2.5 text-sm font-bold text-amber-600 hover:bg-amber-50 rounded-xl transition-colors flex items-center gap-2"
+                                        >
+                                            <RotateCcw size={16} />
+                                            欠席登録を解除
+                                        </button>
+                                    )}
                                     {(selectedLesson?.status === 'Completed' || selectedLesson?.status === 'Absent') && (
                                         <button
                                             type="button"
