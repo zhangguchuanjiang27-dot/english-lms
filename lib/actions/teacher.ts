@@ -433,6 +433,43 @@ export async function markLessonAbsent(data: {
     }
 }
 
+export async function unmarkLessonAbsent(lessonId: string) {
+    try {
+        const lesson = await prisma.lessonSchedule.findUnique({
+            where: { id: lessonId }
+        });
+
+        if (!lesson) {
+            return { success: false, error: '授業が見つかりませんでした' };
+        }
+
+        if (lesson.status !== 'Absent') {
+            return { success: false, error: '欠席登録されている授業ではありません' };
+        }
+
+        await prisma.lessonRecord.deleteMany({
+            where: { lessonId }
+        });
+
+        await prisma.lessonSchedule.update({
+            where: { id: lessonId },
+            data: { status: 'Scheduled' }
+        });
+
+        revalidatePath('/teacher');
+        revalidatePath('/teacher/students');
+        revalidatePath('/teacher/shifts');
+        revalidatePath('/(student)/schedule', 'page');
+        revalidatePath('/(student)/dashboard', 'page');
+        revalidatePath('/(student)/karte', 'page');
+
+        return { success: true };
+    } catch (error) {
+        console.error('Error unmarking lesson absent:', error);
+        return { success: false, error: '欠席登録の解除に失敗しました' };
+    }
+}
+
 export async function scheduleMakeupLesson(data: {
     absentLessonId: string;
     makeupDate: string;
@@ -501,6 +538,42 @@ export async function scheduleMakeupLesson(data: {
     } catch (error) {
         console.error('Error scheduling makeup lesson:', error);
         return { success: false, error: '振替日の設定に失敗しました' };
+    }
+}
+
+export async function deleteAbsenceStock(lessonId: string) {
+    try {
+        const lesson = await prisma.lessonSchedule.findUnique({
+            where: { id: lessonId }
+        });
+
+        if (!lesson) {
+            return { success: false, error: '欠席コマが見つかりませんでした' };
+        }
+
+        if (lesson.status !== 'Absent') {
+            return { success: false, error: '削除できる振替ストックではありません' };
+        }
+
+        await prisma.lessonRecord.deleteMany({
+            where: { lessonId }
+        });
+
+        await prisma.lessonSchedule.delete({
+            where: { id: lessonId }
+        });
+
+        revalidatePath('/teacher');
+        revalidatePath('/teacher/students');
+        revalidatePath('/teacher/shifts');
+        revalidatePath('/(student)/schedule', 'page');
+        revalidatePath('/(student)/dashboard', 'page');
+        revalidatePath('/(student)/karte', 'page');
+
+        return { success: true };
+    } catch (error) {
+        console.error('Error deleting absence stock:', error);
+        return { success: false, error: '振替ストックの削除に失敗しました' };
     }
 }
 
