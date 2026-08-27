@@ -470,6 +470,42 @@ export async function unmarkLessonAbsent(lessonId: string) {
     }
 }
 
+export async function deleteAbsenceStock(lessonId: string) {
+    try {
+        const lesson = await prisma.lessonSchedule.findUnique({
+            where: { id: lessonId }
+        });
+
+        if (!lesson) {
+            return { success: false, error: '授業が見つかりませんでした' };
+        }
+
+        if (lesson.status !== 'Absent') {
+            return { success: false, error: '振替ストックにある欠席コマだけ削除できます' };
+        }
+
+        await prisma.lessonRecord.deleteMany({
+            where: { lessonId }
+        });
+
+        await prisma.lessonSchedule.delete({
+            where: { id: lessonId }
+        });
+
+        revalidatePath('/teacher');
+        revalidatePath('/teacher/students');
+        revalidatePath('/teacher/shifts');
+        revalidatePath('/(student)/schedule', 'page');
+        revalidatePath('/(student)/dashboard', 'page');
+        revalidatePath('/(student)/karte', 'page');
+
+        return { success: true };
+    } catch (error) {
+        console.error('Error deleting absence stock:', error);
+        return { success: false, error: '振替ストックの削除に失敗しました' };
+    }
+}
+
 export async function scheduleMakeupLesson(data: {
     absentLessonId: string;
     makeupDate: string;

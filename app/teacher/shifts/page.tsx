@@ -38,6 +38,7 @@ import {
     revokeLessonKarte,
     markLessonAbsent,
     unmarkLessonAbsent,
+    deleteAbsenceStock,
     scheduleMakeupLesson
 } from '@/lib/actions/teacher';
 import { getStudentGrammarMastery } from '@/lib/actions/grammar';
@@ -399,6 +400,20 @@ export default function TeacherShiftsPage() {
         }
     };
 
+    const handleDeleteAbsenceStock = async (lesson: any) => {
+        if (!confirm(`${lesson.studentName} ${lesson.date} ${lesson.time} の振替ストックを削除しますか？`)) return;
+
+        const result = await deleteAbsenceStock(lesson.id);
+
+        if (result.success) {
+            setSchedules(prev => prev.filter(s => s.id !== lesson.id));
+            alert('振替ストックを削除しました');
+            refreshData();
+        } else {
+            alert(result.error || '振替ストックの削除に失敗しました');
+        }
+    };
+
     // Date calculations
     const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
     const getFirstDayOfMonth = (year: number, month: number) => new Date(year, month, 1).getDay();
@@ -560,6 +575,14 @@ export default function TeacherShiftsPage() {
                                         </div>
                                         <span className="text-[10px] font-black text-rose-600 bg-white border border-rose-100 px-2 py-1 rounded-lg shrink-0">欠席</span>
                                     </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDeleteAbsenceStock(lesson)}
+                                        className="w-full px-4 py-2.5 rounded-xl border border-rose-200 bg-white text-rose-500 hover:bg-rose-50 text-sm font-black transition-colors flex items-center justify-center gap-2"
+                                    >
+                                        <Trash2 size={16} />
+                                        振替ストックを削除
+                                    </button>
                                     <button
                                         type="button"
                                         onClick={() => openMakeupModal(lesson)}
